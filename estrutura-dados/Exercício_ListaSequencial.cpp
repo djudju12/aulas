@@ -197,7 +197,17 @@ void cria_lista( int *fim ){
  * saída   : lista com novo elemento            *
  ***********************************************/
 void inclui_fim( NODO *lista ){
-     
+    if ( lista->f == N_MAX )
+	 	printf( "Lista Cheia! ");
+	else{
+		INFORMACAO aux;
+		entrada_dados( &aux );
+		lista->info[ lista->f ] = aux;
+		lista->f++;
+		printf( "Registro incluido no fim" );
+		
+	}
+
 
 }
 
@@ -210,7 +220,17 @@ void inclui_fim( NODO *lista ){
  * saída   : lista com novo elemento            *
  ************************************************/
 void inclui_inicio( NODO *lista ){
-     
+    if ( lista->f == N_MAX )
+	 	printf( "Lista Cheia! ");
+	else{
+		INFORMACAO aux;
+		entrada_dados( &aux );
+		for( i = lista->f; i > 0; i--)
+			lista->info[ i ] = lista->info[ i - 1];
+		lista->info[ 0 ] = aux;
+		lista->f++;
+		printf( "Registro incluido no início" );
+	}
 
 }
 
@@ -243,8 +263,23 @@ int procura_nodo( int cod, NODO lista ){
  * saída   : lista com um elemento removido     *
  ************************************************/
 void exclui_nodo( NODO *lista ){
-     
-
+    if ( lista->f == N_MAX )
+	 	printf( "Lista Cheia! ");
+	else{
+		int cod, posicao, int;
+		printf( "\nInforme o código a ser excluido: " );
+		fflush( stdin );
+		scanf( "%d", &cod );
+		posicao = procura_nodo( cod, *lista );
+		if( lista->info[ posicao ].codigo == cod){
+			for( i = posicao; i < lista->f-1; i++)
+				lista->info[ i ] = lista->info[ i + 1 ]
+			lista->f--;
+		}
+		else
+			printf( "Codigo nao encontrado" );
+		
+	}
 }
 
 
