@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #define MAX 100
 
 void capitalizeString(char str[]);
@@ -21,8 +20,7 @@ void capitalizeString(char str[])
 	int count=0;
 	for(count=0;count<strlen(str);count++)
 	{
-		if(isalpha(str[count]))
-			str[count] = toupper(str[count]);
+		str[count] = toupper(str[count]);
 	}
 	
 }

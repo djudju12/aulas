@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #define MAX 100
 
 void titleStr(char str[], char strTitled[]);
