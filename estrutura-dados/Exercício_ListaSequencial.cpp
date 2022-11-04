@@ -13,6 +13,7 @@
 #include <stdlib.h>		   // exit, system
 #include <string.h>	  	   // strcmp - comparar strings
 #include <locale.h>        // setlocale - alterar idioma para português
+#include <stdbool.h>
 //#include <ctype.h>       // toupper - converter caracter para maiúsculo
 //#include <conio.h>       // getch - ler do tecla
 
@@ -220,6 +221,7 @@ void inclui_fim( NODO *lista ){
  * saída   : lista com novo elemento            *
  ************************************************/
 void inclui_inicio( NODO *lista ){
+	int i;
     if ( lista->f == N_MAX )
 	 	printf( "Lista Cheia! ");
 	else{
@@ -266,14 +268,14 @@ void exclui_nodo( NODO *lista ){
     if ( lista->f == N_MAX )
 	 	printf( "Lista Cheia! ");
 	else{
-		int cod, posicao, int;
+		int cod, posicao, i;
 		printf( "\nInforme o código a ser excluido: " );
 		fflush( stdin );
 		scanf( "%d", &cod );
 		posicao = procura_nodo( cod, *lista );
 		if( lista->info[ posicao ].codigo == cod){
 			for( i = posicao; i < lista->f-1; i++)
-				lista->info[ i ] = lista->info[ i + 1 ]
+				lista->info[ i ] = lista->info[ i + 1 ];
 			lista->f--;
 		}
 		else
@@ -291,8 +293,17 @@ void exclui_nodo( NODO *lista ){
 * saída   : lista ordenada                      *
 *************************************************/
 void ordena_lista( NODO *lista ){              // Algoritmo Método Bolha - Bubble Sort
+     int i, j, temp;
      
- 
+     for(i=0;i<lista->f;i++){
+     	for(j=0;j<lista->f-i-1;j++){
+     		if(lista->info[ j ].codigo>lista->info[ j+1 ].codigo){
+     			temp = lista->info[ j ].codigo;
+     			lista->info[ j ].codigo = lista->info[ j+1 ].codigo;
+     			lista->info[ j+1 ].codigo = temp;
+			 }
+		 }
+	 }
 }
 
 
@@ -303,7 +314,20 @@ void ordena_lista( NODO *lista ){              // Algoritmo Método Bolha - Bubbl
  * saída   : lista com um elemento alterado     *
  ************************************************/
 void altera_nodo( NODO *lista ){
-        
+	int cod, pf;
+	printf( " Digite o registro de referência: " ); 
+	fflush( stdin );
+    scanf( "%d", &cod );
+    pf = procura_nodo(cod, *lista);
+    
+    if( ( pf >= 0 ) && ( pf < lista->f ) && (lista->info[ pf ].codigo == cod) ){
+    	INFORMACAO aux;
+    	entrada_dados( &aux );
+    	lista->info[ pf ] = aux;
+    	printf( "\n Registro alterado!" );
+	}
+	else
+		printf( "\n Nodo de referência não existe!" );
 
 }             
 
@@ -315,7 +339,23 @@ void altera_nodo( NODO *lista ){
  * saída   : nenhuma, dados em tela             *
  ************************************************/
 void consulta_nome( NODO lista ){
-
+	char nome[50];
+	int i;
+	bool nome_achado = false;
+	printf(" Digite o nome para consulta: ");
+	fflush( stdin );
+	gets( nome );
+	
+	for(i=0;i<lista.f;i++){
+		if(!strcmp(nome, lista.info[i].nome)){
+			printf( "\n Registro[%d]", i );
+	        printf( "\t Código.: %d", lista.info[ i ].codigo );
+	        printf( "\t Nome.: %s", lista.info[ i ].nome );
+	        nome_achado = true;
+		}
+	}
+	if(!nome_achado)
+		printf( " \n Nome não encontrado!" );
 }
 
 /************************************************

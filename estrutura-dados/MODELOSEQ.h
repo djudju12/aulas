@@ -2,7 +2,7 @@
 /* Definição do Registro e da Estrutura        */
 /* Profa Daniela Bagatini                      */
 /***********************************************/ 
-#define N_MAX   6
+#define N_MAX   100
 
 typedef struct{                 // registro pessoa, utilize os dados necessários
        int  codigo;
