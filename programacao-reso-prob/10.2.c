@@ -25,10 +25,14 @@ void imprimirMatrix(int matrix[][COLUNAS]){
 	
 	for(i=0;i<LINHAS;i++){
 		for(j=0;j<COLUNAS;j++){
-			if(matrix[i][j]<10)
-				printf("0%d ", matrix[i][j]);
-			else
-				printf("%d ", matrix[i][j]);
+			switch(matrix[i][j]<10){
+				case 1:
+					printf("0%d ", matrix[i][j]);
+					break;
+				case 0:
+					printf("%d ", matrix[i][j]);
+					break;
+			}
 		}
 		printf("\n");
 	}
