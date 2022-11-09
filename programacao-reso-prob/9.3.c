@@ -22,7 +22,7 @@ void titleStr(char str[], char strTitled[])
 	strcpy(strTitled, str);
 	for(i=0;i<strlen(str);i++)
 	{
-		if((isspace(str[i-1]) || i==0) && isalpha(str[i]))
+		if(isspace(str[i-1]) || i==0)
 			strTitled[i] = toupper(str[i]);
 	}
 }
