@@ -6,20 +6,20 @@
 
 int offsets_reg(char str[]){
     regex_t preg;
-    char regex[] = "<[^>]*>";
-    int ret, cflags = REG_ICASE;
-    regmatch_t pmatch[2] = {{-1,-1},{-1,-1}};
+    char regex[] = "<[.]*>";
+    regmatch_t pmatch[2];
     int result = 0;
-    ret = regcomp(&preg, regex, cflags);
+    int ret = regcomp(&preg, regex, 0);
     
     do{
         ret = regexec(&preg, str, 2, pmatch, 0);
         if(ret)
             break;
         
-        int inicio = pmatch[0].rm_so, fim=pmatch[0].rm_eo - 1;
-        str[inicio] = '0';
-        str[fim] = '0';
+        int inicio = pmatch[0].rm_so;
+        int fim = pmatch[0].rm_eo - 1;
+        str[inicio] = '.';
+        str[fim] = '.';
         result+=1;
         
     }while(1);
