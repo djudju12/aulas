@@ -7,16 +7,6 @@ typedef struct{
     int f;
 }NODO;
 
-// converte a string em uma lista
-void entrada_dados(char padrao[], NODO *lista){
-    int i, lenstr;
-    lenstr = strlen(padrao);
-    for(i=0;i<lenstr;i++){
-        lista->str[i] = padrao[i];
-        lista->f++;
-    }
-}
-
 // exclui nodo na posicao 
 void exclui_nodo( int posicao, NODO *lista ){
     int i;
@@ -71,9 +61,8 @@ int main() {
     scanf("%d", &inputs); // quantidade de casos testes
     for(i=0;i<inputs;i++){
         fflush(stdin);
-        scanf("%s", padrao); // string
-        cria_lista( &lista.f );
-        entrada_dados(padrao, &lista);
+        scanf("%s", lista.str); // string
+        lista.f = strlen(lista.str);
         resultado = diamantes(&lista);
         printf("%d\n", resultado);
     }
