@@ -15,18 +15,11 @@ int main(){
 				"1000110001111110111011111010001010111011100110101011101111011111010010001001100001"
 				"0100111110000000100111011111010101111111111111111111111111111111111111111111111111"
 				"111111111111111111111111"};
-	char matrix[TAMANHO][TAMANHO];
 	int i, j;
 	
 	for(i=0;i<TAMANHO;i++){
 		for(j=0;j<TAMANHO;j++){
-			matrix[i][j] = s[i*TAMANHO+j];
-		}
-	}
-	
-	for(i=0;i<TAMANHO;i++){
-		for(j=0;j<TAMANHO;j++){
-			switch(matrix[i][j]){
+			switch(s[i*TAMANHO+j]){
 				case '1':
 					printf("%c", 219);
 					break;
@@ -40,5 +33,3 @@ int main(){
 	
 	return 0;
 }
-
-
