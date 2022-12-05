@@ -34,16 +34,16 @@ int main(){
 	int nDias; // variavel que armazena quantos dias serão contados
 	int dia, mes, ano; // Variaveis das datas
 	
-//	printf("Informe dia, mes e ano: ");
-//	scanf("%d %d %d", &dia, &mes, &ano);
-//	imprimirWeekday(dia, mes, ano);
-//	
-//	printf("Quantos dias deseja adicionar nessa data? ");
-//	scanf("%d", &nDias);
-//	
-//	contarDias(&dia, &mes, &ano, nDias);
-//	printf("A nova data eh: %d/%d/%d\n", dia, mes, ano);
-//	
+	printf("Informe dia, mes e ano: ");
+	scanf("%d %d %d", &dia, &mes, &ano);
+	imprimirWeekday(dia, mes, ano);
+	
+	printf("Quantos dias deseja adicionar nessa data? ");
+	scanf("%d", &nDias);
+	
+	contarDias(&dia, &mes, &ano, nDias);
+	printf("A nova data eh: %d/%d/%d\n", dia, mes, ano);
+	
 	printf("Deseja imprimir o calendario de qual ano? ");
 	scanf("%d", &ano);
 	printCalendarioCompleto(ano, c);
