@@ -46,6 +46,7 @@ def receber_input(testes: int) -> list[Caso]:
 def calcular_pilhas(casos: list[Caso]) -> list:
    return [mdc(caso) for caso in casos]
 
+# Não há necessidade de validar /0 pois o problema especifica que F1, F2 > 0
 def mdc(caso: Caso) -> int:
    a, b = caso
    r = a % b 
