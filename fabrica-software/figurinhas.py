@@ -33,7 +33,6 @@ Caso = tuple[int, int]
 def main() -> int:
    teste = int(input())
    casos = receber_input(teste)
-   print(type(casos[1]))
    results = calcular_pilhas(casos)
    print_result(results)
 
@@ -48,8 +47,7 @@ def calcular_pilhas(casos: list[Caso]) -> list:
    return [mdc(caso) for caso in casos]
 
 def mdc(caso: Caso) -> int:
-   a = max(caso)
-   b = min(caso)
+   a, b = caso
    r = a % b 
    if (r == 0):
       return b
