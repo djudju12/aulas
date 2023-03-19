@@ -15,6 +15,19 @@ class ListaEncadeada:
         self.primeiro: No | None = None
         self.tail: No | None = None
         self.len: int = 0
+        self.current: No = self.primeiro
+
+    def __iter__(self) -> 'ListaEncadeada':
+        self.current = self.primeiro
+        return self
+    
+    def __next__(self) -> No:
+        if self.current is None:
+            raise StopIteration 
+        else:
+            retorno = self.current
+            self.current = self.current.proximo 
+            return retorno
 
     def lista_vazia(self) -> bool:
         return self.primeiro == None
@@ -23,10 +36,8 @@ class ListaEncadeada:
         if self.lista_vazia():
             print("Lista vazia")
             return None
-        atual = self.primeiro
-        while (atual != None):
-            atual.mostrar_no()
-            atual = atual.proximo
+        for item in self:
+            item.mostrar_no()
         print("\n")
 
     def inserir_inicio(self, valor: Any) -> None:
@@ -41,11 +52,8 @@ class ListaEncadeada:
         if self.lista_vazia():
             self.inserir_inicio(valor)
         else:
-            atual = self.primeiro
-            while (atual.proximo != None):
-                atual = atual.proximo
             novo = No(valor)
-            atual.proximo = novo
+            self.tail.proximo = novo
             self.tail = novo
             self.len += 1
 
@@ -54,43 +62,38 @@ class ListaEncadeada:
             raise IndexError
         elif index == self.len-1:
             return self.tail.valor
-        elif index == 0:
-            return self.primeiro.valor
         else:
-            count = 1
-            atual = self.primeiro.proximo
-            while (count < self.len-1):
+            count = 0
+            for item in self:
                 if count == index:
-                    return atual.valor
-                else:
-                    atual = atual.proximo
-                    count += 1
+                    return item.valor
+                count += 1
 
     def index_of(self, valor: Any) -> int:
         if self.lista_vazia():
-            raise IndexError
-        atual = self.primeiro
-        count = 0
-        while (atual != None):
-            if atual.valor == valor:
-                return count
-            atual = atual.proximo
-            count += 1
-        raise IndexError
+            raise -1
+        elif self.tail.valor == valor:
+            return self.len-1
+        else:
+            count = 0
+            for item in self:
+                if item.valor == valor:
+                    return count
+                count += 1
+        return -1
 
     def delete(self, index: int) -> None:
         if self.lista_vazia() or index > self.len-1:
             raise IndexError
         elif index == 0:
             self.primeiro = self.primeiro.proximo
-            self.len -= 1
         else:
-            atual = self.primeiro
             count = 0
-            while (count < index-1):
-                atual = atual.proximo
+            for item in self:
+                if count == index-1:
+                    item.proximo = item.proximo.proximo
                 count += 1
-            atual.proximo = atual.proximo.proximo
+        self.len -= 1
 
     def concat(self, element: Any ):
         if isinstance(element, ListaEncadeada):
@@ -153,12 +156,15 @@ def main():
     lista.inserir_inicio(5)
     lista.inserir_inicio(75)
     lista.inserir_at(5, 11)
-    print("unsorted")
-    lista.mostrar_lista()
-    print("sorted")
-    sorted = lista.naive_sort()
-    sorted.mostrar_lista()
 
+    lista.inserir_fim(999)
+    lista.mostrar_lista()
+    lista.delete(0)
+    lista.delete(3)
+    lista.delete(1)
+    lista.mostrar_lista()
+    print(f"value at 3 => {lista.value_at(3)}")
+    print(f"index of {lista.value_at(3)} => {lista.index_of(lista.value_at(3))}")
 
 if __name__ == '__main__':
     main()
