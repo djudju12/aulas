@@ -112,19 +112,21 @@ class ListaEncadeada:
             self.inserir_fim(valor)
         else:
             no_valor = No(valor)
-            atual = self.primeiro
             count = 0
-            while (count < index-1):
-                atual = atual.proximo
+            for item in self:
+                if count == index-1:
+                    no_valor.proximo = item.proximo
+                    item.proximo = no_valor 
+                    self.len += 1 
+                    return 
                 count += 1
-            no_valor.proximo = atual.proximo
-            atual.proximo = no_valor
-            self.len += 1
+
 
     def naive_sort(self) -> 'ListaEncadeada':
         atual = self.primeiro
         sorted_list = ListaEncadeada()
         sorted_list.inserir_inicio(atual.valor)
+        sorted_list.inserir_inicio(self.primeiro)
 
         for n in range(1, self.len):
             proximo = sorted_list.primeiro
@@ -135,6 +137,7 @@ class ListaEncadeada:
                 if proximo.proximo is None:
                     sorted_list.inserir_fim(atual) 
                     inserted = True
+                    break
                 proximo = proximo.proximo
                 index += 1
 
@@ -142,29 +145,21 @@ class ListaEncadeada:
                 sorted_list.inserir_at(index, atual)
 
         return sorted_list
-            
+
+
+    def sort(self):
+        def merge(array: ListaEncadeada, ):
+            return 
+        merge(self)
+
+
 
 
 
 def main():
-    lista = ListaEncadeada()
-    lista.inserir_inicio(1)
-    lista.inserir_inicio(4)
-    lista.inserir_inicio(3)
-    lista.inserir_fim(7)
-    lista.inserir_fim(75)
-    lista.inserir_inicio(5)
-    lista.inserir_inicio(75)
-    lista.inserir_at(5, 11)
 
-    lista.inserir_fim(999)
-    lista.mostrar_lista()
-    lista.delete(0)
-    lista.delete(3)
-    lista.delete(1)
-    lista.mostrar_lista()
-    print(f"value at 3 => {lista.value_at(3)}")
-    print(f"index of {lista.value_at(3)} => {lista.index_of(lista.value_at(3))}")
+    return 0
+
 
 if __name__ == '__main__':
     main()
