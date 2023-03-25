@@ -147,10 +147,7 @@ class ListaEncadeada:
         return sorted_list
 
 
-    def sort(self):
-        def merge(array: ListaEncadeada, ):
-            return 
-        merge(self)
+
 
 
 
