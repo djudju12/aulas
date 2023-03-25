@@ -121,7 +121,6 @@ class ListaEncadeada:
                     return 
                 count += 1
 
-
     def naive_sort(self) -> 'ListaEncadeada':
         atual = self.primeiro
         sorted_list = ListaEncadeada()
@@ -145,13 +144,6 @@ class ListaEncadeada:
                 sorted_list.inserir_at(index, atual)
 
         return sorted_list
-
-
-
-
-
-
-
 
 def main():
 

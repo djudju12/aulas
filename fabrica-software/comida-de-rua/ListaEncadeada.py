@@ -16,6 +16,7 @@ class ListaEncadeada:
     self.current: No | None = self.primeiro
     self.tail: No | None = None
 
+
   def __iter__(self) -> 'ListaEncadeada':
     self.current = self.primeiro
     return self
@@ -27,6 +28,37 @@ class ListaEncadeada:
       no_atual = self.current
       self.current = self.current.proximo 
       return no_atual.valor
+    
+  def __len__(self):
+    return self.len
+
+  def __delitem__(self, index: int) -> None:
+    if self.lista_vazia() or index > self.len-1:
+      return print('Index fora dos limites da lista')
+    elif index == 0:
+      self.primeiro = self.primeiro.proximo
+    else:
+      count = 0
+      item = self.primeiro
+      for _ in self:
+        if count == index-1:
+          item.proximo = item.proximo.proximo
+          if index == self.len-1:
+            self.tail = item
+          break
+        item = item.proximo
+        count += 1
+    self.len -= 1
+
+  def __getitem__(self, index):
+    if self.lista_vazia() or index > self.len:
+      raise IndexError
+    else:
+      count = 0
+      for item in self:
+        if count == index:
+          return item
+        count += 1
 
   def mostrar_lista(self) -> None:
     if self.lista_vazia():
@@ -47,7 +79,7 @@ class ListaEncadeada:
       self.tail = novo
     self.len += 1
 
-  def inserir_fim(self, valor: Any) -> None:
+  def append(self, valor: Any) -> None:
     if self.lista_vazia():
       self.inserir_inicio(valor)
     else:
@@ -56,7 +88,7 @@ class ListaEncadeada:
       self.tail = novo
       self.len += 1
 
-  def value_at(self, index: int) -> No:
+  def index(self, index: int) -> No:
     if self.lista_vazia() or index > self.len:
       raise IndexError
     else:
@@ -66,20 +98,4 @@ class ListaEncadeada:
           return item
         count += 1
 
-  def delete(self, index: int) -> None:
-    if self.lista_vazia() or index > self.len-1:
-      return print('Index fora dos limites da lista')
-    elif index == 0:
-      self.primeiro = self.primeiro.proximo
-    else:
-      count = 0
-      item = self.primeiro
-      for _ in self:
-        if count == index-1:
-          item.proximo = item.proximo.proximo
-          if index == self.len-1:
-            self.tail = item
-          break
-        item = item.proximo
-        count += 1
-    self.len -= 1
+
