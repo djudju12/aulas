@@ -13,13 +13,33 @@
          (count-pairs (cdr x))
          1)))
 
+; 3 \/
+; w --> [o][o] ---> [o][o] ---> [o][o] 
 
-(define w (list 'a 'b 'c))
-(count-pairs w)
-(define w ())
-;
-;
-;
+; 4 \/
+;   .-----------------------.
+;   |                       | 
+;   |                       * 
+;  [o][o] ---> [o][o] ---> [o][^] 
+
+; 7 \/
+;   .-----------.           c 
+;   |           |           | 
+;  [o][o] ---> [o][o] ---> [o][^] 
+;               |           |
+;               *-----------*
+
+
+(define a (list 'a 'b 'c))
+(count-pairs a) ; 3
+
+(set-car! a (cddr a)) 
+(count-pairs a) ; 4 
+
+(set-car! a (cdr a) )
+(set-car! (cdr a) (cddr a) ) ; 7
+
+(count-pairs a)
 ;
 ;
 ;
