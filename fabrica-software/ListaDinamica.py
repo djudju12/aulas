@@ -7,7 +7,7 @@ class No:
         self.proximo: No | None = None
 
     def mostrar_no(self) -> None:
-        print(self.valor)
+        print(self.valor, end=" ")
 
 
 class ListaEncadeada:
@@ -27,6 +27,7 @@ class ListaEncadeada:
         while (atual != None):
             atual.mostrar_no()
             atual = atual.proximo
+        print("\n")
 
     def inserir_inicio(self, valor: Any) -> None:
         novo = No(valor)
@@ -104,7 +105,7 @@ class ListaEncadeada:
             raise IndexError
         elif index == 0:
             self.inserir_inicio(valor)
-        elif index == self.len-1:
+        elif index == self.len:
             self.inserir_fim(valor)
         else:
             no_valor = No(valor)
@@ -117,22 +118,27 @@ class ListaEncadeada:
             atual.proximo = no_valor
             self.len += 1
 
-    def naive_sort(self):
+    def naive_sort(self) -> 'ListaEncadeada':
         atual = self.primeiro
         sorted_list = ListaEncadeada()
         sorted_list.inserir_inicio(atual.valor)
 
-        for _ in range(1, self.len-1):
-            atual = atual.proximo
+        for n in range(1, self.len):
             proximo = sorted_list.primeiro
+            atual = self.value_at(n)
             index = 0
-            while (atual.valor > proximo.valor):
+            inserted = False
+            while (atual > proximo.valor):
                 if proximo.proximo is None:
-                    sorted_list.inserir_fim(atual.valor) 
+                    sorted_list.inserir_fim(atual) 
+                    inserted = True
                 proximo = proximo.proximo
                 index += 1
 
-            sorted_list.inserir_at(index, atual.valor)
+            if not inserted:
+                sorted_list.inserir_at(index, atual)
+
+        return sorted_list
             
 
 
@@ -145,11 +151,13 @@ def main():
     lista.inserir_fim(7)
     lista.inserir_fim(75)
     lista.inserir_inicio(5)
-
+    lista.inserir_inicio(75)
+    lista.inserir_at(5, 11)
+    print("unsorted")
     lista.mostrar_lista()
-    print("\n")
-    lista.naive_sort()
-    lista.mostrar_lista()
+    print("sorted")
+    sorted = lista.naive_sort()
+    sorted.mostrar_lista()
 
 
 if __name__ == '__main__':
