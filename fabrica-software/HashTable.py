@@ -1,5 +1,5 @@
 from typing import Any
-from ListaDinamicaMelhorada import *
+from ListaDinamica import *
 
 INITIAL_CAPATY = 50
 class NodeHash:
