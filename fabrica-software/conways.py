@@ -139,16 +139,5 @@ def plot_grid2(grid: list[list[int]], rule_dict: dict):
             return
         plt.clf()
 
-# def plot_grid(grid: list[list[int]], root: tk.Tk):
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111)
-#     ax.axis('off')
-#     canvas = FigureCanvasTkAgg(fig, master=root)
-#     canvas.get_tk_widget().pack()
-#     ax.imshow(grid)
-#     canvas.draw_idle()
-#     canvas.
-
-
 if __name__ == '__main__':
     main()
