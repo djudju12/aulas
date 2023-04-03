@@ -14,7 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import tkinter as tk
 
-LARGURA, ALTURA = 100, 100 
+LARGURA, ALTURA = 60, 60 
 SELF_WEIGHT, CELL_WEIGHT = 1, 2 # Necessário para o cálculo das somas (será explicado melhor na função correspondente)
 ZERO, ONE = " ", "\u25A0" # Espaco vazio e unicode para o caracter BLACK SQUARE. Constantes usadas na impressao do grid no terminal
 POSSIBLE_STATES = [0, 1] 
@@ -22,7 +22,7 @@ DENSIDADE = 60 # Porcentagem de células vivas na primeira geracao
 SLEEP = 0.05
 
 
-def main():
+def main2():
     root = tk.Tk()
     fig = Figure(figsize=(5, 4), dpi=100)
     root.geometry('800x600')
@@ -41,7 +41,7 @@ def main():
 
     root.mainloop()
 
-def main2():
+def main():
     # conways => 224
     gen = make_seed(DENSIDADE)
     rule_dict = rule(224) 
