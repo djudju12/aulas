@@ -14,7 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import tkinter as tk
 
-LARGURA, ALTURA = 60, 60 
+LARGURA, ALTURA = 80, 80 
 SELF_WEIGHT, CELL_WEIGHT = 1, 2 # Necessário para o cálculo das somas (será explicado melhor na função correspondente)
 ZERO, ONE = " ", "\u25A0" # Espaco vazio e unicode para o caracter BLACK SQUARE. Constantes usadas na impressao do grid no terminal
 POSSIBLE_STATES = [0, 1] 
