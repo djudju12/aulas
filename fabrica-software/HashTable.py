@@ -7,7 +7,7 @@ class NodeHash:
         self.value: Any = valor 
         self.key: str = key 
 
-    def __eq__(self, other: 'NodeHash'):
+    def __eq__(self, other: 'NodeHash') -> bool:
         if isinstance(other, NodeHash):
             return (other.value == self.value and other.key == self.key)
         return False
@@ -32,7 +32,7 @@ class HashTable:
             hashsum = hashsum % self.capacity 
         return hashsum
 
-    def print_hash(self):
+    def print_hash(self) -> None:
         print("{ ", end="")
         for nodes in self.buckets:
             if nodes is not None:
@@ -40,7 +40,7 @@ class HashTable:
                     print(f"'{node.key}' -> {node.value}", end=" ")
         print("}", end="")
 
-    def insert(self, key, value):
+    def insert(self, key, value) -> None:
         self.size += 1 
         index: int = self.hash(key)
         nodes: Nodes = self.buckets[index]
