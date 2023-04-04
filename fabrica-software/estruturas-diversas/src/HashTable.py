@@ -1,7 +1,10 @@
+# https://citeseerx.ist.psu.edu/doc/10.1.1.14.5908
+# https://www.csd.uoc.gr/~hy460/pdf/Dynamic%20Hash%20Tables.pdf
+
 from typing import Any
 from ListaDinamica import *
 
-INITIAL_CAPATY = 50
+INITIAL_CAPATY = 500
 class NodeHash:
     def __init__(self, key: str, valor: Any) -> None:
         self.value: Any = valor 
@@ -21,7 +24,7 @@ class Nodes:
 class HashTable:
     def __init__(self) -> None:
         self.capacity: int = INITIAL_CAPATY
-        self.keys: list = []  
+        self.keys: list[str] = []  
         self.size: int = 0 
         self.buckets: list[Nodes] = [None] * self.capacity
 
@@ -67,7 +70,6 @@ class HashTable:
         for node in nodes.list:
             if node.key == key:
                 return node.value  
-
         
     def remove(self, key) -> None:
         index: int = self.hash(key)
@@ -79,6 +81,14 @@ class HashTable:
         for node in nodes.list:
             if node.key == key:
                 nodes.list.first_ocurrence(node)
+                self.size -= 1 
+
+    def get_keys(self):
+        unic_keys = []
+        for key in self.keys:
+            if key not in unic_keys:
+                unic_keys.append(key)
+        return unic_keys
 
 
 
@@ -87,5 +97,5 @@ if __name__ == '__main__':
     hash1.insert("a", 1)
     hash1.insert("b", 2)
     hash1.insert("c", 2)
-    hash1.print_hash()
+    print(hash1.get_keys())
 
