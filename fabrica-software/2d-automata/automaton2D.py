@@ -3,6 +3,7 @@
 # Fontes: 
 # 1 - https://en.wikipedia.org/wiki/Cellular_automaton
 # 2 - https://mathematica.stackexchange.com/questions/153388/how-to-calculate-cellularautomaton-rule-numbers-in-higher-dimensions
+# 3 - https://www.geeksforgeeks.org/conways-game-life-python-implementation/
 # Para o presente trabalho foi escolhido uma implementacao parcial
 # Ou seja, soh estamos considerando casos onde os pesos das celulas vizinhas sao identicos ao do Conway's Game of Life
 # A referencia 1 fala a respeito. Mas basicamente foi abstraido o K, WT e RSPEC "{n,{k,{wt 1,wt 2,...},rspec" e mantido apenas o N 
@@ -14,38 +15,21 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import tkinter as tk
 
-LARGURA, ALTURA = 60, 60 
+import numpy as np
+
+LARGURA, ALTURA = 120, 120 
 SELF_WEIGHT, CELL_WEIGHT = 1, 2 # Necessário para o cálculo das somas (será explicado melhor na função correspondente)
-ZERO, ONE = " ", "\u25A0" # Espaco vazio e unicode para o caracter BLACK SQUARE. Constantes usadas na impressao do grid no terminal
+# ZERO, ONE = " ", "\u25A0" # Espaco vazio e unicode para o caracter BLACK SQUARE. Constantes usadas na impressao do grid no terminal
+ZERO, ONE = "0", "1" # Espaco vazio e unicode para o caracter BLACK SQUARE. Constantes usadas na impressao do grid no terminal
 POSSIBLE_STATES = [0, 1] 
 DENSIDADE = 60 # Porcentagem de células vivas na primeira geracao 
-SLEEP = 0.03
-
-
-def main2():
-    root = tk.Tk()
-    fig = Figure(figsize=(5, 4), dpi=100)
-    root.geometry('800x600')
-    canvas = FigureCanvasTkAgg(fig, master=root)
-    canvas.get_tk_widget().pack(side='top', fill='both', expand=1)
-
-    grid = make_seed(DENSIDADE)
-    rule_dict = rule(224)
-    def draw_chart(grid):
-        fig.clear()
-        fig.add_subplot(111).plot(grid)
-        canvas.draw_idle()
-        grid = next_gen(grid, rule_dict)
-    
-    tk.Button(root, text="Draw", command=lambda: draw_chart(grid)).pack()
-
-    root.mainloop()
+SLEEP = 0.01
 
 def main():
     # conways => 224
     gen = make_seed(DENSIDADE)
     rule_dict = rule(224) 
-    plot_grid2(gen, rule_dict)
+    plot_grid(gen, rule_dict)
     
 # Aqui a definicao das regras são feitas.
 def rule(rule: int) -> dict:
@@ -81,33 +65,45 @@ def calc_sum(state: str, bit_number: str) -> int:
     return sum
 
 # Constroi o grid inicial
-def make_seed(densidade: int) -> list[list[int]]:
-    return [[weighted_cel(densidade) for _ in range(LARGURA)] for _ in range(ALTURA)]
+def make_seed(densidade: int) -> np.ndarray:
+    # return [[weighted_cel(densidade) for _ in range(LARGURA)] for _ in range(ALTURA)]
+    return np.array([[weighted_cel(densidade) for _ in range(LARGURA)] for _ in range(ALTURA)])
 
 # retorna 1 ou 0 com pesos para 1 e 0
 def weighted_cel(densidade: int) -> int:
     return choices(POSSIBLE_STATES, weights=(densidade, (100 - densidade)))[0]
 
 # Funcao auxiliar para printar o grid no terminal 
-def print_grid(grid: list[list[str]]) -> None:
+def print_grid(grid: np.ndarray) -> None:
+    print("\n" + "-"*LARGURA)
     for x in range(ALTURA):
-        print('\n', end='')
+        print()
         for y in range(LARGURA):
             print(ONE if grid[x][y] == 1 else ZERO, end="")
+    print("\n" + "-"*LARGURA)
 
+# TODO: testar oque é melhor. Novo array ou modificar no lugar o array
 # Para cada celula no grid busca seu proximo estado conforme o valor dos vizinhos
-def next_gen(gen: list[list[int]], rule_dict: dict) -> list[list[int]]:
-    next_gen = []
+# def next_gen2(gen: np.ndarray, rule_dict: dict) -> np.ndarray:
+#     next_gen = []
+#     for x in range(ALTURA):
+#         linha = []
+#         for y in range(LARGURA):
+#             bits = pegar_vizinhos(gen, (x, y))
+#             linha.append(rule_dict[bits])
+#         next_gen.append(linha)
+#     return next_gen
+
+def next_gen(gen: np.ndarray, rule_dict: dict) -> np.ndarray:
+    gen_atual = gen.copy()
     for x in range(ALTURA):
-        linha = []
         for y in range(LARGURA):
-            bits = pegar_vizinhos(gen, (x, y))
-            linha.append(rule_dict[bits])
-        next_gen.append(linha)
-    return next_gen
+            bits = pegar_vizinhos(gen_atual, (x, y))
+            gen[x][y] = rule_dict[bits]
+
 
 # Pega os vizinhos da celula re torna como uma string para ser usada como key no dicionario
-def pegar_vizinhos(gen: list[list[int]], pos_cel: tuple[int, int]) -> list[str]:
+def pegar_vizinhos(gen: np.ndarray, pos_cel: tuple[int, int]) -> list[str]:
     x, y = pos_cel
     vizinhos = [str(gen[x][y])]
     permutacoes = ((x - 1, y + 1),
@@ -125,7 +121,7 @@ def pegar_vizinhos(gen: list[list[int]], pos_cel: tuple[int, int]) -> list[str]:
             vizinhos.append('0')
     return "".join(vizinhos)
 
-def plot_grid2(grid: list[list[int]], rule_dict: dict):
+def plot_grid(grid: np.ndarray, rule_dict: dict):
     plt.ion()
     # Fullscreen. Não tenho a solucao para fechar a janela ainda
     # manager = plt.get_current_fig_manager()
@@ -133,7 +129,7 @@ def plot_grid2(grid: list[list[int]], rule_dict: dict):
     while True:
         plt.matshow(grid, fignum=0, cmap=ListedColormap(['white', 'black']))
         plt.draw()
-        grid = next_gen(grid, rule_dict)
+        next_gen(grid, rule_dict)
         if plt.waitforbuttonpress(SLEEP):
             plt.close()
             return
