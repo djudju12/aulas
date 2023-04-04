@@ -21,9 +21,13 @@ class Nodes:
 class HashTable:
     def __init__(self) -> None:
         self.capacity: int = INITIAL_CAPATY
+        self.keys: list = []  
         self.size: int = 0 
         self.buckets: list[Nodes] = [None] * self.capacity
 
+    def __len__(self) -> int:
+        return self.size
+    
     def hash(self, key) -> int:
         hashsum: int = 0
 
@@ -45,6 +49,7 @@ class HashTable:
         index: int = self.hash(key)
         nodes: Nodes = self.buckets[index]
         node: NodeHash = NodeHash(key, value)
+        self.keys.append(key)
 
         if nodes is None:
             self.buckets[index] = Nodes(node)

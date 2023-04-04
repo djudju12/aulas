@@ -9,7 +9,6 @@ class Node:
     def mostrar_no(self) -> None:
         print(self.valor, end=" ")
 
-
 class ListaEncadeada:
     def __init__(self) -> None:
         self.primeiro: Node | None = None
