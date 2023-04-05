@@ -16,7 +16,7 @@ class TesteHashTable(unittest.TestCase):
         self.assertEqual(self.hash_table.find("dog"), 7)
         print("Insert OK")
 
-    def test_delete(self):
+    def test_remove(self):
         self.hash_table.remove("apple")
         self.assertIsNone(self.hash_table.find("apple"))
         self.assertEqual(self.hash_table.find("orange"), 50)
