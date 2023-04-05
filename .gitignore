@@ -3,3 +3,4 @@ venv_*
 __pychache__*/
 *.o
 *.exe
+*.pyc
