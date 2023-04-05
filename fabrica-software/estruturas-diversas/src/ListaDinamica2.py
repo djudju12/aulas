@@ -2,10 +2,12 @@ from typing import Any
 
 
 class Node:
+    def __init__(self, valor: Any) -> None:
+        self.valor: Any = valor
+        self.proximo: Node | None = None
 
-    def __init__(self, value) -> None:
-        self.value: tuple = value
-        self.proximo: Node | None = None 
+    def mostrar_no(self) -> None:
+        print(self.valor, end=" ")
 
 class ListaEncadeada:
     def __init__(self) -> None:
@@ -24,7 +26,7 @@ class ListaEncadeada:
         else:
             no_atual = self.current
             self.current = self.current.proximo
-            return no_atual.value
+            return no_atual.valor
 
     def __len__(self):
         return self.len
@@ -68,19 +70,19 @@ class ListaEncadeada:
     def lista_vazia(self) -> bool:
         return self.primeiro == None
 
-    def inserir_inicio(self, value: Any) -> None:
-        novo = Node(value)
+    def inserir_inicio(self, valor: Any) -> None:
+        novo = Node(valor)
         novo.proximo = self.primeiro
         self.primeiro = novo
         if self.len == 0:
             self.tail = novo
         self.len += 1
 
-    def append(self, value: Any) -> None:
+    def append(self, valor: Any) -> None:
         if self.lista_vazia():
-            self.inserir_inicio(value)
+            self.inserir_inicio(valor)
         else:
-            novo = Node(value)
+            novo = Node(valor)
             self.tail.proximo = novo
             self.tail = novo
             self.len += 1
@@ -96,20 +98,18 @@ class ListaEncadeada:
                 count += 1
 
 
-    def first_ocurrence(self, value: Any) -> None:
+    def first_ocurrence(self, valor: Any) -> None:
         if self.lista_vazia():
             return print('Index fora dos limites da lista')
         else:
             count = 0
             item = self.primeiro
-            if item.value == value:
+            if item.valor == valor:
                 self.primeiro = self.primeiro.proximo
-                self.len -= 1
-                return True
             for _ in self:
                 if item.proximo is None:
-                    return False
-                if item.proximo.value == value:
+                    return print("Item não encontrado")
+                if item.proximo.valor == valor:
                     item.proximo = item.proximo.proximo
                     if count == self.len-1:
                         self.tail = item
@@ -117,4 +117,3 @@ class ListaEncadeada:
                 item = item.proximo
                 count += 1
             self.len -= 1
-        return True

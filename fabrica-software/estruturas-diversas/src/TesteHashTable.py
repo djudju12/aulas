@@ -1,9 +1,8 @@
 import unittest
-from random import choice
-import string
 from config import *
-from HashTable import * 
+from HashTable2 import * 
 from config import *
+from TesteFuncUtils import make_rand_str
 
 class TesteHashTable(unittest.TestCase):
     def setUp(self):
@@ -21,24 +20,36 @@ class TesteHashTable(unittest.TestCase):
         self.hash_table.remove("apple")
         self.assertIsNone(self.hash_table.find("apple"))
         self.assertEqual(self.hash_table.find("orange"), 50)
+        self.hash_table.insert("teste", 20)
+        self.hash_table.remove("teste")
+        self.assertIsNone(self.hash_table.find("teste"))
         print("Delete OK")
 
-    def test_resize(self):
+    def test_resize_len(self):
         len1 = len(self.hash_table)
         self.hash_table.insert("papel", 3)
         len2 = len(self.hash_table)
         self.assertEqual(len1+1, len2)
-        print("Resize OK")
+        self.hash_table.remove("papel")
+        self.assertEqual(len2-1, len(self.hash_table))
+        print("Resize length OK")
 
     def test_find(self):
         value = self.hash_table.find("batata")
-        self.assertAlmostEqual(value, 10)
+        self.hash_table.insert("teste123", 123)
+        self.assertEqual(self.hash_table.find("teste123"), 123)
+        self.assertEqual(value, 10)
         print("Find OK")
     
     def test_get_keys(self):
         self.assertTrue("batata" in self.hash_table.get_keys())
         print("Get keys OK")
 
+    def test_resize(self):
+        for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND + 1)):
+            self.hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
+        self.assertEqual(self.hash_table.doubled, 1)
+        print("Resize OK")
 
 if __name__ == '__main__':
     unittest.main()    
