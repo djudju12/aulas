@@ -40,7 +40,7 @@ class HashTable:
         self.length: int = 0
         self.upper_bound: int = UPPER_BOUND
         self.lower_bound: int = LOWER_BOUND
-        self.directory: list[Segment] = [Segment()]
+        self.directory: list[Segment] = [Segment()] + [None] * (DIRECTORY_MAXIMUM_LENGTH - 1)
         self.maxp = MINIMUN_SIZE * 2**self.doubled
         self.keys: list[str] = []
 
@@ -59,13 +59,6 @@ class HashTable:
         if addr < self.next_bucket:
             addr = h % (self.maxp * 2)
         return addr
-
-    # def find_first(self, key: str) -> ListaEncadeada:
-    #     addr: int = self.address(key)
-    #     current_segment: Segment = self.directory[addr //
-    #                                               SEGMENTS_MAXIMUM_LENGTH]
-    #     segment_i: int = addr % DIRECTORY_MAXIMUM_LENGTH
-    #     return current_segment[segment_i]
     
     def find_head(self, key: str) -> Node:
         addr: int = self.address(key)
@@ -83,6 +76,10 @@ class HashTable:
         
     def remove(self, key: str) -> None:
         current_node: Node = self.find_head(key)
+
+        # if current_node.key == key:
+        #     if current_node.next != None:
+        #         current_node.next 
 
         while current_node.next != None:
             if current_node.next.key == key:
