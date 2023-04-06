@@ -175,13 +175,14 @@ class HashTable:
         self.length -= 1
         self.keys.remove(key)
         if self.length / self.maxp < self.lower_bound:
-            self.shrink_table()
+            try:
+                self.shrink_table()
+            except Exception as e:
+                print(e)
     
     
     def shrink_table(self):
-        if self.maxp + self.next_bucket > 0:
-
-            
+        raise NotImplementedError("Shrink_table not implemented")
 
     def shrink(self) -> None:
         self.next_bucket -= 1
@@ -195,9 +196,15 @@ if __name__ == '__main__':
     from TesteFuncUtils import make_rand_str
     from config import LENGTH_RAND_STR
     hash_table = HashTable()
-    # for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND+1)):
-    #     hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
-    hash_table.insert("teste", 10)
-    print(hash_table.find("teste"))
-    hash_table.remove("teste")
-    print(hash_table.find("teste"))
+    
+    print(len(hash_table))
+    for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND+1)):
+        hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
+    
+    print(len(hash_table))
+    
+    for key in hash_table.get_keys():
+        hash_table.remove(key)
+        
+    print(len(hash_table))
+    
