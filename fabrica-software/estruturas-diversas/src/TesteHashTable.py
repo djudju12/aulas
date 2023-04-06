@@ -45,11 +45,21 @@ class TesteHashTable(unittest.TestCase):
         self.assertTrue("batata" in self.hash_table.get_keys())
         print("Get keys OK")
 
-    def test_resize(self):
+    def test_expand(self):
         for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND + 1)):
             self.hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
         self.assertEqual(self.hash_table.doubled, 1)
-        print("Resize OK")
+        print("Expand OK")
+
+    def teste_shrink(self):
+        for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND + 1)):
+            self.hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
+        keys = self.hash_table.get_keys()
+
+        for key in keys:
+            self.hash_table.remove(key)
+        
+        self.assertEqual(self.hash_table.doubled, 0)
 
 if __name__ == '__main__':
     unittest.main()    
