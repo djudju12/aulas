@@ -40,7 +40,7 @@ class Segment:
 
 
 class Node:
-    def __init__(self, key, value) -> None:
+    def __init__(self, key, value: Any) -> None:
         self.value: Any = value
         self.key: str = key
         self.next: Node | None = None
@@ -205,7 +205,7 @@ class HashTable:
     def collision_stats(self) -> dict:
         i = 0
         current_dir = self.directory[i]
-        collisions_list = np.array([])  # list os lists of collisions
+        collisions_list = np.array([])  
         while current_dir is not None:
             collisions_list = np.append(
                 collisions_list, current_dir.colisions())

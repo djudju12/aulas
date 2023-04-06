@@ -4,7 +4,6 @@ from HashTable2 import *
 from random import randint, choice
 from config import *
 from TesteFuncUtils import *
-import numpy as np
 
 class TestePerfomanceHashTable(unittest.TestCase):
     
