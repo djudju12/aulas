@@ -196,15 +196,21 @@ if __name__ == '__main__':
     from TesteFuncUtils import make_rand_str
     from config import LENGTH_RAND_STR
     hash_table = HashTable()
-    
+    # TODO ver pq nao esta excluindo todas as keys. Onde estão esses valores? O tamanho da hash table é zerada mas é possível achar as chaves ainda
     print(len(hash_table))
-    for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND+1)):
+    for _ in range(100):
         hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
     
-    print(len(hash_table))
-    
+    # print(len(hash_table))
+    # print(len(hash_table.get_keys()))
+    print(hash_table.get_keys())
+
     for key in hash_table.get_keys():
         hash_table.remove(key)
-        
-    print(len(hash_table))
+    # print(len(hash_table.get_keys()))
+    print(f' len => {len(hash_table)}')
+
+    for key in hash_table.get_keys():
+        print(hash_table.find(key)) 
+    
     
