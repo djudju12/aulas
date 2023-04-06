@@ -75,7 +75,7 @@ class HashTable:
                 return current_node.value
             current_node = current_node.next
 
-    def get_keys(self):
+    def get_keys(self) -> list[str]:
         return self.keys
 
     def insert(self, key: str, value: Any) -> None:
@@ -101,7 +101,7 @@ class HashTable:
         self.keys.append(key)
         self.length += 1
 
-    def expand_table(self):
+    def expand_table(self) -> None:
         if self.maxp + self.next_bucket < DIRECTORY_MAXIMUM_LENGTH * SEGMENTS_MAXIMUM_LENGTH:
 
             new_addr: int = self.maxp + self.next_bucket
