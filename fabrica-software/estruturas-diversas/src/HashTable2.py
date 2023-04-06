@@ -29,7 +29,7 @@ class Node:
     def __init__(self, key, value) -> None:
         self.value: Any = value
         self.key: str = key
-        self.next: Node | None = None 
+        self.next: Node | None = None
 
 
 class HashTable:
@@ -40,7 +40,8 @@ class HashTable:
         self.length: int = 0
         self.upper_bound: int = UPPER_BOUND
         self.lower_bound: int = LOWER_BOUND
-        self.directory: list[Segment] = [Segment()] + [None] * (DIRECTORY_MAXIMUM_LENGTH - 1)
+        self.directory: list[Segment] = [
+            Segment()] + [None] * (DIRECTORY_MAXIMUM_LENGTH - 1)
         self.maxp = MINIMUN_SIZE * 2**self.doubled
         self.keys: list[str] = []
 
@@ -59,7 +60,7 @@ class HashTable:
         if addr < self.next_bucket:
             addr = h % (self.maxp * 2)
         return addr
-    
+
     def find_head(self, key: str) -> Node:
         addr: int = self.address(key)
         current_segment: Segment = self.directory[addr //
@@ -74,7 +75,6 @@ class HashTable:
                 return current_node.value
             current_node = current_node.next
 
-
     def get_keys(self):
         return self.keys
 
@@ -86,7 +86,8 @@ class HashTable:
 
         addr = self.address(key)
 
-        current_segment: Segment = self.directory[addr//SEGMENTS_MAXIMUM_LENGTH]
+        current_segment: Segment = self.directory[addr //
+                                                  SEGMENTS_MAXIMUM_LENGTH]
         segment_i: int = addr % DIRECTORY_MAXIMUM_LENGTH
         current_node: Node | None = current_segment[segment_i]
 
@@ -96,7 +97,7 @@ class HashTable:
             while current_node.next != None:
                 current_node = current_node.next
             current_node.next = new_node
-        
+
         self.keys.append(key)
         self.length += 1
 
@@ -112,8 +113,8 @@ class HashTable:
             new_segment: Segment = self.directory[directory_i]
             new_segment_i: int = new_addr % SEGMENTS_MAXIMUM_LENGTH
 
-
-            old_segment: Segment = self.directory[self.next_bucket//SEGMENTS_MAXIMUM_LENGTH]
+            old_segment: Segment = self.directory[self.next_bucket //
+                                                  SEGMENTS_MAXIMUM_LENGTH]
             old_segment_i: int = self.next_bucket % SEGMENTS_MAXIMUM_LENGTH
 
             self.resize()
@@ -143,7 +144,7 @@ class HashTable:
                 else:
                     previous = current_n
                     current_n = current_n.next
-    
+
     def new_segment(self, i: int) -> None:
         self.directory[i] = Segment()
 
@@ -159,10 +160,11 @@ class HashTable:
 
         if current_node is None:
             return
-                    
+
         if current_node.key == key:
             addr: int = self.address(key)
-            current_segment: Segment = self.directory[addr // SEGMENTS_MAXIMUM_LENGTH]
+            current_segment: Segment = self.directory[addr //
+                                                      SEGMENTS_MAXIMUM_LENGTH]
             segment_i: int = addr % DIRECTORY_MAXIMUM_LENGTH
             current_segment[segment_i] = current_node.next
         else:
@@ -173,14 +175,10 @@ class HashTable:
                 current_node = current_node.next
 
         self.length -= 1
-        self.keys.remove(key)
+        # self.keys.remove(key)
         if self.length / self.maxp < self.lower_bound:
-            try:
-                self.shrink_table()
-            except Exception as e:
-                print(e)
-    
-    
+            self.shrink_table()
+
     def shrink_table(self):
         raise NotImplementedError("Shrink_table not implemented")
 
@@ -200,17 +198,20 @@ if __name__ == '__main__':
     print(len(hash_table))
     for _ in range(100):
         hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
-    
+
     # print(len(hash_table))
     # print(len(hash_table.get_keys()))
-    print(hash_table.get_keys())
+    print(len(hash_table.get_keys()))
 
     for key in hash_table.get_keys():
         hash_table.remove(key)
-    # print(len(hash_table.get_keys()))
-    print(f' len => {len(hash_table)}')
 
     for key in hash_table.get_keys():
-        print(hash_table.find(key)) 
-    
-    
+        if hash_table.find(key) is not None:
+            print("oi")
+    # print(len(hash_table.get_keys()))
+    # print(f' len => {len(hash_table)}')
+
+    print(len(hash_table.get_keys()))
+    # for key in hash_table.get_keys():
+    # print(hash_table.find(key))
