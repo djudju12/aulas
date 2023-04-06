@@ -31,7 +31,7 @@ class HashTable:
     def __len__(self) -> int:
         return self.size
     
-    def hash(self, key) -> int:
+    def address(self, key) -> int:
         hashsum: int = 0
 
         for idx, c in enumerate(key):
@@ -49,7 +49,7 @@ class HashTable:
 
     def insert(self, key, value) -> None:
         self.size += 1 
-        index: int = self.hash(key)
+        index: int = self.address(key)
         nodes: Nodes = self.buckets[index]
         node: NodeHash = NodeHash(key, value)
         self.keys.append(key)
@@ -61,7 +61,7 @@ class HashTable:
         nodes.list.append(node)
 
     def find(self, key) -> Any:
-        index: int = self.hash(key)
+        index: int = self.address(key)
         nodes: Nodes = self.buckets[index]
 
         if nodes is None:
@@ -72,7 +72,7 @@ class HashTable:
                 return node.value  
         
     def remove(self, key) -> None:
-        index: int = self.hash(key)
+        index: int = self.address(key)
         nodes: Nodes = self.buckets[index]
         
         if nodes is None: 

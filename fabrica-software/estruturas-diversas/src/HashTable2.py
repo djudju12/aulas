@@ -3,6 +3,7 @@
 # https://planetmath.org/goodhashtableprimes
 
 from typing import Any
+import numpy as np
 # from ListaDinamica import *
 
 MINIMUN_SIZE = 256
@@ -23,6 +24,19 @@ class Segment:
 
     def __setitem__(self, i: int, value: Any):
         self.pointer_list[i] = value
+
+    def colisions(self) -> np.ndarray:
+        colision_distribuition = np.array(
+            list(map(self.count_nodes, self.pointer_list)))
+        return colision_distribuition
+
+    @staticmethod
+    def count_nodes(node: 'Node') -> int:
+        count = 0
+        while node is not None:
+            count += 1
+            node = node.next
+        return count
 
 
 class Node:
@@ -175,7 +189,6 @@ class HashTable:
                 current_node = current_node.next
 
         self.length -= 1
-        # self.keys.remove(key)
         if self.length / self.maxp < self.lower_bound:
             self.shrink_table()
 
@@ -189,29 +202,25 @@ class HashTable:
             self.maxp = MINIMUN_SIZE * 2**self.doubled
             self.next_bucket = self.maxp
 
+    def collision_stats(self) -> dict:
+        i = 0
+        current_dir = self.directory[i]
+        collisions_list = np.array([])  # list os lists of collisions
+        while current_dir is not None:
+            collisions_list = np.append(
+                collisions_list, current_dir.colisions())
+            i += 1
+            current_dir = self.directory[i]
 
-if __name__ == '__main__':
-    from TesteFuncUtils import make_rand_str
-    from config import LENGTH_RAND_STR
-    hash_table = HashTable()
-    # TODO ver pq nao esta excluindo todas as keys. Onde estão esses valores? O tamanho da hash table é zerada mas é possível achar as chaves ainda
-    print(len(hash_table))
-    for _ in range(100):
-        hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
+        collisions_list = np.sort(collisions_list)
+        stats = {}
+        stats['median'] = np.median(collisions_list)
+        stats['average'] = np.mean(collisions_list)
+        stats['max'] = np.max(collisions_list)
+        stats['min'] = np.min(collisions_list)
 
-    # print(len(hash_table))
-    # print(len(hash_table.get_keys()))
-    print(len(hash_table.get_keys()))
+        return stats
 
-    for key in hash_table.get_keys():
-        hash_table.remove(key)
 
-    for key in hash_table.get_keys():
-        if hash_table.find(key) is not None:
-            print("oi")
-    # print(len(hash_table.get_keys()))
-    # print(f' len => {len(hash_table)}')
-
-    print(len(hash_table.get_keys()))
-    # for key in hash_table.get_keys():
-    # print(hash_table.find(key))
+# if __name__ == '__main__':
+#     return 0

@@ -46,9 +46,12 @@ class TesteHashTable(unittest.TestCase):
         print("Get keys OK")
 
     def test_expand(self):
+        self.assertIsNone(self.hash_table.directory[1])
         for _ in range(SEGMENTS_MAXIMUM_LENGTH*(UPPER_BOUND + 1)):
             self.hash_table.insert(make_rand_str(LENGTH_RAND_STR), 1)
         self.assertEqual(self.hash_table.doubled, 1)
+        self.assertIsNotNone(self.hash_table.directory[1])
+        self.assertTrue(any(self.hash_table.directory[1]))
         print("Expand OK")
 
     # def teste_shrink(self):

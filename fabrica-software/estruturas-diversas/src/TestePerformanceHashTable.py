@@ -1,5 +1,6 @@
 import unittest
-from HashTable import * 
+# from HashTable import * 
+from HashTable2 import * 
 from random import randint, choice
 from config import *
 from TesteFuncUtils import *
@@ -32,21 +33,12 @@ class TestePerfomanceHashTable(unittest.TestCase):
     @time_it
     def test_hash_time(self):
         for _ in range(AMOUNT_OF_TST_CASES):
-            self.hash_table.hash(make_rand_str(LENGTH_RAND_STR))
+            self.hash_table.address(make_rand_str(LENGTH_RAND_STR))
     
-    def test_collision(self):
-        list_of_collisions = []
-        for nodes in self.hash_table.buckets:
-            if nodes is not None:
-                len_node = len(nodes.list)
-                list_of_collisions.append(len_node) 
+    # def test_collision(self):
+    #     stats = self.hash_table.collision_stats()
 
-        list_of_collisions.sort()
-        print('distribution:')
-        print(f'Maximun => {max(list_of_collisions)}')
-        print(f'Minimun => {min(list_of_collisions)}')
-        print(f'Median  => {np.median(list_of_collisions)}')  
-        print(f'Average => {np.average(list_of_collisions)}', end='\n\n')  
+    #     print(stats)  
 
 
 if __name__ == '__main__':
