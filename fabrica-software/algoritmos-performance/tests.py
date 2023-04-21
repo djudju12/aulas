@@ -80,4 +80,4 @@ if __name__ == '__main__':
             time_to_print = timeit(lambda: algoritmo(copied_array), number=NUMBER_OF_TESTES)
             print(f'time for {current_array} => {time_to_print}')
 
-        print(f'End of => {algoritmo.__name__}')
+        print(f'End of => {algoritmo.__name__}', end='\n\n')
