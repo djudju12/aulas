@@ -12,7 +12,7 @@ def insertion_sort(vetor):
     vetor[j] = chave               # CHAVE na posicao correta
   return vetor    
 
-def bubble2_sort(vetor):           # Bolha com melhor desempenho   
+def bubble_sort(vetor):           # Bolha com melhor desempenho   
   n = len(vetor)                   # Verifica tamanho do vetor.     
   troca = True                     # Troca é uma flag que avisa quando o vetor está ordenado (melhor desempenho).
   while troca:                     # Enquanto houver troca, continua.  
