@@ -1,6 +1,9 @@
 import numpy as np
 from numpy import random as rd
+from algoritmos import *
+from timeit import timeit
 
+ALGORITMOS = [insertion_sort, bubble_sort]
 SIZE_T = 50 
 SIZE_M = 500
 SIZE_G =  1_000
@@ -49,4 +52,11 @@ if __name__ == '__main__':
     empty_array = zero_elements()
     one_element_array = one_element()
 
-    
+    arrays_to_sort = [tiny_array, big_array, ordered_array, reversed_array, duplicated_array, lots_of_dups_array, empty_array, one_element_array ]
+    for algoritmo in ALGORITMOS:
+        for my_array in arrays_to_sort:
+            copied_array = my_array.copy()
+            print(f'Start of => {algoritmo.__name__}')
+            time_to_print = timeit(lambda: algoritmo(copied_array))
+            print(f'time => {time_to_print}')
+            print(f'End of => {algoritmo.__name__}')
