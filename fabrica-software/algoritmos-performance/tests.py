@@ -3,14 +3,38 @@ from numpy import random as rd
 from algoritmos import *
 from timeit import timeit
 
-ALGORITMOS = [insertion_sort, bubble_sort]
+# ------ Configuraçoes dos arrays ------
+# Tamanho do array
 SIZE_T = 50 
 SIZE_M = 500
 SIZE_G =  1_000
+
+# valor dos elementos do array
 MAX_VALUE = 1_000
 MIN_VALUE = 0
-DUP_VALUE = 100
-PERC_DUPS = 80 
+DUP_VALUE = 100 # valor dos duplcados
+PERC_DUPS = 80  # porcentagem de duplicados 
+
+# Algoritmos de teste. Adicione uma funcao aqui para incluir nos teste
+ALGORITMOS = [insertion_sort, bubble_sort]
+
+# Numero de testes executados na função TIMEIT
+NUMBER_OF_TESTES = 1_000_000
+# -------------------------------------
+
+# Cria um dicionario com os arrays que serão ordenados
+# Adicione aqui o novo array que deseja ordenar
+def set_up_arrays():
+    arrays_to_sort = {}
+    arrays_to_sort['tiny_array'] = rand_array(SIZE_T)
+    arrays_to_sort['big_array'] = rand_array(SIZE_G)
+    arrays_to_sort['ordered_array'] = ordered(SIZE_M)
+    arrays_to_sort['reversed_array'] = reversed(SIZE_M)
+    arrays_to_sort['duplicated_array'] = duplicated(SIZE_M)
+    arrays_to_sort['lots_of_dups_array'] = lots_of_duplicateds(SIZE_M)
+    arrays_to_sort['empty_array'] = zero_elements()
+    arrays_to_sort['one_element_array'] = one_element()
+    return arrays_to_sort
 
 # Aleatoria pequena 
 def rand_array(size: int) -> np.ndarray:
@@ -43,20 +67,17 @@ def lots_of_duplicateds(size: int) -> np.ndarray:
     return arr
 
 if __name__ == '__main__':
-    tiny_array = rand_array(SIZE_T)
-    big_array = rand_array(SIZE_G)
-    ordered_array = ordered(SIZE_M)
-    reversed_array = reversed(SIZE_M)
-    duplicated_array = duplicated(SIZE_M)
-    lots_of_dups_array = lots_of_duplicateds(SIZE_M)
-    empty_array = zero_elements()
-    one_element_array = one_element()
+    # Cria os arrays inicais que serão ordenados
+    arrays_to_sort = set_up_arrays()
 
-    arrays_to_sort = [tiny_array, big_array, ordered_array, reversed_array, duplicated_array, lots_of_dups_array, empty_array, one_element_array ]
+    # Itera em cada os um algoritmos que estão no array     
     for algoritmo in ALGORITMOS:
-        for my_array in arrays_to_sort:
-            copied_array = my_array.copy()
-            print(f'Start of => {algoritmo.__name__}')
-            time_to_print = timeit(lambda: algoritmo(copied_array))
-            print(f'time => {time_to_print}')
-            print(f'End of => {algoritmo.__name__}')
+        print(f'Start of => {algoritmo.__name__}')
+
+        # Ordena uma copia do array e printa o resultado
+        for current_array in arrays_to_sort.keys():
+            copied_array = arrays_to_sort[current_array].copy()
+            time_to_print = timeit(lambda: algoritmo(copied_array), number=NUMBER_OF_TESTES)
+            print(f'time for {current_array} => {time_to_print}')
+
+        print(f'End of => {algoritmo.__name__}')
