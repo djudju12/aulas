@@ -8,13 +8,7 @@ Exemplo
 s = if man was meant to stay on the ground god would have given us roots
 
 Depois de remover os espaços, a String tem 54 caracteres.  está entre 7 e 8, por isso é escrito na forma de uma grade com 7 linhas e 8 colunas.
-ifmanwas  
-meanttos          
-tayonthe  
-groundgo  
-dwouldha  
-vegivenu  
-sroots
+ifmanwasmeanttostayonthegroundgodwouldhavegivenusroots
 
     • Garanta que linhas * colunas ? L
     • Se várias grades satisfizerem as condições acima, escolha aquela com a área mínima, ou seja, linhas * colunas.
