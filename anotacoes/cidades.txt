@@ -1,0 +1,44 @@
+O presente trabalho intenciona explicitar o contraponto à “higienização urbana”, que se esquece que as pessoas fazem
+parte das cidades, ressaltando a estética em detrimento do atendimento ao princípio magno da
+dignidade da pessoa humana.
+
+cidades inteligentes, smart cities, tecnologia, dados, qualidade de vida, recursos, desenvolvimento econômico, 
+desenvolvimento social, sustentabilidade, sistemas inteligentes, sensores, dispositivos móveis, redes de comunicação, 
+trânsito, poluição do ar, consumo de energia, segurança pública, comunicação, gestão da cidade.
+
+
+sustentabilidade cidades inteligentes dados
+
+As cidades chinesas e o papel da tecnologia 
+
+>> cidades chinesas e suas ferramentas tecnolgicas que buscam trazer dignidade para 
+os habitantes
+{link}
+
+>> importância da pesquisa e desenvolvimento tencologicos para alcançar tais marcos no
+brasil
+{exemplos brasileiros}
+
+>> a participação da engenharia de computação no desenvolvimento nas tecnologias
+>> o cuidado especial para a tecnologia antender o ser humano
+
+>> dia mundial das cidades => criado em 31/10/2013 pela ONU
+>> O Objetivo de Desenvolvimento Sustentável (ODS) 11 da Agenda 2030 da ONU trata de “Cidades e Comunidades Sustentáveis”.
+   Elenorteia as ações da comunidade internacional para as três dimensões do desenvolvimento sustentável: 
+   a econômica, a social e a ambiental. => https://www.ibrachina.com.br/ibrachina-promove-uso-da-tecnologia-para-cidades-mais-inteligentes-e-sustentaveis/
+
+>> IOT Chine => https://ieeexplore.ieee.org/abstract/document/6851114
+
+IoT should have the following three characteristics [6].
+
+Comprehensive Perception: Using RFID, sensors, and two-dimensional barcode to obtain the object information at anytime and anywhere, it will be a new opportunity. Using it, information and communication systems can be invisibly embedded in the environment around us. Sensor network will enable people to interact with the real world remotely. Identification technologies mentioned here include objects and location identifications. Identification and recognition of the physical world is the foundation of implementing overall perception.
+
+Reliable Transmission: Through a variety of available radio networks, telecommunication networks, and Internet, objects information can be available in any time. Communication technology here includes a variety of wired and wireless transmission technologies, switching technologies, networking technologies, and gateway technologies. IoT further creates the interaction among the physical world, the virtual world, the digital world, and the society. Machine to machine (M2M), furthermore, is the key implementation technology of the Network of Things, which represents the connections and communications between M2M and Human to Machine including Mobile to Machine.
+
+Intelligent Processing: By collecting IoT data into databases, various intelligent computing technologies including cloud computing will be able to support IoT data applications. The network service providers can process tens of millions or even billion pieces of messages instantly through cloud computing. Cloud computing technology will thus be the promoter of IoT.
+
+2030 foi criado o dia mundial das cidades. Criado o Objetivo de Desenvolvimento sustentável (ODS) que trata das "cidades e comunidades sustentável", buscando nortear as ações necessarios para as tres dimensoes do desenvolvimento sustentabilidade.
+
+O papel da pesquisa e desenvolvimento na area de IoT. Buscando criar um alto grau de conectivadade entre Homem maquina, maquina homem e maquina maquina. IoT não é uma tecnologia revolucionaria, mas sim um avanço do que temos como tecnolgia.
+
+Tecnologias usadas na china e quantidade de gastos com P&D. O papel do cientista da computação no desenvolvimento destas tecnologias e o que podemos aprender com eles. 

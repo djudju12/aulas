@@ -1,0 +1,32 @@
+Um texto em inglês precisa ser criptografado usando o seguinte esquema de criptografia.
+Primeiro, os espaços são removidos do texto. Seja L o comprimento deste texto.
+Em seguida, os caracteres são escritos em uma grade, cujas linhas e colunas possuem as seguintes restrições:
+
+L^0.5 <= LINHA <= COLUNA <= L^0.5
+
+Exemplo
+s = if man was meant to stay on the ground god would have given us roots
+
+Depois de remover os espaços, a String tem 54 caracteres.  está entre 7 e 8, por isso é escrito na forma de uma grade com 7 linhas e 8 colunas.
+ifmanwasmeanttostayonthegroundgodwouldhavegivenusroots
+
+    • Garanta que linhas * colunas ? L
+    • Se várias grades satisfizerem as condições acima, escolha aquela com a área mínima, ou seja, linhas * colunas.
+
+A mensagem codificada é obtida exibindo os caracteres de cada coluna, com um espaço entre os textos das colunas. 
+A mensagem codificada para a grade acima é:
+
+imtgdvs fearwer mayoogo anouuio ntnnlvt wttddes aohghn sseoau
+
+Crie uma função para codificar uma mensagem.
+Descrição da função
+Complete a função de criptografia no editor abaixo.
+criptografia tem os seguintes parâmetros:
+    • string s: uma string para criptografar
+
+Retornos
+    • string: a string criptografada
+
+Formato de entrada
+Uma linha de texto, a string s
+

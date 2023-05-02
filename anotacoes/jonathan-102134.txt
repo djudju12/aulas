@@ -1,0 +1,26 @@
+Tamanho importa? 
+
+Desde da invenção dos primeiros computadores até os atuais vimos uma grande evolução no que diz o seu tamanho, Vimos computadores que ocupavam salas e as vezes até prédios inteiros sendo reduzidos à pequenos  chips. Essa evolução "natural" dos eletronicos nos trouxe algumas outras vantagens. 
+Em 1991 o termo "Internet of Things" foi cunhado por Kevin Ashton, pesquisador do MIT, mas a ideia de conectar objetos já era discutida desde 1991, quando a internet começou a se popularizar. 
+Podemos começar pensando em coisas simples, como geladeiras inteligentes, luzes, etc., mas a rápida evolução do IoT tornou seu uso presente em tarefas tão cotidianas que nem percebemos. 
+O sonho da cidade inteligente passa, principalmente, pelo desenvolvimento de tecnolgias que conectam objetos com outros objetos. A coleta de dados de diversos serviços publicos, como lixo ou transporte, poderá ajudar as cidades a se planejar, tornando-as inteligentes. A IoT pode ser aplicada em diversos setores de uma cidade, como na industria, agricultura, transporte, logistica... Contudo tão importante quanto discutir as aplicações é discutir o desenvolvimento dessas técnologias, e como podemos deixa-las mais robustas e acessiveis.
+
+{ieeexplore}
+IoT promove diversas oportunidades, contudo como toda tecnologia em desenvolvimento enfrenta diversos desafios, principalmente no que diz respeito a Padronização e Hardware.
+dispositivos inteligentes com alto grau de conexão D/D levarão à sistemas com alto grau de inteligencia. Hoje as pesquisas estão focadas em desenvolver sistemas pequenos, sem-fio e comunicaveis, que ainda sim sejam baratos e robustos. 
+A padronização de sistemas possui uma grande importância em seu desenvolvimento. Com seu crescimento, sistemas de IoT tornam-se cada vez mais complexos, essa complexidade traz consigo a necessidade de estabelecer padrões. Padrões são como manuais que ditam como aplicações e dispositivos devem funcionar juntos.     
+
+Concluio que com o desenvolvimento gradual de sistemas inteligentes e a padronização desses mesmos sistemas trará a IoT para o cotidiano das cidades.   
+
+
+Internet de quem? 
+
+A "Internet das Coisas" (IoT), termo cunhado em 1999 pelo pesquisar do MIT Kevin Ashton, pode ser definida como um sistema inteligente que conecta "todas as coisas" do mundo fisico à internet, com o propósito de troca de informações. Apesar do conceito ter surgido em 1999, um dos primeiros exemplos de IoT surge no começo dos anos 80, quando programadores da universidade de Carnegie Mellon conectaram uma máquina de refrigerantes à internet, podendo então checar se nela haviam refrigerantes gelados. Apesar do começo simples, já ficava evidente as capacidades da técnologia. Durante as últimas décadas o investimento e pesquisa e desenvolvimento da IoT cresceu, conectando cada vez mais dispositivos e tornando-se a base para o que chamamos de "Cidades Inteligentes".
+
+O conceito de Cidade inteligente surge como um novo modelo de desenvolvimento de cidades que utilizam de novas técnologias, como IoT, para aumentar o trafego de informações dentro dos seus sistemas. Esse alto grau de comunicatividade possui aplicação nos mais diversos setores, como na coleta de lixo, na saúde, no trafego de veículos... Contudo, como toda tecnologia emergente, a IoT enfrenta diversos desafios em seus desenvolvimento, sendo um deles a padronização dos protocolos de comunicação e segurança. 
+
+A necessidade por padronização surge devido ao alto volume de dados que uma cidade inteligente produz. Tais sistemas necessitam de protocolos que permitam a comunicação entre diferentes dispositivos de forma transparente, efetiva e segura. Esse tipo de comunicação entre sistemas, também conhecida como interoperalidade, é um problema conhecido pelos pesquisadores da área. O autor Shanzhi Chen diz que, para superá-lo, será necessário adotar práticas "holistas" em diversas camadas do desenvolvimento, ou seja, adotar linguagens neutras para que diferentes dispositivos possam se comunicar. O autor também da enfase que este processo de criação de padrões deve ser aberto a todos os participantes e seus resultados devem ser publicados abertamente.
+
+Portanto, fica claro a importância da pesquisa e desenvolvimento na área da tecnologia, afinal a padronização imatura é apenas um dos problemas que terão de ser superados para que possamos, de forma efetiva, desenvolver as cidades inteligentes que queremos para o futuro.  
+
+
