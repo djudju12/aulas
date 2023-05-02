@@ -32,7 +32,6 @@ def main():
         for vector in vectors.keys():
             copied_vector = vectors[vector].copy()
             t = timeit(lambda: algoritmo(copied_vector), number=NUMBER_OF_TESTS)
-            # results['time'][algoritmo.__name__][vector] = 
             results['time'][algoritmo.__name__][vector] = t 
 
     results['comparacoes'] = {}
