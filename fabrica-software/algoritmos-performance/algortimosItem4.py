@@ -55,10 +55,11 @@ def insertion_sort_comparasoes(vetor):
 
         trocas += 1
         vetor[j] = chave
+
     return comparacoes, trocas
 
 
-def bisect_left2(a, x, lo=0, hi=None, *, key=None):
+def bisect_left2(a, x, lo=0, hi=None):
     """Return the index where to insert item x in list a, assuming a is sorted.
 
     The return value i is such that all e in a[:i] have e < x, and all e in
@@ -70,17 +71,15 @@ def bisect_left2(a, x, lo=0, hi=None, *, key=None):
     """
     comparacoes = 0
 
+
     comparacoes += 1
     if lo < 0:
         raise ValueError('lo must be non-negative')
     comparacoes += 1
+
     if hi is None:
         hi = len(a)
 
-    # Note, the comparison uses "<" to match the
-    # __lt__() logic in list.sort() and in heapq.
-    # comparacoes += 1
-    # if key is None:
     while lo < hi:
         mid = (lo + hi) // 2
         comparacoes += 1
@@ -88,16 +87,6 @@ def bisect_left2(a, x, lo=0, hi=None, *, key=None):
             lo = mid + 1
         else:
             hi = mid
-
-    # Retirado pois key é sempre None. Diminuindo as comparações
-    # else:
-    # while lo < hi:
-    #     mid = (lo + hi) // 2
-    #     comparacoes += 1
-    #     if key(a[mid]) < x:
-    #         lo = mid + 1
-    #     else:
-    #         hi = mid
 
     return lo, comparacoes
 
