@@ -30,7 +30,7 @@ def main() -> None:
     with open(PATH_RESULTADO, 'w', newline='') as f:
 
         # csv.writer() é o objeto que escreverá no arquvio de resultado
-        writer = csv.writer(f)
+        writer = csv.writer(f, delimiter='|')
         writer.writerow(HEADER)
 
         # Itera sobre cada um dos algoritmos de tempo e comparação/troca
