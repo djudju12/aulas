@@ -6,6 +6,7 @@ import os
 import numpy as np
 from algoritmosPerformance import *
 
+# _DEFINIÇÃO DAS VARIAVEIS_______________________________________________________
 PARENT_FOLDER = r'.\vetores'
 ALGORITMOS_TIME: list[Callable] = [quick_time, selection_time]
 ALGORITMOS_COUNT: list[Callable] = [quick_count, selection_count]
