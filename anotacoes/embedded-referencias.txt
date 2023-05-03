@@ -1,0 +1,11 @@
+    "Embedded Systems: Introduction to ARM Cortex-M Microcontrollers" by Jonathan Valvano: This book is a great introduction to embedded systems, focusing on ARM Cortex-M microcontrollers. It covers topics such as programming in C, interrupts, timers, and more.
+
+    "Programming Embedded Systems: With C and GNU Development Tools" by Michael Barr and Anthony Massa: This book covers embedded systems programming with a focus on the C language and GNU development tools. It covers topics such as interrupts, timers, memory management, and more.
+
+    "An Embedded Software Primer" by David E. Simon: This book is a comprehensive guide to embedded software development, covering topics such as real-time operating systems, device drivers, debugging, and more.
+
+    "Making Embedded Systems: Design Patterns for Great Software" by Elecia White: This book covers design patterns for creating high-quality embedded systems software, covering topics such as code organization, testing, and debugging.
+
+    "Internet of Things: A Hands-On Approach" by Arshdeep Bahga and Vijay Madisetti: This book provides an introduction to the internet of things, covering topics such as sensors, data analysis, cloud computing, and more.
+
+In addition to these books, there are also many online resources available to help you learn about embedded systems and the internet of things. Some popular websites include Embedded.com, Hackster.io, and Instructables.com. Good luck with your studies!
