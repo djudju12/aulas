@@ -6,52 +6,48 @@ import os
 import numpy as np
 from algoritmosPerformance import *
 
-PATH = r'.\vetores'
-CENARIOS = ['vetor1000-1',
-            'vetor1000-2',
-            'vetor1000-3',
-            'vetor10000-1',
-            'vetor10000-2',
-            'vetor10000-3',
-            'vetor50000-1',
-            'vetor50000-2',
-            'vetor50000-3',
-            'vetor100000-1',
-            'vetor100000-2',
-            'vetor100000-3'
-           ]
-Function = Callable
-ALGORITMOS_TIME: list[Function] = [quick_time, selection_time]
-ALGORITMOS_COMP: list[Function] = [quick_count, selection_count]
+PARENT_FOLDER = r'.\vetores'
+ALGORITMOS_TIME: list[Callable] = [quick_time, selection_time]
+ALGORITMOS_COUNT: list[Callable] = [quick_count, selection_count]
+PATH_RESULTADO = 'resultados.csv'
+HEADER = ['Algoritmo', 'Cenario', 'Trocas', 'Comparacoes', 'Tempo']
 
 def main() -> None:
-    vetores: dict[str, int] = criar_vetores() 
-    print('start: ', datetime.datetime.now().strftime('%H:%M:%S'))
-    with open('resultados2.csv', 'w', newline='') as f:
+    vetores = criar_vetores() 
+    
+    print('start: ', hora_agora())
+    with open(PATH_RESULTADO, 'w', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow(['Algoritmo', 'Cenario', 'Trocas', 'Comparacoes', 'Tempo'])
-        for algo_time, algo_count in zip(ALGORITMOS_TIME, ALGORITMOS_COMP):
-            for cenario in CENARIOS:
-                comparacoes: int = 0
-                trocas: int = 0 
-            
-                vetor_time: np.ndarray[int] = np.array(vetores[cenario]).copy()    
-                vetor_count: np.ndarray[int] = np.array(vetores[cenario]).copy()    
+        writer.writerow(HEADER)
+
+        for algo_time, algo_count in zip(ALGORITMOS_TIME, ALGORITMOS_COUNT):
+            for cenario in vetores.keys():
+                vetor_time, vetor_count = make_2_copies(vetores[cenario])
                 comparacoes, trocas = algo_count(vetor_count)
                 tempo = algo_time(vetor_time)
+                writer.writerow([algo_time.__name__, cenario, 
+                                 str(trocas), str(comparacoes), 
+                                 str(tempo)])
 
-                writer.writerow([algo_time.__name__, cenario, str(trocas), str(comparacoes), str(tempo)])
-                print(f'{datetime.datetime.now().strftime("%H:%M:%S")}: ', algo_time.__name__, cenario)
-    print('End: ', datetime.datetime.now().strftime('%H:%M:%S'))
+                print(f'{hora_agora()}: ', algo_time.__name__, cenario)
+
+    print('End: ', hora_agora())
+
+def make_2_copies(vetor: list) -> tuple[np.ndarray, np.ndarray]:
+    vet = np.array(vetor)
+    return vet.copy(), vet.copy() 
+
+def hora_agora() -> str:
+    return datetime.datetime.now().strftime('%H:%M:%S')
 
 
-def criar_vetores() -> dict:
+def criar_vetores() -> dict[str, list]:
     vetores = {}
-    for vetor_path in os.listdir(PATH):
-        _, tail = os.path.split(vetor_path)
-        with open(PATH+'\\'+vetor_path, 'r') as f:
+    for vetor_path in os.listdir(PARENT_FOLDER):
+        _, file_name = os.path.split(vetor_path)
+        with open(os.path.join(PARENT_FOLDER, vetor_path), 'r') as f:
             vetor = np.array(list(map(int, f.read().split('\n'))))
-            vetores[tail[:-4]] = vetor
+            vetores[file_name[:-4]] = vetor
     return vetores
 
 
