@@ -109,10 +109,10 @@ def quick_sort(array, first=0, last=None):
 
 def quick_time(array):
     time_s = time()
-    array = quick_sort(array)
+    quick_sort(array)
     return time() - time_s 
 
 def selection_time(array):
     time_s = time()
-    array = selection_sort(array)
+    selection_sort(array)
     return time() - time_s 
