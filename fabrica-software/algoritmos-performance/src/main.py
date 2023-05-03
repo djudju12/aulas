@@ -7,7 +7,7 @@ import numpy as np
 from algoritmosPerformance import *
 
 # _DEFINIÇÃO DAS VARIAVEIS_______________________________________________________
-PARENT_FOLDER = r'.\vetores'
+PARENT_FOLDER = r'vetores'
 
 # Funções de tempo
 ALGORITMOS_TIME: list[Callable] = [quick_time, selection_time] 
@@ -24,7 +24,7 @@ HEADER = ['Algoritmo', 'Cenario', 'Trocas', 'Comparacoes', 'Tempo']
 def main() -> None:
     # Criar todos os vetores (pequeno, medio, grande, supergrande)
     vetores = criar_vetores()
-    
+
     # Começa os testes e printa a hora
     print('start: ', hora_agora())
     with open(PATH_RESULTADO, 'w', newline='') as f:
@@ -72,8 +72,9 @@ def hora_agora() -> str:
 def criar_vetores() -> dict[str, list]:
     vetores = {}
 
+    
     # Lê todos os arquvios que estão no path PARENT_FOLDER
-    for vetor_path in os.listdir(PARENT_FOLDER):
+    for vetor_path in sorted(os.listdir(PARENT_FOLDER)):
         
         # Pega só o nome junto da extensão
         _, file_name = os.path.split(vetor_path)
