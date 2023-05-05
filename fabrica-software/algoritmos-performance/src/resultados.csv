@@ -1,0 +1,16 @@
+Algoritmo     | Cenario    | Trocas| Comparacoes| Tempo
+quick_time    | vetor1000-1| 6184  | 30566      | 0.0016107559204101562
+quick_time    | vetor1000-2| 6240  | 29636      | 0.0017001628875732422
+quick_time    | vetor1000-3| 6276  | 30792      | 0.0014922618865966797
+merge_time    | vetor1000-1| 262888| 6814       | 0.002099275588989258
+merge_time    | vetor1000-2| 275257| 6664       | 0.0019061565399169922
+merge_time    | vetor1000-3| 168028| 6145       | 0.0020494461059570312
+selection_time| vetor1000-1| 2000  | 499500     | 0.03182053565979004
+selection_time| vetor1000-2| 2000  | 499500     | 0.026983022689819336
+selection_time| vetor1000-3| 2000  | 499500     | 0.027071475982666016
+insertion_time| vetor1000-1| 995   | 249082     | 0.001667022705078125
+insertion_time| vetor1000-2| 992   | 250693     | 0.0015704631805419922
+insertion_time| vetor1000-3| 993   | 254078     | 0.0017352104187011719
+index_time    | vetor1000-1| 0     | 0          | 0.00029659271240234375
+index_time    | vetor1000-2| 0     | 0          | 0.00029277801513671875
+index_time    | vetor1000-3| 0     | 0          | 0.00030112266540527344

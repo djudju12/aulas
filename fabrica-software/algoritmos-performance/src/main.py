@@ -3,17 +3,20 @@ from collections.abc import Callable
 import csv
 import datetime
 import os
-import numpy as np
 from algoritmosPerformance import *
 
 # _DEFINIÇÃO DAS VARIAVEIS_______________________________________________________
-PARENT_FOLDER = r'vetores'
+PARENT_FOLDER = r'vetores2'
 
 # Funções de tempo
-ALGORITMOS_TIME: list[Callable] = [quick_time, selection_time] 
+ALGORITMOS_TIME: list[Callable] = [quick_time, merge_time, 
+                                   selection_time, insertion_time, 
+                                   index_time]
 
 # Funções de troca e comparação
-ALGORITMOS_COUNT: list[Callable] = [quick_count, selection_count]
+ALGORITMOS_COUNT: list[Callable] = [quick_count, merge_count, 
+                                    selection_count, insertion_count, 
+                                    index_count]
 
 # Path do arquivo que conterá os resultados
 PATH_RESULTADO = 'resultados.csv'
@@ -60,9 +63,8 @@ def main() -> None:
     # fim
     print('End: ', hora_agora())
 
-def make_2_copies(vetor: list) -> tuple[np.ndarray, np.ndarray]:
-    vet = np.array(vetor)
-    return vet.copy(), vet.copy() 
+def make_2_copies(vetor: list) -> tuple[list, list]:
+    return vetor.copy(), vetor.copy() 
 
 # Retorna a hora atual em hora:minuto:segundo
 def hora_agora() -> str:
@@ -81,7 +83,7 @@ def criar_vetores() -> dict[str, list]:
         with open(os.path.join(PARENT_FOLDER, vetor_path), 'r') as f:
             
             # Splita na quebras de linha
-            vetor = np.array(list(map(int, f.read().split('\n'))))
+            vetor = list(map(int, f.read().split('\n')))
 
             # Adciona o vetor no dicionario e a chave sera o nome do arquivo
             # sem a extensão. O nome dos arquivos possuem o padrão vetor + tamanho + nº cenario
