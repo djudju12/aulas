@@ -1,4 +1,3 @@
-# jonathan: quick, selection
 from collections.abc import Callable
 import csv
 import datetime
@@ -73,7 +72,6 @@ def hora_agora() -> str:
 
 def criar_vetores() -> dict[str, list]:
     vetores = {}
-
     
     # Lê todos os arquvios que estão no path PARENT_FOLDER
     for vetor_path in sorted(os.listdir(PARENT_FOLDER)):

@@ -1,6 +1,6 @@
 # Desafio Ordenação - Fábrica de Software
 
-### Integrantes: Jonathan Santos, Arthus, Julio e Gustavo Cunha 
+### Integrantes: Jonathan Santos, Arthur, Julio e Gustavo Cunha 
 
 ### Algoritmos testados:
 * quick sort
