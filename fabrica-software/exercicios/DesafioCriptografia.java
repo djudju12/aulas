@@ -18,7 +18,7 @@ class DesafioCriptografia {
     public static String codificar(String in, int upperBound, int lowerBound) {
         String codigo = "";
 
-        // 0 1234567                8
+        //   01234567                  8
         // 0 ifmanwas => 0 1   | (uppderBound) * coluna + linha = 0 ...   1 ... 7
         // 1 meanttos => 8 9   | (uppderBound) * coluna + linha = 8 ...   9 ... 15
         // 2 tayonthe => 16 17 | (uppderBound) * coluna + linha = 16 ... 17 ... 23
