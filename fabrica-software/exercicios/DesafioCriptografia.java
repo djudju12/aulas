@@ -2,8 +2,8 @@ import java.util.Scanner;
 
 class DesafioCriptografia {
     public static void main(String[] args) {
-        // String in = inputString();
-        String in = new String("if man was meant to stay on the ground god would have given us roots");
+        String in = inputString();
+        // String in = new String("if man was meant to stay on the ground god would have given us roots");
         // L eh calculado antes ou depois de retirar os espacos?????
         in = in.replaceAll(" ", "");
         int L = in.length();
