@@ -62,3 +62,48 @@ ___
 
 [Visitor](#Visitor) represent an operation to be perfomed on the elements of an object structure. Visitor lets you define a new operation without changing the classes of the elements on which its operates.
 
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-nto1{background-color:#000000;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-nto1" colspan="2" rowspan="2"></th>
+    <th class="tg-c3ow" colspan="3">Pupose</th>
+  </tr>
+  <tr>
+    <th class="tg-0lax">Creational</th>
+    <th class="tg-0lax">Structural</th>
+    <th class="tg-0lax">Behavioral</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky" rowspan="5">Scope</td>
+    <td class="tg-0pky">Class</td>
+    <td class="tg-0pky">Factory Method</td>
+    <td class="tg-0lax">Adapter</td>
+    <td class="tg-0pky">Interpreter<br><br>Template Method</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky" rowspan="4">Object</td>
+    <td class="tg-0pky" rowspan="4">Abstract Factory<br>Builder<br>Prototype<br>Singleton</td>
+    <td class="tg-0lax" rowspan="4">Adapter<br>Bridge<br>Composite<br>Decorator<br>Facade<br>Flyweight<br>Proxy</td>
+    <td class="tg-0pky" rowspan="4">Chain oif Responsibility<br>Command<br>Iterator<br>Mediator<br>Memento<br>Observer<br>State<br>Strategy<br>Visitor</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+</tbody>
+</table>
