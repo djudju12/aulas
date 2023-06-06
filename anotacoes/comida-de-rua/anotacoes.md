@@ -41,3 +41,8 @@
       2. Ela é simples? 
 2. Containers. É uma boa começar usando, ou devo ignorar isso por enquanto visando diminuir a complexidade?
 3. Qual usar: Mysql ou Postgres?
+
+
+REFERENCIAS:
+
+https://github.com/ChangeNode/spring-boot-supabase/blob/main/src/main/resources/application.yaml
