@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt_br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Página de login para acessar o EAD UNISC">
+    <meta name="author" content="Universidade de Santa Cruz do Sul - UNISC">
+    <link rel="icon" href="icon.png">
+        <title>VIRTUAL UNISC - Login</title>
+
+    <!-- Custom styles for this template -->
+    <link href="style.css" rel="stylesheet">
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="jquery-ui.css" rel="stylesheet" >
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script>
+        $( function() {
+          $( document ).tooltip({
+            position: {
+              my: "center bottom-20",
+              at: "center top",
+              using: function( position, feedback ) {
+                $( this ).css( position );
+                $( "<div>" )
+                  .addClass( "arrow" )
+                  .addClass( feedback.vertical )
+                  .addClass( feedback.horizontal )
+                  .appendTo( this );
+              }
+            }
+          });
+        } );
+    </script>
+  </head>
+
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+
+                <div class="navbar-text">
+                    <a href="">
+                        <img class="logo-site-virtual" alt="LOGO EAD UNISC" src="logo_ead_unisc_cinza.png">
+                    </a>
+                </div>
+                <div class="navbar-logo">
+                    <a href="http://www.unisc.br">
+                      <img class="logo-site" alt="LOGO UNISC" src="unisc.png">
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="login-page row">
+
+            <div class="col-md-6">
+            <div class="form">
+                <!--Login Especial-->
+                            <form class="register-form" action="https://portalvirtual.unisc.br/moodle/login/index.php" method="post">
+                                <p class="message">Login especial</p><br>
+                                <input name="username" type="text" placeholder="login" required/>
+                                <input name="password" type="password" placeholder="senha" required />
+                                <button><strong>Entrar na Sala Virtual</strong></button>
+                                <p class="message ou">-------------------------- ou --------------------------</p>
+                                <p class="message">Login unificado UNISC? <a class = "login_change"
+                                title="Para usuários que POSSUEM uma conta @mx2.unisc.br ou @unisc.br."
+                                alt="Para usuários que POSSUEM uma conta @mx2.unisc.br ou @unisc.br."
+                                href="#">Clique aqui</a></p>
+                            </form><!--Login UNISC-->
+                                <form class="login-form" action="https://portalvirtual.unisc.br/moodle/auth/oauth2/login.php?id=4&wantsurl=https%3A%2F%2Fportalvirtual.unisc.br%2Fmoodle%2Fpluginfile.php%2F1096781%2Fmod_resource%2Fcontent%2F2%2FAula9.zip&sesskey=JCj9jtJcFu" method="post">
+                                    <p class="message">Login unificado UNISC<br>@mx2.unisc.br e @unisc.br</p><br>
+                                    <button id="logar"> <strong>Entrar na Sala Virtual</strong></button>
+                                    <p class="message ou">------------------------------- ou -------------------------------</p>
+                                    <p class="message">Login especial? <a alt="Para usuários que NÃO possuem uma conta @mx2.unisc.br ou @unisc.br."
+                                    class="login_change" title="Para usuários que NÃO possuem uma conta @mx2.unisc.br ou @unisc.br."
+                                    alt="Para usuários que NÃO possuem uma conta @mx2.unisc.br ou @unisc.br."
+                                    href="#">Clique aqui</a></p>
+                                </form><p class="message suporte">Precisa de ajuda?<br><a href="mailto:suporte-ead@unisc">suporte-ead@unisc.br</a></br><a href="tel:+5551-3717-7664">(51) 3717-7664</a></p></div></div><div class="col-md-6"><div class="smartphone"><a target="_blank" href="https://docs.google.com/document/d/1zep1JaexYNb41Q5mldgmEhERzyfn3doP6T4BQPa8R60/preview"><img alt="Image do aplicativo moodle mobile, clique aqui para acessar o tutorial de instalação e configuração" src="moodle_mobile.png"><br><span>Clique para acessar o tutorial de instalação e configuração</span></a></div></div></div><script>
+                                        $('.message a.login_change').click(function(){
+                                            $('form').animate({height: 'toggle', opacity: 'toggle'}, 'slow');
+                                            $('.alert').animate({height: 'toggle', opacity: 'toggle'}, 'slow');
+                                        });
+                                    </script>
+                                        </body>
+</html>
