@@ -42,8 +42,18 @@
 2. Containers. É uma boa começar usando, ou devo ignorar isso por enquanto visando diminuir a complexidade?
 3. Qual usar: Mysql ou Postgres?
 4. Utilizar um EC2 da AWS com NGROK e o banco instalado na nuvem para o ambiente de desenvolvimento?
-5. A gente precisa de acesso à um mesmo banco de dados. A API de dev a gente pode disponibilizar com NGROK pro front e o back usa localmente
+5. A gente precisa de acesso à um mesmo banco de dados. A API de dev a gente
+6. pode disponibilizar com NGROK pro front e o back usa localmente
 
 REFERENCIAS:
 
 https://github.com/ChangeNode/spring-boot-supabase/blob/main/src/main/resources/application.yaml
+
+
+### TRELLO
+1. Modelagem de dados 
+2. Endpoints
+   1. Cria-los 
+   2. Expor eles
+3. Banco de dados 
+4. 
