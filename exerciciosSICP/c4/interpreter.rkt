@@ -1,31 +1,15 @@
-#lang sicp 
+ #lang sicp 
 
 
 ; Eval definition 
 
 (define (eval exp env)
+   (define (eval-proc proc)
+      (proc exp env))
+
    (cond ((self-evaluating? exp) exp)
-
          ((variable? exp) (lookup-variable-value exp env))
-         
-         ((quoted? exp) (text-of-quotation exp))
-
-         ((assignment? exp) (eval-assignment exp env))
-
-         ((definition? exp) (eval-definition exp env))
-
-         ((if? exp) (eval-if exp env))
-
-         ((lambda? exp)
-          (make-procedure (lambda-parameters exp)
-                          (lambda-body exp)
-                          env))
-
-         ((begin? exp)
-          (eval-sequence (begin-actions exp) env))
-
-         ((cond? exp) (eval (cond->if exp) env))
-         
+         ((lookup (car exp) eval-table) => eval-proc)
          ((application? exp)
           (my-apply (eval (operator exp) env)
                  (list-of-values (operands exp) env)))
@@ -74,16 +58,8 @@
 
 ;-4.8----------------------
 
-;(for (start range step) 
-;  ((display start) (newline)) 
-
-; (define (for? exp) 
-;    (tagged-list? exp 'for))
-
-; (let (i 10) 
-;    (for (i 0 s1)
-;     lambda(i) ((display "Hello World")))
-
+; (define (while? exp) 
+;    (tagged-list? exp 'while))
 
 
 
@@ -130,6 +106,9 @@
          (else (eval (first-exp exps) env)
                (eval-sequence (rest-exps exps) env))))
 
+(define (eval-begin exp env) 
+   (eval-sequence (begin-actions exp) env))
+
 ; eval-assignment definition
 (define (eval-assignment exp env) 
    (set-variable-value! (assignment-variable exp) 
@@ -164,7 +143,7 @@
 
 ; text-of-quotation definition
 
-(define (text-of-quotation exp) 
+(define (text-of-quotation exp env) 
    (cadr exp))
 
 ; tagged-list? definition
@@ -268,6 +247,8 @@
 (define (cond-actions clause) (cdr clause))
 (define (cond->if exp)
    (expand-clauses (cond-clauses exp)))
+(define (eval-cond exp env)
+   (eval (cond->if exp) env))
 
 (define (expand-clauses clauses)
    (if (null? clauses)
@@ -285,6 +266,12 @@
 
 (define (make-procedure parameters body env)
    (list 'procedure parameters body env))
+ 
+(define (make-lambda-proc exp env)
+   (make-procedure (lambda-parameters exp)
+                   (lambda-body exp)
+                   env))
+
 
 (define (compound-procedure? p)
    (tagged-list? p 'procedure))
@@ -381,6 +368,7 @@
          (list '< <)
          (list '> >)
          (list 'map meta-map)
+         (list 'display display)
          ))
 
 (define (primitive-procedure-names)
@@ -404,6 +392,58 @@
       initial-env))
 
 (define the-global-environment (setup-environment))
+
+;--------------------------
+(define (while->if exp env)
+   (let ((test (while-test exp))
+         (body (while-body exp)))
+
+      (eval 
+         (make-if test 
+               ; sequence->exp transforma o body em uma exp
+               ; e junta com a exp anterior, virando begin (body) (exp)
+               ; Nisso, o primeiro a ser evaluado é o body e logo depois a exp
+               ; novamente, que é mesma inicial, criando um loop
+               (sequence->exp (list body exp)) 
+               "done")
+            env))) 
+
+(define (while-test exp) (cadr exp))
+(define (while-body exp) (caddr exp))
+
+;-4.3----------------------
+
+(define (make-table) 
+   (list '*table*))
+
+(define (lookup key table) 
+   (let ((record (assoc key (cdr table))))
+      (if record
+          (cdr record)
+          false)))
+
+(define (assoc key records) 
+   (cond ((null? records) false)
+         ((equal? key (caar records)) (car records))
+         (else (assoc key (cdr records)))))
+
+(define (insert! key value table)
+   (let ((record (assoc key (cdr table))))
+      (if record
+          ((set-cdr! record value))
+          (set-cdr! table
+                    (cons (cons key value) (cdr table))))))
+
+(define eval-table (make-table))
+(insert! 'quote text-of-quotation eval-table)
+(insert! 'assignment eval-assignment eval-table)
+(insert! 'define eval-definition eval-table)
+(insert! 'if eval-if eval-table)
+(insert! 'lambda make-lambda-proc eval-table)
+(insert! 'begin eval-begin eval-table)
+(insert! 'cond cond->if eval-table)
+(insert! 'while while->if eval-table)
+
 
 ; --- end of interpreter
 
