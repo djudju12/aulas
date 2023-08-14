@@ -1,4 +1,14 @@
+F: r = a % b 
+T: r == 0 ? 
+G: a = b e b = r 
 
+
+
+r1: Faça (r = a % b) vá_para r2
+r2: Se (r == 0) então vá_para r3 senao r4
+r3: b
+r4: faça (a = b) vá para r5
+r5: faça (b = r) vá para r1 
 
 3. Relativamente a programas iterativos:
 
