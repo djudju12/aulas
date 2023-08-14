@@ -1,0 +1,31 @@
+
+
+3. Relativamente a programas iterativos:
+
+   a) Em que situação a execução de: "enquanto T faça V", V pode não ser executado?
+      Quando a primeira vez que o teste T for feito o resultado for Falso.
+
+   b) Por que a operação ✓ constitui um programa iterativo?
+      Porque toda a operação constitui um programa iterativo (?).
+
+   c) Por que se pode afirmar que: A tradução de um programa iterativo para um monolítico é trivial. Cite um exemplo no qual isso ocorre.
+      Porque é possível construir a mesma lógica usando instruções rotuladas. 
+      
+      Por exemplo, é possível escrever um programa iterativo da seguinte forma:
+      
+         `enquanto T faça F` 
+      
+      e analogamente podemos escrever 
+      
+         `r1: se T vá_para r2 senao r3 
+          r2: faça F vá_para r1 
+          r3: `
+      
+      o seguinte fluxograma descreve ambos: 
+         
+                        .--------.
+                        |        |
+         [parada] <-f--<T>--v-> [F] 
+         
+      Concluo que os programas iterativos surgem para solucionar os problemas de desvios incondicionais encontrados em programas monolítico, por 
+      isso a tradução pode ser considerada trivial. 
