@@ -1,6 +1,6 @@
 # Design Patterns 
 
-### [Book](...)
+### [Book]
 ___
 
 <br>

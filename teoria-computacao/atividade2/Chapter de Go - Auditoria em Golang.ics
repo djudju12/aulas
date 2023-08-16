@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Microsoft Corporation//Outlook 16.0 MIMEDIR//EN
+
+BEGIN:VEVENT
+DTSTAMP:20230815T112454Z
+
+DTSTART:20230829T110000
+DTEND:20230829T120000
+SUMMARY:Chapter de Go - Auditoria em Golang
+
+X-ALT-DESC;FMTTYPE=text/html:<html xmlns="http://www.w3.org/1999/xhtml"><head><base href="https://compasso.sharepoint.com" /></head><body><p style="margin-left:0px;">Na terça-feira 29/08 teremos mais um encontro do mês de agosto, com a participação do nosso colega <strong>José Hallex de Abreu.</strong></p><p style="margin-left:0px;"><strong>Sobre a talk:</strong></p><p style="margin-left:0px;"><strong>Vamos aprender na prática a construir uma solução de registro de eventos para auditoria usando a linguagem de programação Golang em conjunto com os serviços da AWS, incluindo SQS, Lambdas e DynamoDB. </strong></p><p><br /> </p></body></html>
+
+
+
+
+
+
+CATEGORIES:Meeting
+END:VEVENT
+END:VCALENDAR
