@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app/text_widget.dart';
+import 'package:quiz_app/title_widget.dart';
 
 class LogoWidget extends StatelessWidget {
   const LogoWidget(this.callback, {super.key});
@@ -18,9 +18,7 @@ class LogoWidget extends StatelessWidget {
         const SizedBox(
           height: 65,
         ),
-        const TextWidget(
-          "Learn Flutter the fun way!",
-        ),
+        const TitleText("Learn Flutter the fun way!"),
         const SizedBox(
           height: 5,
         ),

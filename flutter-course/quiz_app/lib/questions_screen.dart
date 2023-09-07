@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/answer_button.dart';
 import 'package:quiz_app/data/questions.dart';
-import 'package:quiz_app/models/question.dart';
-import 'package:quiz_app/text_widget.dart';
+import 'package:quiz_app/title_widget.dart';
 
 class QuestionsWidget extends StatefulWidget {
-  const QuestionsWidget({super.key});
+  final void Function(String) onSelectAnswers;
+
+  const QuestionsWidget({super.key, required this.onSelectAnswers});
 
   @override
   State<StatefulWidget> createState() {
@@ -15,11 +16,10 @@ class QuestionsWidget extends StatefulWidget {
 
 class _MakeQuestions extends State<QuestionsWidget> {
   int currentIndex = 0;
-  void answerQuestion() {
+  void answerQuestion(String selectedAnswers) {
+    widget.onSelectAnswers(selectedAnswers);
     setState(() {
-      if (currentIndex < (questions.length - 1)) {
-        currentIndex++;
-      }
+      currentIndex++;
     });
   }
 
@@ -31,16 +31,15 @@ class _MakeQuestions extends State<QuestionsWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            questions[currentIndex].text,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          TitleText(questions[currentIndex].text),
           const SizedBox(height: 20),
           ...questions[currentIndex].getShuffledAnswers().map((a) {
-            return AnswerButton(a, answerQuestion);
+            return AnswerButton(
+              data: a,
+              callback: () {
+                answerQuestion(a);
+              },
+            );
           })
         ],
       ),

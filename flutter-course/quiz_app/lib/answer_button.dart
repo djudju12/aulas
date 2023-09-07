@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/text_widget.dart';
 
 class AnswerButton extends StatelessWidget {
   final String data;
   final void Function() callback;
-  const AnswerButton(this.data, this.callback, {super.key});
+  const AnswerButton({required this.data, required this.callback, super.key});
 
   @override
   Widget build(context) {
@@ -14,16 +15,13 @@ class AnswerButton extends StatelessWidget {
           horizontal: 40,
           vertical: 10,
         ),
-        backgroundColor: const Color.fromARGB(255, 112, 31, 173),
+        backgroundColor: const Color.fromARGB(255, 64, 2, 110),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(40),
         ),
       ),
-      child: Text(
-        data,
-        textAlign: TextAlign.center,
-      ),
+      child: TextWidget(data),
     );
   }
 }

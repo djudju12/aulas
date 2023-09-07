@@ -9,7 +9,7 @@ class TextWidget extends StatelessWidget {
     return Text(
       data,
       style: const TextStyle(
-        fontSize: 18,
+        fontSize: 12,
         color: Colors.white,
       ),
     );
