@@ -14,14 +14,18 @@ const (
 	dataSourceName = "postgresql://root:secret@localhost:25432/simple_bank?sslmode=disable"
 )
 
-var testQueries *Queries
+var (
+	testQueries *Queries
+	testDB      *sql.DB
+)
 
 func TestMain(m *testing.M) {
-	conn, err := sql.Open(driverName, dataSourceName)
+	var err error
+	testDB, err = sql.Open(driverName, dataSourceName)
 	if err != nil {
 		log.Fatal("cannot open db connection:", err)
 	}
 
-	testQueries = New(conn)
+	testQueries = New(testDB)
 	os.Exit(m.Run())
 }
