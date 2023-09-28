@@ -45,3 +45,23 @@ $$(\lambda x.M)$$
 
 3. _Aplicação Lambda_ ou $\lambda - aplicacao$. Se **M** e **N** são $\lambda -termos$, então também são $\lambda - termos$:
 $$(M \quad N)$$
+
+Intuitivamente temos a definição de um $\lambda - termo$:
+* abstração Lambda representa a operação de conceder cárater funcional à um objeto. Assim $\lambda x.(M)$ representa uma função que possui um parâmetro de entrada; 
+* aplicação Lambda (M N) representação a aplicação de uma função M à um objeto (entrada) N
+
+exemplos de termos lambdas (os numeros mapeam para as definições acima)
+
+$x \quad  1$
+
+$\lambda x.x \quad 1, 2$
+
+$(x y) \quad 1, 3$
+
+$(\lambda x.x \lambda x.x) \quad 1, 2, 3$
+
+**Definição**: Linguagem Lambda
+
+Seja **V** um conjunto infinito de variáveis, uma linguagem lambda, ou $\lambda -linguagem$, é o conjunto de todos os $\lambda - termos$ sobre esse conjuntos. 
+
+
