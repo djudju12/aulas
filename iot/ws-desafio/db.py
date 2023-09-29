@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS weather(
 );
 """
 
-SELECT_ALL_STMT = "SELECT * FROM weather"
+    _ALL_STMT = "SELECT * FROM weather"
 
 @dataclass
 class Weather:

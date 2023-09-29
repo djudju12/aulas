@@ -22,7 +22,6 @@ def create_wheater():
         req = Weather(**request.json)
         conn = sqlite3.connect(DB_NAME)
         database = DB(conn)
-        print(req)
         d = database.create(req)
         return Response(
             json.dumps(d.__dict__), status=201, mimetype="application/json")
