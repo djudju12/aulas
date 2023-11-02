@@ -40,9 +40,3 @@ diminuir a quantidade de código gerado.
 ### Geração de Código
 
 O gerador de código recebe como entrada um programa intermediário e o mapeia em linguagem objeto.
-
-
-
-
-
-
