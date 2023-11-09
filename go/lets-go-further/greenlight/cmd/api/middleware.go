@@ -51,10 +51,8 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 	}
 
 	var (
-		mu         sync.Mutex
-		clients    = make(map[string]*client)
-		rateLimit  = rate.Limit(2)
-		bucketSize = 4
+		mu      sync.Mutex
+		clients = make(map[string]*client)
 	)
 
 	go func() {
@@ -76,33 +74,33 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 	}()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip, _, err := net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-			return
-		}
+		if app.config.limiter.enable {
+			ip, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				app.serverErrorResponse(w, r, err)
+				return
+			}
 
-		mu.Lock()
+			mu.Lock()
 
-		if _, found := clients[ip]; !found {
-			// limiter que adiciona um token ao bucket a cada 1/rateLimit seconds
-			// e possui um tamanho máximo de bucketSize (bucket)
-			clients[ip] = &client{limiter: rate.NewLimiter(rateLimit, bucketSize)}
-		}
+			if _, found := clients[ip]; !found {
+				clients[ip] = &client{limiter: rate.NewLimiter(rate.Limit(app.config.limiter.rps), app.config.limiter.burst)}
+			}
 
-		clients[ip].lastSeen = time.Now()
+			clients[ip].lastSeen = time.Now()
 
-		if !clients[ip].limiter.Allow() {
+			if !clients[ip].limiter.Allow() {
+				mu.Unlock()
+				app.rateLimitExceededResponse(w, r)
+				return
+			}
+
+			// Very importantly, unlock the mutex before calling the next handler in the
+			// chain. Notice that we DON'T use defer to unlock the mutex, as that would mean
+			// that the mutex isn't unlocked until all the handlers downstream of this
+			// middleware have also returned.
 			mu.Unlock()
-			app.rateLimitExceededResponse(w, r)
-			return
 		}
-
-		// Very importantly, unlock the mutex before calling the next handler in the
-		// chain. Notice that we DON'T use defer to unlock the mutex, as that would mean
-		// that the mutex isn't unlocked until all the handlers downstream of this
-		// middleware have also returned.
-		mu.Unlock()
 
 		next.ServeHTTP(w, r)
 	})
