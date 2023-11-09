@@ -104,6 +104,8 @@ func (app *application) updatesMovieHandler(w http.ResponseWriter, r *http.Reque
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
+
+		return
 	}
 	if input.Title != nil {
 		movie.Title = *input.Title

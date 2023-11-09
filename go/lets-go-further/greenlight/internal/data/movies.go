@@ -18,14 +18,14 @@ type Movie struct {
 	Year      int32     `json:"year,omitempty"`
 	Runtime   Runtime   `json:"runtime,omitempty"`
 	Genres    []string  `json:"genres,omitempty"`
-	Version   int32     `json:"version"`
+	Version   int32     `json:"-"`
 }
 
-var maxBytes = 500
+var maxBytesTitle = 500
 
 func ValidateMovie(v *validator.Validator, movie *Movie) {
 	v.Check(movie.Title != "", "title", "must be provided")
-	v.Check(len(movie.Title) <= maxBytes, "title", fmt.Sprintf("must not be more than %d bytes long", maxBytes))
+	v.Check(len(movie.Title) <= maxBytesTitle, "title", fmt.Sprintf("must not be more than %d bytes long", maxBytesTitle))
 
 	v.Check(movie.Year != 0, "year", "must be provided")
 	v.Check(movie.Year >= 1888, "year", "must be greater than 1888")
