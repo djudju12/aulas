@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/djudju12/greenlight/internal/validator"
 )
@@ -27,4 +28,23 @@ func ValidateFilter(v *validator.Validator, f Filters) {
 	v.Check(f.PageSize <= maxPageSize, "page_size", fmt.Sprintf("must be a maximum of %d", maxPageSize))
 
 	v.Check(validator.In(f.Sort, f.SortSafelist...), "sort", "invalid sort value")
+}
+
+func (f Filters) sortColumn() string {
+	for _, safeValue := range f.SortSafelist {
+		if f.Sort == safeValue {
+			return strings.TrimPrefix(f.Sort, "-")
+		}
+	}
+
+	// unreachable, unles...
+	panic("unsafe sort parameter: " + f.Sort)
+}
+
+func (f Filters) sortDirection() string {
+	if strings.HasPrefix(f.Sort, "-") {
+		return "DESC"
+	}
+
+	return "ASC"
 }
