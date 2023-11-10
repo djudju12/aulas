@@ -27,13 +27,18 @@ func (app *application) registerUserHandle(w http.ResponseWriter, r *http.Reques
 		Activated: true,
 	}
 
+	v := validator.New()
+	if data.ValidatePasswordPlaintext(v, input.Password); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
 	err = user.Password.Set(input.Password)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	v := validator.New()
 	if data.ValidateUser(v, user); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
