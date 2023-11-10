@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flag"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/djudju12/greenlight/internal/data"
@@ -63,7 +64,7 @@ func main() {
 	flag.BoolVar(&cfg.limiter.enable, "limiter-enable", true, "Eanble rate limiter")
 
 	flag.StringVar(&cfg.smtp.host, "smtp-host", "sandbox.smtp.mailtrap.io", "SMTP host")
-	flag.IntVar(&cfg.smtp.port, "smtp-port", 25, "SMTP port")
+	flag.IntVar(&cfg.smtp.port, "smtp-port", 2525, "SMTP port")
 	flag.StringVar(&cfg.smtp.username, "smtp-username", os.Getenv("SMTP_USERNAME"), "SMTP username")
 	flag.StringVar(&cfg.smtp.password, "smtp-password", os.Getenv("SMTP_PASSWORD"), "SMTP password")
 	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "jonathan.willian321@gmail.com", "SMTP sender")
@@ -80,10 +81,19 @@ func main() {
 	defer db.Close()
 	logger.PrintInfo("database connection pool established", nil)
 
+	logger.PrintInfo("SMTP connection", map[string]string{
+		"username": cfg.smtp.username,
+		"password": cfg.smtp.password,
+		"host":     cfg.smtp.host,
+		"post":     strconv.Itoa(cfg.smtp.port),
+		"sender":   cfg.smtp.sender,
+	})
+
 	app := &application{
 		config: cfg,
 		logger: logger,
 		models: data.NewModels(db),
+		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
 	err = app.serve()
