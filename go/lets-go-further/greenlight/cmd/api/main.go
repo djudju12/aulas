@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"flag"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/djudju12/greenlight/internal/data"
@@ -80,14 +79,6 @@ func main() {
 
 	defer db.Close()
 	logger.PrintInfo("database connection pool established", nil)
-
-	logger.PrintInfo("SMTP connection", map[string]string{
-		"username": cfg.smtp.username,
-		"password": cfg.smtp.password,
-		"host":     cfg.smtp.host,
-		"post":     strconv.Itoa(cfg.smtp.port),
-		"sender":   cfg.smtp.sender,
-	})
 
 	app := &application{
 		config: cfg,

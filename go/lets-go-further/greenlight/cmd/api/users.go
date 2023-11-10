@@ -57,11 +57,15 @@ func (app *application) registerUserHandle(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.mailer.Send(user.Email, "user_welcome.go.tmpl", user)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
+	go func() {
+		// i think its important to declare a new error variable with :=
+		// because you can have race conditions with the outer scope
+		err := app.mailer.Send(user.Email, "user_welcome.go.tmpl", user)
+		if err != nil {
+			app.logger.PrintError(err, nil)
+			return
+		}
+	}()
 
 	err = app.writeJSON(w, http.StatusCreated, envelope{"user": user}, nil)
 	if err != nil {
