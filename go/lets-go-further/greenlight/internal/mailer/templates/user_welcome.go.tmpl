@@ -7,6 +7,8 @@ Thanks for signing up for a Greenlight accout. We're excited to have you on boar
 
 For future reference, your user ID numbers is {{.ID}}
 
+{"token": "{{.activationToken}}"}
+
 Thanks,
 
 The Greenlight Team
@@ -25,6 +27,11 @@ The Greenlight Team
    <p>hi, </p>
    <p>Thanks for signing up for a Greenlight accout. We're excited to have you on board!</p>
    <p>For future reference, your user ID numbers is {{.ID}}</p>
+   <p>Please send a request to the <code>PUT /v1/users/activated</code> endpoint with the
+following JSON body to activate your account:</p>
+   <pre><code>
+   {"token": "{{.activationToken}}"}
+   </code></pre>
    <p>Thanks,</p>
    <p>The Greenlight Team</p>
 </body>
