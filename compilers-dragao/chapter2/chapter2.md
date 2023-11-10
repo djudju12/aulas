@@ -154,5 +154,18 @@ c) sim:
 e (e) e (e) e
 
 
+### atributos
 
+atributos podem ser qualquer valor associado a uma construção de programa.
+Como usamos símbolos de gramática para representar as construções dos nosso programas,
+estendemos a noção dos atributos das construções aos símbolos que eles representam.
+
+### Esquemas de tradução (dirigidos por sintaxe)
+É uma notação para contectar fragmentos de programa às produções de uma gramática
+
+### Notação pós-fixada
+
+1. se E é uma variavel ou constante, então a notação pós-fixada de E é o próprio E
+2. Se E é uma expr no formato E1 op E2 onde op é uma operação binária, então a notação para E será E1'E2' op, onde E1' e E2' são as notações pós-fixadas de E1 e E2 respectivamente
+3. Se E é uma expr entre parenteses da forma (E1) então a notação pós-fixada para E é a mesma que para E1
 
