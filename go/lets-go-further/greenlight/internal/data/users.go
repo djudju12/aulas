@@ -97,7 +97,7 @@ type UserModel struct {
 	DB *sql.DB
 }
 
-func (u UserModel) Insert(user *User) error {
+func (m UserModel) Insert(user *User) error {
 	query := `
 	INSERT INTO users (name, email, password_hash, activated)
 	VALUES ($1, $2, $3, $4)
@@ -108,7 +108,7 @@ func (u UserModel) Insert(user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := u.DB.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.CreatedAt, &user.Version)
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.CreatedAt, &user.Version)
 	if err != nil {
 		switch {
 		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
@@ -121,7 +121,7 @@ func (u UserModel) Insert(user *User) error {
 	return nil
 }
 
-func (u UserModel) GetByEmail(email string) (*User, error) {
+func (m UserModel) GetByEmail(email string) (*User, error) {
 	query := `
 	SELECT id, created_at, name, email, password_hash, activated, version
 	FROM users
@@ -132,7 +132,7 @@ func (u UserModel) GetByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := u.DB.QueryRowContext(ctx, query, email).Scan(
+	err := m.DB.QueryRowContext(ctx, query, email).Scan(
 		&user.ID,
 		&user.CreatedAt,
 		&user.Name,
@@ -154,7 +154,7 @@ func (u UserModel) GetByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (u UserModel) Update(user *User) error {
+func (m UserModel) Update(user *User) error {
 	query := `
 	UPDATE users
 	SET name=$1, email=$2, password_hash=$3, activated=$4, version=version+1
@@ -166,7 +166,7 @@ func (u UserModel) Update(user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := u.DB.QueryRowContext(ctx, query, args...).Scan(&user.Version)
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Version)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -179,4 +179,14 @@ func (u UserModel) Update(user *User) error {
 	}
 
 	return nil
+}
+
+func (m UserModel) GetForToken(scope string, tokenPlainText string) (*User, error) {
+	//query := `
+	//SELECT id, created_at, name, email, password_hash, activated, version
+	//FROM users
+	//JOIN tokens ON tokens.user_id = users.id
+	//WHERE tokens.=$1 AND tokens.scope=$2`
+
+	return nil, nil
 }
