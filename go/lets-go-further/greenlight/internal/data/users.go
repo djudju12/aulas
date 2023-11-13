@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -161,7 +162,7 @@ func (m UserModel) Update(user *User) error {
 	WHERE id=$5 AND version=$6
 	RETURNING version`
 
-	args := []interface{}{user.Name, user.Email, user.Password.hash, user.Activated}
+	args := []interface{}{user.Name, user.Email, user.Password.hash, user.Activated, user.ID, user.Version}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -182,11 +183,42 @@ func (m UserModel) Update(user *User) error {
 }
 
 func (m UserModel) GetForToken(scope string, tokenPlainText string) (*User, error) {
-	//query := `
-	//SELECT id, created_at, name, email, password_hash, activated, version
-	//FROM users
-	//JOIN tokens ON tokens.user_id = users.id
-	//WHERE tokens.=$1 AND tokens.scope=$2`
+	query := `--sql
+	SELECT u.id, u.created_at, u.name, u.email, u.password_hash, u.activated, u.version
+	FROM users u
+	INNER JOIN tokens t
+	ON u.id = t.user_id
+	WHERE t.hash=$1
+	AND t.scope=$2
+	AND t.expiry > $3`
 
-	return nil, nil
+	tokenHash := sha256.Sum256([]byte(tokenPlainText))
+
+	args := []interface{}{tokenHash[:], scope, time.Now()}
+
+	var user User
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(
+		&user.ID,
+		&user.CreatedAt,
+		&user.Name,
+		&user.Email,
+		&user.Password.hash,
+		&user.Activated,
+		&user.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
 }
