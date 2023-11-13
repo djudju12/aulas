@@ -205,3 +205,41 @@ func (app *application) requirePermission(code string, next http.HandlerFunc) ht
 
 	return app.requireActivatedUser(fn)
 }
+
+func (app *application) enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
+
+		// Set a Vary: Access-Control-Request-Method header on all responses, as the response
+		// will be different depending on whether or not this header exists in the request.
+		w.Header().Add("Vary", "Access-Control-Request-Method")
+
+		origin := r.Header.Get("Origin")
+
+		if origin != "" && len(app.config.cors.trustedOrigins) != 0 {
+			for _, trustedOrigin := range app.config.cors.trustedOrigins {
+				if origin == trustedOrigin {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+
+					// preflight
+					if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+						w.Header().Add("Access-Control-Allow-Method", "OPTIONS, PUT, PATCH, DELETE")
+
+						// it’s important to not set the wildcard Access-Control-Allow-Origin: * header
+						// or reflect the Origin header without checking against a list of trusted origins. Otherwise,
+						// this would leave your service vulnerable to a distributed brute-force attack against any
+						// authentication credentials that are passed in that header.
+						w.Header().Add("Access-Control-Allow-Headers", "Authorization, Content-Type")
+
+						w.WriteHeader(http.StatusOK)
+						return
+					}
+
+					break
+				}
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
