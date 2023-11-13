@@ -56,3 +56,8 @@ func (app *application) rateLimitExceededResponse(w http.ResponseWriter, r *http
 	message := "unable to make the request due to too many requests"
 	app.errorResponse(w, r, http.StatusTooManyRequests, message)
 }
+
+func (app *application) invalidCredentialsResponse(w http.ResponseWriter, r *http.Request) {
+	message := "authentication credentials"
+	app.errorResponse(w, r, http.StatusUnauthorized, message)
+}
