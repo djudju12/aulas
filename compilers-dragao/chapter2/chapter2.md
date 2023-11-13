@@ -169,3 +169,21 @@ estendemos a noção dos atributos das construções aos símbolos que eles repr
 2. Se E é uma expr no formato E1 op E2 onde op é uma operação binária, então a notação para E será E1'E2' op, onde E1' e E2' são as notações pós-fixadas de E1 e E2 respectivamente
 3. Se E é uma expr entre parenteses da forma (E1) então a notação pós-fixada para E é a mesma que para E1
 
+### Árvore de Sintaxe
+
+Um ponto de partida útil para iniciar o projeto de um tradutor é uma estrutura de dados chamada árvore de sintaxe abstrata.
+Em uma árvore sintática abstrata, para uma expressão, cada nó interior representa um operador; os filhos do nó representam
+os operandos do operador.
+
+9-5+2:
+
+     +
+    / \
+   -  2
+ /  \
+9    5
+
+Árvores sintáticas são, até certo ponto, parecidas com árvores de derivação. Porém, na árvore sintática, os nós interiores representam
+construções de programação, enquanto na árvore de derivação os nós interiores representam não-terminais. Muitos dos não-terminais de uma
+gramática representam construções de programação, mas outros são "auxiliares" (como digitos ou termos usados nos exemplos anteriores).
+Na árvore sintática estes não-terminais auxiliares são removidos.
