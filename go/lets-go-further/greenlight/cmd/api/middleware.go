@@ -121,7 +121,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 
 		// add anonymous user to the context
 		if authorizationHeader == "" {
-			r = app.contenxtSetUser(r, data.AnonymousUser)
+			r = app.contextSetUser(r, data.AnonymousUser)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -152,7 +152,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		r = app.contenxtSetUser(r, user)
+		r = app.contextSetUser(r, user)
 		next.ServeHTTP(w, r)
 	})
 }
