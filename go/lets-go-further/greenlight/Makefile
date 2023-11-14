@@ -31,8 +31,9 @@ db/migrations/up: confirm
 	@echo 'Running up migrations...'
 	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} up
 
+git_description = $(shell git describe --always --diryt)
 current_time = $(shell date --iso-8601=seconds)
-linker_flags = '-s -X main.buildTime=$(current_time)'
+linker_flags = '-s -X main.buildTime=$(current_time) -X main.version=${git_description}'
 
 .PHONY: build/api
 ## build/api: build the binaries for the application
