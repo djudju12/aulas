@@ -44,6 +44,9 @@ void match(char t)
 {
     if (*lookahead == t) {
         lookahead++;
+        for (; isspace(*lookahead); lookahead++)
+            ;
+
     } else {
         printf("\nsyntax error\n");
         exit(1);
@@ -54,6 +57,9 @@ int main(void)
 {
     int ferror;
     lookahead = read_all_file("input.txt", &ferror);
+    for (; isspace(*lookahead); lookahead++)
+        ;
+
     if (!lookahead || ferror != 0) {
         printf("error opening the file\n");
         return 1;

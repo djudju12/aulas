@@ -187,3 +187,13 @@ os operandos do operador.
 construções de programação, enquanto na árvore de derivação os nós interiores representam não-terminais. Muitos dos não-terminais de uma
 gramática representam construções de programação, mas outros são "auxiliares" (como digitos ou termos usados nos exemplos anteriores).
 Na árvore sintática estes não-terminais auxiliares são removidos.
+
+### Análise Léxica
+
+Um analisador léxico lê os caracteres de entrada e os agrupa em "objetos tipo token". Junto com o símbolo terminal que é usado durante a análise sintática, um
+objeto token carrega informações adicionais na forma de valores de atributo.
+
+Uma sequencia de caracteres de entrada compreendendo um único token é chamada de _lexema_. Assim, podemos dizer que o analisador léxico isola do analisador sintático
+a representação do lexema dos tokens.
+
+Analisador léxico da seção 2.6
