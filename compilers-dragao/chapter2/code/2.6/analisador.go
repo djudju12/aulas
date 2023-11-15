@@ -131,6 +131,10 @@ func (l *Lexer) TrimSpaceAndComments() bool {
 				if ok := l.TrimCurrentLine(); !ok {
 					return ok
 				}
+			} else if l.Peek == '*' {
+				if ok := l.TrimMultilineComment(); !ok {
+					return ok
+				}
 			} else {
 				l.Unread()
 				return true
@@ -157,6 +161,26 @@ func (l *Lexer) TrimCurrentLine() bool {
 		if l.Peek == '\n' {
 			l.Line += 1
 			return true
+		}
+	}
+}
+
+func (l *Lexer) TrimMultilineComment() bool {
+	for {
+		if ok := l.Read(); !ok {
+			return ok
+		}
+
+		if l.Peek == '*' {
+			if ok := l.Read(); !ok {
+				return ok
+			}
+
+			if l.Peek == '/' {
+				return true
+			} else {
+				l.Unread()
+			}
 		}
 	}
 }
