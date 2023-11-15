@@ -1,6 +1,9 @@
 true false word false
 1234
-
+1234.12345
+0.50
+.50
+< <= == != >= >
 /*
 true false word false
 hello world

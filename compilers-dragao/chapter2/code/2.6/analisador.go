@@ -40,9 +40,17 @@ type Tag int
 
 const (
 	TOKEN_NUM = iota + 255
+	TOKEN_FLOAT
 	TOKEN_TRUE
 	TOKEN_FALSE
 	TOKEN_ID
+	TOKEN_LT
+	TOKEN_LE
+	TOKEN_EQUAL
+	TOKEN_NEQUAL
+	TOKEN_GE
+	TOKEN_GT
+	TOKEN_ASSIG
 )
 
 type Lexer struct {
@@ -83,7 +91,7 @@ func (l *Lexer) Scan() (Token, bool) {
 		return Token{}, ok
 	}
 
-	if IsDigit(l.Peek) {
+	if IsDigit(l.Peek) || l.Peek == '.' {
 		value := 0
 		for IsDigit(l.Peek) {
 			value = 10*value + int(l.Peek-'0')
@@ -92,7 +100,24 @@ func (l *Lexer) Scan() (Token, bool) {
 			}
 		}
 
-		return Token{TokenTag: TOKEN_NUM, Value: value}, true
+		fraction := 0.0
+		power := 1.0
+		if l.Peek == '.' {
+			if l.Read(); !IsDigit(l.Peek) {
+				l.Unread()
+			} else {
+				for IsDigit(l.Peek) {
+					fraction = 10*fraction + float64(l.Peek-'0')
+					power *= 10.0
+					if ok := l.Read(); !ok {
+						break
+					}
+				}
+			}
+			return Token{TokenTag: TOKEN_FLOAT, Value: float64(value) + fraction/power}, true
+		} else {
+			return Token{TokenTag: TOKEN_NUM, Value: value}, true
+		}
 	}
 
 	if IsLetter(l.Peek) {
@@ -112,6 +137,40 @@ func (l *Lexer) Scan() (Token, bool) {
 		l.Reserve(TOKEN_ID, str)
 
 		return l.Words[str], true
+	}
+
+	switch l.Peek {
+	case '<':
+		l.Read()
+		if l.Peek != '=' {
+			l.Unread()
+			return Token{TokenTag: TOKEN_LT, Value: "<"}, true
+		} else {
+			return Token{TokenTag: TOKEN_LE, Value: "<="}, true
+		}
+	case '>':
+		l.Read()
+		if l.Peek != '=' {
+			l.Unread()
+			return Token{TokenTag: TOKEN_GT, Value: ">"}, true
+		} else {
+			return Token{TokenTag: TOKEN_GE, Value: ">="}, true
+		}
+	case '=':
+		l.Read()
+		if l.Peek != '=' {
+			l.Unread()
+			return Token{TokenTag: TOKEN_ASSIG, Value: "="}, true
+		} else {
+			return Token{TokenTag: TOKEN_EQUAL, Value: "=="}, true
+		}
+	case '!':
+		l.Read()
+		if l.Peek != '=' {
+			l.Unread()
+		} else {
+			return Token{TokenTag: TOKEN_NEQUAL, Value: "!="}, true
+		}
 	}
 
 	t := Token{TokenTag: -1, Value: l.Peek}
