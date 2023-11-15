@@ -28,10 +28,11 @@ func main() {
 
 	for {
 		t, ok := lexer.Scan()
-		fmt.Printf("%+v\n", t)
 		if !ok {
 			return
 		}
+
+		fmt.Printf("%+v\n", t)
 	}
 }
 
@@ -59,8 +60,8 @@ type Token struct {
 func NewLexer() *Lexer {
 	lexer := &Lexer{
 		Line:    1,
-		Peek:    buffer[0],
-		PBuffer: 0,
+		Peek:    ' ',
+		PBuffer: -1,
 		Words:   make(map[string]Token),
 	}
 
@@ -74,19 +75,12 @@ func (l *Lexer) Reserve(tag Tag, word string) {
 }
 
 func (l *Lexer) Scan() (Token, bool) {
-	ok := true
-	for {
-		if l.Peek == ' ' || l.Peek == '\t' {
+	if ok := l.Read(); !ok {
+		return Token{}, ok
+	}
 
-		} else if l.Peek == '\n' {
-			l.Line += 1
-		} else {
-			break
-		}
-
-		if ok = l.Read(); !ok {
-			return Token{}, false
-		}
+	if ok := l.TrimSpaceAndComments(); !ok {
+		return Token{}, ok
 	}
 
 	if IsDigit(l.Peek) {
@@ -98,34 +92,82 @@ func (l *Lexer) Scan() (Token, bool) {
 			}
 		}
 
-		return Token{TokenTag: TOKEN_NUM, Value: value}, ok
+		return Token{TokenTag: TOKEN_NUM, Value: value}, true
 	}
 
 	if IsLetter(l.Peek) {
 		var buf bytes.Buffer
 		for IsLetter(l.Peek) {
 			_ = buf.WriteByte(l.Peek)
-			if ok = l.Read(); !ok {
+			if ok := l.Read(); !ok {
 				break
 			}
 		}
 
 		str := buf.String()
 		if w, exists := l.Words[str]; exists {
-			return w, ok
+			return w, true
 		}
 
 		l.Reserve(TOKEN_ID, str)
 
-		return l.Words[str], ok
+		return l.Words[str], true
 	}
 
 	t := Token{TokenTag: -1, Value: l.Peek}
-	l.Peek = ' '
-	return t, l.PBuffer < len(buffer)
+	return t, true
+}
+
+func (l *Lexer) TrimSpaceAndComments() bool {
+	for {
+		switch l.Peek {
+		case ' ', '\t':
+		case '/':
+			if ok := l.Read(); !ok {
+				return ok
+			}
+
+			if l.Peek == '/' {
+				if ok := l.TrimCurrentLine(); !ok {
+					return ok
+				}
+			} else {
+				l.Unread()
+				return true
+			}
+
+		case '\n':
+			l.Line += 1
+		default:
+			return true
+		}
+
+		if ok := l.Read(); !ok {
+			return ok
+		}
+	}
+}
+
+func (l *Lexer) TrimCurrentLine() bool {
+	for {
+		if ok := l.Read(); !ok {
+			return ok
+		}
+
+		if l.Peek == '\n' {
+			l.Line += 1
+			return true
+		}
+	}
 }
 
 func (l *Lexer) Read() bool {
+	if l.PBuffer < 0 {
+		l.PBuffer = 0
+		l.Peek = buffer[l.PBuffer]
+		return true
+	}
+
 	l.PBuffer += 1
 	if l.PBuffer >= len(buffer) {
 		return false
@@ -133,6 +175,13 @@ func (l *Lexer) Read() bool {
 
 	l.Peek = buffer[l.PBuffer]
 	return true
+}
+
+func (l *Lexer) Unread() {
+	if l.PBuffer > 0 {
+		l.PBuffer -= 1
+		l.Peek = buffer[l.PBuffer]
+	}
 }
 
 func IsDigit(b byte) bool {
