@@ -100,9 +100,10 @@ func (l *Lexer) Scan() (Token, bool) {
 			}
 		}
 
-		fraction := 0.0
-		power := 1.0
 		if l.Peek == '.' {
+			fraction := 0.0
+			power := 1.0
+
 			if l.Read(); !IsDigit(l.Peek) {
 				l.Unread()
 			} else {

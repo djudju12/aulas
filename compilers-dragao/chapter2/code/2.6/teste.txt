@@ -3,6 +3,7 @@ true false word false
 1234.12345
 0.50
 .50
+1.
 < <= == != >= >
 /*
 true false word false
