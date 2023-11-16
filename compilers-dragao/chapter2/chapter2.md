@@ -197,3 +197,17 @@ Uma sequencia de caracteres de entrada compreendendo um único token é chamada 
 a representação do lexema dos tokens.
 
 Analisador léxico da seção 2.6
+
+### Tabela de simbolos
+
+_Tabelas de Simbolos_ são estruturas de dados usadas pelos compiladores para conter informações sobre as construções do programa fonte. Ela é construída de forma incrimental durante as fases de analise e usada pelas fases de síntese para gerar o cógido objeto. As entradas da tabela conterão informações sobre um identificador, como seu nome ou lexema, seu tipo, seu endereço na memoria e qualquer outra informação relevante.
+
+Um bloco de programa terá sua própria tabela de simbolos, sendo as declarações neste blocos as entradas.
+
+Uma tabela de simbolos por escopo pode ser definida da seguinte forma:
+
+A _regra de aninhamento mais interno_ para blocos é que um identificador x está no escopo da declaração aninhada mais interna de x, ou seja, a declaração de x é encontrada examinando os escopos de dentro pra fora, começando com o bloco que x aparece.
+
+A regra de aninhamento mais interno pode ser implementada encadeando tabelas, de modo que a tabela mais aninhada possua acesso à tabela anterior.
+
+Um exemplo da implementação pode ser encontrada nos códigos da seção 2.7.
