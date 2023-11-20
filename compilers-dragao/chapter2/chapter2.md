@@ -211,3 +211,225 @@ A _regra de aninhamento mais interno_ para blocos é que um identificador x est�
 A regra de aninhamento mais interno pode ser implementada encadeando tabelas, de modo que a tabela mais aninhada possua acesso à tabela anterior.
 
 Um exemplo da implementação pode ser encontrada nos códigos da seção 2.7.
+
+### Código de três endereços
+
+O código de três endereços é uma sequência de instruções no formato `x = y op z`, onde x, y e z são nomes, restrições ou temporários gerados pelo compilador; e **op** significa operador.
+
+Os arranjos são tratados da seguinte forma;
+
+```
+x [ y ] = z
+
+x = y [ z ]
+```
+
+As instruções de três endereços são executadas de forma sequencial, a não ser que sejam forçadas por um desvio condicional ou incondicional:
+
+```
+ifFalse x then goto L
+ifTrue x then goto L
+goto L
+```
+
+E, finalmente, uma instrução para copiar um valor: `x = y`
+
+O seguinte leiaute ilustra a o comando `if expr then stmt`
+
+`ifFalse x goto _after_`
+
+```
+código para calcular
+      expr em x
+------------------------
+ifFalse x goto after
+------------------------
+código para stmt
+------------------------
+after:
+```
+
+O pseudocódigo para a classe _If_:
+
+```java
+class If extends Stmt {
+  private Expr e;
+  private Stmt s;
+  private String after;
+
+  public If( Expr x, Stmt y ) {
+    this.E = x;
+    this.S = y;
+    after = newLabel();
+  }
+
+  public void gen() {
+    Expr n = e.rvalue();
+    emit("ifFalse " + n.toString() + "goto " + after);
+    S.gen();
+    emit(after + ":");
+  }
+}
+```
+
+Foi falado sobre a tradução de comandos, agora falaremos sobre a tradução de expressões contendo operadores binários op, acessos a arranjos e atribuições, além de constantes e identificadores.
+
+Usaremos a técnica simples de gerar uma instrução de três endereços para cada nó operador para expressões. Nenhum código é gerado para constantes e identificadores, pois eles podem aparecer como endereços nas instruções.
+
+Se um nó _x_ da classe _Expr_ tiver operador op, então uma instrução é emitida para calcular o valor no nó _x_ para um nome "temporário" gerado pelo compilador, digamos, _t_.
+
+Exemplo:
+
+```
+Para i-j+k teremos,
+
+t1 = i - j
+t2 = t1 + k
+```
+
+Com os acessos a arranjos e atribuições, é necessário distinguir entre _r-values_ e _l-values_. Por exemplo:
+
+```
+2*a[i] pode ser traduzido calculando o r-value de a[i]
+
+t1 = a [ i ]
+t2 = 2*t1
+```
+
+Porém não podemos usar um temporário para `a[i]` se ele aparecer no lado esquerdo.
+A técnica mais simples é usar as funções `lvalue` e `rvalue`. Quando a função `rvalue` é aplicada a um nó não folha de _x_, ela gera instruções para calcular _x_ em um "temporário" e retorna o endereço do temporário. Quando aplicada à um `lvalue` ela também gera instruções para calcular as subárvores abaixo de _x_ e retorna um nó representado pelo "endereço" de _x_.
+
+```
+Expr lvalue(x: Expr) {
+  ir (x é um nó Id) return x;
+  else if (x é um nó Access(y, z) e y é um nó Id) {
+    return new Access(y, rvalue(z));
+  }
+  else error;
+}
+```
+
+```
+Expr rvalue(x: Expr) {
+  if (x é um Id ou um nó Constant) return x;
+  else if (x é um nó Op(op, y, z) ou um nó Rel(op, y, z)) {
+    t = novo temporário;
+    emite string para t = rvalue(y) op rvalue(z);
+    return um novo nó para t;
+  } else if (x é um nó Access(y, z)){
+    t = novo temporário;
+    call lvalue(x), que retorna Access(y, z');
+    emite string para t = Access(y, z');
+    return um novo nó para t;
+  } else if (x é um nó Assign(y, z)) {
+    z' = rvalue(z);
+    emite string para lvalue(y) = z';
+    return z';
+  }
+}
+```
+
+```
+exercício 2.8.1
+
+for ( expr1; expr2 ; expr3 ) stmt;
+
+expr1; while ( expr2 ) { stmt expr3 };
+
+leiaute:
+
+----------------------
+
+código para calcular
+  expr1 em x
+
+----------------------
+
+loop:
+  código para calcular
+    expr2 em y usando x
+
+  ifFalse y goto stop
+
+----------------------
+
+stmt
+
+----------------------
+
+código para calcular
+  expr3 em x
+
+goto loop
+
+----------------------
+
+stop:
+
+----------------------
+
+
+pseudocódigo:
+
+class For extends Stmt {
+  Expr e1;
+  Expr e2;
+  Expr e3;
+  Stmt s;
+  String stop;
+  String loop;
+
+  public For(Expr x, Expr y, Expr z, Stmt st) {
+    e1 = x;
+    e2 = y;
+    e3 = z;
+    s = st;
+    stop = newLabel();
+    loop = newLabel();
+  }
+
+  public void gen() {
+    Expr n1 = e1.rvalue();
+
+    emit(loop + ":");
+
+    Expr n2 = e2.rvalue();
+
+    emit("ifFalse " + n2.toString() + " goto " + stop);
+
+    S.gen();
+
+    Expr n3 = e3.rvalue();
+
+    emit(n3.toString());
+
+    emit("goto " + loop)
+
+    emit(stop + ":")
+  }
+
+}
+
+exercício 2.8.2:
+
+class If extends Stmt {
+  Expr E;
+  Stmt S;
+  String after;
+
+  public If( Expr x, Stmt y ) {
+    E = x;
+    S = y;
+
+    after = newLabel();
+  }
+
+  public gen() {
+    Expr n = E.rvalue();
+    emit("ifZero " n.toString(); " goto " + after);
+    S.gen();
+    emit(after + ":");
+  }
+}
+
+```
