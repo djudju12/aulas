@@ -77,5 +77,67 @@ float limitedSquare(x) float x {
 <id, *table.find(x)>
 <;>
 <}>
-```
 
+3.1.2
+
+Tudo que estiver fora de <></> é tratado como TEXT
+
+Quando uma tag for aberta, o token TAG é produzido
+
+
+TOKEN_TAG, "a"
+
+com tags abertas, podemos diferenciar
+identificadores como HREF = "..."
+
+```
+### Especificação de Tokens
+
+As expressões regulares são de extrema importância para identificação de tokens. Embora não podemos identificar todos os padrões com elas, ela são muitos eficientes para identificar os padrões que realmente precisamo
+
+Termos para partes de uma cadeia caracteres:
+
+1. Prefixo: qualquer cadeia obtida pela remoção de zero ou mais símbolos do final
+2. pós-fixada: qualquer cadeia obtida pela remoção de zero ou mais símbolos do começo
+3. Subcadeia: qualquer cadeia dentro da sequencia
+4. Os _próprios_, que podem ser os anteriores, mas sem a palavra vazia e a própria cadeia
+5. subsequencias: qualquer combinação obtida removendo zero ou mais posições não necessariamente consecutivas
+
+**Operações sobre linguagens**
+
+União, concatenação, fecho de Kleene e fechamento positivo.
+
+O fecho de kleene pode ser identificado como
+
+L* = zero ou mais vezes L
+L+ = uma ou mais vezes L
+
+**Expressões regulares**
+
+Expressões regulares é a notação dada ao conjunto de todas as linguagens que podem ser formadas com as operações acima aplicadas aos símbolos de algum alfabeto.
+
+Nesta notação, poderimos ter a seguinte expressão para representar identificadores na linguagem C:
+letra_ (letra_ | digito_)*
+
+onde letra_ é uma letra ou _ e digito_ é um digito ou _.
+
+**Definições Regulares**
+
+Por conveniência de notação, podemos dar nomes a certas expressões regulares e usar seus nomes em expressões subsequentes.
+
+Exemplo dos identificadores em C:
+
+letter_ -> A | B | ... | Z | a | b | ... | z | _
+digit -> 0 | 1 | 2 | ... | 9
+id -> letter_ (letter_ | digit)*
+
+**Extensões de Expressões Regulares**
+
+Desde que Kleene criou as expressões regulares com os operadores básico para união, concatenação e fecho de _kleene_, na década de 1950, muitas extensões foram acrescentadas.
+
+1. _Uma ou mais instâncias_. O operador unário pós-fixado + representa o fechamento positivo de uma expressão regular e sua linguagem. O operador + tem a mesma precedencia do *.
+2. _Zero ou uma instância_. O operador pós-fixado ?, r? representa r|e. Possui a mesma precedencia de * e +
+3. _Classes de caracteres_. Representado por [a1...an] onde a é uma sequencia lógica.
+
+letter_ -> [A-Za-z-]
+digit -> [0-9]
