@@ -141,3 +141,38 @@ Desde que Kleene criou as expressões regulares com os operadores básico para u
 
 letter_ -> [A-Za-z-]
 digit -> [0-9]
+```
+3.3.2:
+a) a(a|b)*a = começa com a, depois tem zero ou mais a ou b seguido de um a {aa, aaa, aba, aaaaaaa, aababababababa}
+b) ((e|a)b*)* = (a*b*)* zero ou mais zero ou mais a's seguido de zero ou mais b's = {aaaaaaabbbbb, a}
+c) (a|b)*a(a|b)(a|b) = zero ou mais a ou b seguido de um a seguido de um a ou b seguido de um a ou b
+d) a*ba*ba*ba* = zero ou mais a seguido de b seguido zero ou mais seguido de b seguido de zero ou mais a ....
+
+3.3.5)
+a) todas as cadeias de letras minusculas que contem cinco vogais em ordem
+[a-z]*(aeiou)+[a-z]*
+b) toda sas cadeias de letras minusiculas que as letrass estao em ordem lexicografica crescente
+[a-z]*
+c) toda sas cadeias de digitos sem digitos repetidos
+want -> 0|(0?2(02)*)?0?1((0?2(02)*)0?1|01)*(0?2(02)*)?0?|(0?2(02)*)0?
+A -> 0?2(02)*
+
+
+```
+
+### KMP
+
+O algoritmo de Knuth-Morris-Pratt é utilizado para reconhecer um padrão em um texto.
+
+Basicamente é utilizada uma estrutura de dados chamada _trie_, que é um diagrama de transições,
+que possui do 0 até n estados, onde 0 é o estado inicial e n é o estado final.
+
+A partir de cada estado s de 0 até n-1, existe uma transição para o estado s+1.
+
+Trie para a palavra ababaa:
+  a    b    a    b    a    a
+0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+
+Para processar rapidamente e e procuras as cadeias de caracteres em busca do padrão, é útil definir uma uma _função de falha_. A função de falha serve para se, caso tenha-se casado as _s_ primeiras posições, mas depois falharmos, então f(s) é o prefixo mais longo da cadeia de caracteres que poderia possivelmente casar com o texto até o ponto que estamos. Podemos pegar o valor de f(s) é voltar para tentar casar novamente
+
+o código esta em ./code/failure.py
