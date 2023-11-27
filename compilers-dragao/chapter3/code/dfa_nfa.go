@@ -58,29 +58,55 @@ const EWORD = "&"
 
 /* (Q, Σ, δ, q0, F) */
 type NFA struct {
-	states       []string
+	states       []int
 	alphabet     string
-	transition   map[string][]NFATransition
-	initialState []string
-	finalStates  []string
+	transition   map[int][]NFATransition
+	initialState int
+	finalStates  []int
+
+	oldStates []int
+	newStates []int
+	alreadyOn []bool
 }
 
 type NFATransition struct {
 	c string
-	s string
+	s int
+}
+
+func (n *NFA) addState(s int) {
+	n.newStates = push(n.newStates, s)
+	n.alreadyOn[s] = true
+	for _, t := range n.transition[s] {
+		if t.c == EWORD && !n.alreadyOn[t.s] {
+			n.addState(t.s)
+		}
+	}
 }
 
 func (n *NFA) accept(in string) bool {
-	s := n.closure(n.initialState)
-	for _, c := range in {
-		s = n.closure(n.move(s, string(c)))
+	n.addState(n.initialState)
+	for _, s := range n.oldStates {
+		for _, t := range n.transition[s] {
+			if t.c == "a" && !n.alreadyOn[t.s] {
+				n.addState(t.s)
+				n.oldStates, _ = pop(n.oldStates)
+			}
+		}
 	}
 
-	return len(intersection(s, n.finalStates)) != 0
+	for _, s := range n.newStates {
+		n.newStates, _ = pop(n.newStates)
+		n.oldStates = push(n.oldStates, s)
+		n.alreadyOn[s] = false
+	}
+
+	fmt.Println(n.newStates)
+	return true
 }
 
-func (n *NFA) move(states []string, c string) []string {
-	var result []string
+func (n *NFA) move(states []int, c string) []int {
+	var result []int
 	for _, s := range states {
 		ts := n.transition[s]
 		for _, t := range ts {
@@ -93,8 +119,8 @@ func (n *NFA) move(states []string, c string) []string {
 	return result
 }
 
-func intersection(arr1 []string, arr2 []string) []string {
-	i := []string{}
+func intersection(arr1 []int, arr2 []int) []int {
+	i := []int{}
 	for _, value := range arr1 {
 		if contains(arr2, value) && !contains(i, value) {
 			i = append(i, value)
@@ -104,10 +130,10 @@ func intersection(arr1 []string, arr2 []string) []string {
 	return i
 }
 
-func (n *NFA) closure(states []string) []string {
+func (n *NFA) closure(states []int) []int {
 	candidates := states[:]
 	result := states[:]
-	var curr string
+	var curr int
 
 	for len(candidates) > 0 {
 		candidates, curr = pop(candidates)
@@ -123,11 +149,11 @@ func (n *NFA) closure(states []string) []string {
 	return result
 }
 
-func push(s []string, v string) []string {
+func push(s []int, v int) []int {
 	return append(s, v)
 }
 
-func pop(s []string) ([]string, string) {
+func pop(s []int) ([]int, int) {
 	if len(s) == 0 {
 		panic("pop on empty stack")
 	}
@@ -140,43 +166,44 @@ func pop(s []string) ([]string, string) {
 
 func main() {
 	nfa := &NFA{
-		initialState: []string{"Q0"},
+		initialState: 0,
 		alphabet:     "ab",
-		finalStates:  []string{"Q10"},
-		states:       []string{"Q0", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10"},
-		transition: map[string][]NFATransition{
-			"Q0": {
-				{EWORD, "Q1"},
-				{EWORD, "Q7"},
+		finalStates:  []int{10},
+		states:       []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		alreadyOn:    make([]bool, 11),
+		transition: map[int][]NFATransition{
+			0: {
+				{EWORD, 1},
+				{EWORD, 7},
 			},
-			"Q1": {
-				{EWORD, "Q2"},
-				{EWORD, "Q4"},
+			1: {
+				{EWORD, 2},
+				{EWORD, 4},
 			},
-			"Q2": {
-				{"a", "Q3"},
+			2: {
+				{"a", 3},
 			},
-			"Q3": {
-				{EWORD, "Q6"},
+			3: {
+				{EWORD, 6},
 			},
-			"Q4": {
-				{"b", "Q5"},
+			4: {
+				{"b", 5},
 			},
-			"Q5": {
-				{EWORD, "Q6"},
+			5: {
+				{EWORD, 6},
 			},
-			"Q6": {
-				{EWORD, "Q7"},
-				{EWORD, "Q1"},
+			6: {
+				{EWORD, 7},
+				{EWORD, 1},
 			},
-			"Q7": {
-				{"a", "Q8"},
+			7: {
+				{"a", 8},
 			},
-			"Q8": {
-				{"b", "Q9"},
+			8: {
+				{"b", 9},
 			},
-			"Q9": {
-				{"b", "Q10"},
+			9: {
+				{"b", 10},
 			},
 		},
 	}
