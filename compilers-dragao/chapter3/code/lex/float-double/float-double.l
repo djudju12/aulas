@@ -2,7 +2,7 @@
 #include <stdio.h>
 %}
 
-%%
+%% 
 float {printf("double");}
 .|\n  {printf("%s", yytext);}
 %%
