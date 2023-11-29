@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var testsPassed = 0
+
 func main() {
 	basePathIn := "inputs/low-dimensional"
 	basePathOut := "inputs/low-dimensional-optimum"
@@ -30,20 +32,27 @@ func main() {
 		solver := sa.NewSolver(problemData)
 
 		initialSolution := solver.GenerateNaiveSolution()
-		finalSolution := solver.Solve(4000, 0.98, 2000, initialSolution)
-		testResult(expectedResult, solver.TotalValue(finalSolution), dir.Name())
-
+		finalSolution := solver.Solve(400, 0.98, 200, initialSolution)
+		testResult(
+			solver.TotalValue(initialSolution),
+			expectedResult,
+			solver.TotalValue(finalSolution),
+			dir.Name(),
+		)
 	}
 
+	fmt.Printf("total passed tests = %d\n", testsPassed)
 }
 
-func testResult(expected, actual float64, testName string) {
+func testResult(initial, expected, actual float64, testName string) {
 	if expected != actual {
 		fmt.Print("[X] ")
 	} else {
+		testsPassed++
 		fmt.Print("[V] ")
 	}
-	fmt.Printf("%s\t|\tEXPECT: %6.2f\t|\tACTUAL: %6.2f\n", testName, expected, actual)
+
+	fmt.Printf("%s\t| EXPECT: %10.2f | ACTUAL: %10.2f | INITIAL: %10.2f\n", testName, expected, actual, initial)
 }
 
 func readFileStr(filepath string) string {

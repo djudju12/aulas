@@ -13,7 +13,7 @@ func init() {
 	random = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-const Epsilon = 2.2204460492503131e-16
+const Epsilon = 1.0e-7
 
 type Solver struct {
 	Candidates []candidate
@@ -40,12 +40,12 @@ func (solver *Solver) Solve(
 	currSolution := initialSolution
 	i := 0
 	temp := temp0
-	for temp > 1.0e-10 {
+	for temp > 1.0e-30 {
 		for i < iterMax {
 			i++
 			tempSolution := solver.generateNeighborSolution(currSolution)
 			deltaS := solver.TotalValue(tempSolution) - solver.TotalValue(currSolution)
-			if deltaS > 0 {
+			if deltaS >= 0 {
 				currSolution = tempSolution
 				if solver.TotalValue(currSolution) > solver.TotalValue(solution) {
 					solution = currSolution
@@ -53,12 +53,13 @@ func (solver *Solver) Solve(
 			} else {
 				x := random.Float64()
 				y := math.Pow(Epsilon, (-deltaS / temp))
+
 				if x < y {
 					currSolution = tempSolution
 				}
 			}
 		}
-		temp = temp * alpha
+		temp *= alpha
 		i = 0
 	}
 
@@ -114,7 +115,7 @@ func (solver *Solver) generateNeighborSolution(s Solution) Solution {
 			}
 
 			if newSolution.TotalCost > solver.Limiter {
-				panic("wtf")
+				panic("unreachable")
 			}
 		}
 	}
