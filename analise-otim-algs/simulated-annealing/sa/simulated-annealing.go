@@ -13,8 +13,6 @@ func init() {
 	random = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-const Epsilon = 1.0e-7
-
 type Solver struct {
 	Candidates []candidate
 	Limiter    float64
@@ -40,7 +38,7 @@ func (solver *Solver) Solve(
 	currSolution := initialSolution
 	i := 0
 	temp := temp0
-	for temp > 1.0e-30 {
+	for temp > 1.0e-10 {
 		for i < iterMax {
 			i++
 			tempSolution := solver.generateNeighborSolution(currSolution)
@@ -52,7 +50,7 @@ func (solver *Solver) Solve(
 				}
 			} else {
 				x := random.Float64()
-				y := math.Pow(Epsilon, (-deltaS / temp))
+				y := math.Exp(-deltaS / temp)
 
 				if x < y {
 					currSolution = tempSolution

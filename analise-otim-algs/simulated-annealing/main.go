@@ -14,6 +14,8 @@ var testsPassed = 0
 func main() {
 	basePathIn := "inputs/low-dimensional"
 	basePathOut := "inputs/low-dimensional-optimum"
+	// basePathIn := "inputs/large_scale"
+	// basePathOut := "inputs/large_scale-optimum"
 	dirEntries, err := os.ReadDir(basePathIn)
 	if err != nil {
 		panic(err)
@@ -32,7 +34,7 @@ func main() {
 		solver := sa.NewSolver(problemData)
 
 		initialSolution := solver.GenerateNaiveSolution()
-		finalSolution := solver.Solve(400, 0.98, 200, initialSolution)
+		finalSolution := solver.Solve(300, 0.99, 2000, initialSolution)
 		testResult(
 			solver.TotalValue(initialSolution),
 			expectedResult,
