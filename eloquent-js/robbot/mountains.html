@@ -1,0 +1,65 @@
+<!doctype html>
+
+<h1>Mountains</h1>
+
+<div id="mountains">
+</div>
+
+<script>
+    const MOUNTAINS = [
+        { name: "Kilimanjaro", height: 5895, place: "Tanzania" },
+        { name: "Everest", height: 8848, place: "Nepal" },
+        { name: "Mount Fuji", height: 3776, place: "Japan" },
+        { name: "Vaalserberg", height: 323, place: "Netherlands" },
+        { name: "Denali", height: 6168, place: "United States" },
+        { name: "Popocatepetl", height: 5465, place: "Mexico" },
+        { name: "Mont Blanc", height: 4808, place: "Italy/France" }
+    ];
+
+    function make_table(mapped_data, parent) {
+        let table = document.createElement("table");
+        let tr = document.createElement("tr");
+        let sample = mapped_data[0];
+
+        for (key in sample) {
+            let th = document.createElement("th");
+            th.textContent = key;
+            th.style.textAlign = "center";
+            th.style.width = "100px";
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+
+        mapped_data.forEach(data => {
+            let tr_data = document.createElement("tr");
+            for (key in data) {
+                let td = document.createElement("td");
+                td.textContent = data[key];
+                td.style.textAlign = typeof data[key] == "number" ? "right" : "center";
+                tr_data.appendChild(td);
+            }
+            table.appendChild(tr_data);
+        });
+
+        parent.appendChild(table);
+    }
+
+    let parent = document.getElementById("mountains")
+    make_table(MOUNTAINS, parent);
+
+    function getElementByTagNameInNode(node, string) {
+        let result = [];
+        function _getElementByTagNameInNode(n, s) {
+            if (n == undefined) return;
+            if (n.nodeName.toLowerCase() === string.toLowerCase()) result.push(n);
+            n.childNodes.forEach(child => _getElementByTagNameInNode(child, s))
+        }
+
+        _getElementByTagNameInNode(node, string)
+        return result;
+    }
+
+    let trs = getElementByTagNameInNode(parent, "th");
+    console.log(trs);
+    console.log(parent);
+</script>

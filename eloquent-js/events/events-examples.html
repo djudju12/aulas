@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Event Example</title>
+   </head>
+
+   <body>
+      <button>click me</button>
+      <p>Click this document to activate the handler.</p>
+      <script>
+         let b = document.querySelector("button");
+         b.onclick = (e) => {
+            console.log(e);
+         }
+      </script>
+
+      <p id="para2">a paragraph with a <button id="data-button2">button</button>.</p>
+      <script>
+         document.addEventListener("click", () => console.log("hello"));
+         let para = document.getElementById("para2");
+         let button = document.getElementById("data-button2");
+         para.addEventListener("mousedown", event => {
+            console.log("handler for button.");
+            if (event.button == 2) event.stopPropagation();
+         })
+      </script>
+
+      <p>press Ctrl-Space to continue.</p>
+      <script>
+         window.addEventListener("keydown", event => {
+            console.log(event);
+            // if (event.key == " " && event.ctrlKey) {
+            //      console.log("Continuing!");
+            //    }
+         })
+      </script>
+   </body>
+</html>
