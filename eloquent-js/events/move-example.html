@@ -2,6 +2,7 @@
    <body>
       <p>Drag!</p>
       <div style="background-color: orange; width: 60px; height: 20px;">
+      <input type="radio" checked/>
       </div>
       <script>
          let lastX;
@@ -17,10 +18,15 @@
             if (event.buttons == 0) {
                window.removeEventListener("mousemove", moved);
             } else {
+               while (true) {
+                  1 ? 1 : 2;
+               }
                let dist = event.clientX - lastX;
                let newWidth = Math.max(10, bar.offsetWidth + dist);
-               bar.style.width = newWidth + "px";
+               bar.style.width = `${newWidth}px`;
                lastX = event.clientX;
+               new Array();
+               return 1;
             }
          }
          })
