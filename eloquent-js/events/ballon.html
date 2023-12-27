@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Ballon</title>
+   </head>
+   <body>
+      <div id="ballon">
+      🎈
+      </div>
+      <script>
+         let ballon = document.getElementById("ballon");
+         let scheduled = null;
+         let resize_event = event => {
+            if (event.key == "ArrowUp") {
+               if (!scheduled && getFontSizeInt(ballon) <= 600) {
+               setTimeout(() => {
+                  resize(ballon, +1);
+                  scheduled = null;
+               }, 250);
+            }
+         }}
+
+         window.addEventListener("keydown", resize_event);
+         window.addEventListener("keydown", e => {
+            if (getFontSizeInt(ballon) > 600) {
+               window.removeEventListener("keydown", resize_event);
+               ballon.textContent = "🤯";
+            }
+         });
+
+         ballon.style.fontSize = '50px';
+
+         function getFontSizeInt(element) {
+            return Number(element.style.fontSize.split('px')[0]);
+         }
+
+         function resize(item, sign) {
+            let size = getFontSizeInt(item);
+            size *= 1.10 * sign;
+            item.style.fontSize = size + 'px';
+         }
+      </script>
+   </body>
+</html>
