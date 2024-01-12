@@ -79,3 +79,55 @@ a good way to explain how it works is to think of the MSB as the amount of negat
 1 0 0 0  0 0 0 0 = -128
 
 1 1 1 1  1 1 1 1 = -1
+
+### Popular instructions
+
+```assembly
+; Load and Store:
+
+LDA ; Load Accumulator
+LDX ; Load X
+LDY ; Load Y
+STA ; Store Accumulator
+STX ; Store X
+STY ; Store Y
+
+; Arithmetic:
+
+ADC ; Add with Carry
+
+SBC ; Subtract with Carry
+
+; Its always a good idea to clear or set the carry flag before using ADC or SBC
+
+CLC ; Clear Carry, use before ADC
+SEC ; Set Carry, use before SBC
+
+INC ; Increment
+INX ; Increment X
+INY ; Increment Y
+
+DEC ; Decrement
+DEX ; Decrement X
+DEY ; Decrement Y
+
+; inc and dec instructions set the zero and negative flags
+
+JMP ; Jump (GOTO)
+BCC ; Branch if Carry Clear     C == 0
+BCS ; Branch if Carry Set       C == 1
+BEQ ; Branch if Equal           Z == 1
+BNQ ; Branch if Not Equal       Z == 0
+BMI ; Branch if Minus           N == 1
+BPL ; Branch if Positive        N == 0
+BVC ; Branch if Overflow Clear  V == 0
+BVS ; Branch if Overflow Set    V == 1
+
+; loop example
+
+    ldy #100 ;y=100
+Loop:
+    dey      ;y--
+    bne Loop ;if y != 0, loop
+
+```
