@@ -212,6 +212,67 @@ A regra de aninhamento mais interno pode ser implementada encadeando tabelas, de
 
 Um exemplo da implementação pode ser encontrada nos códigos da seção 2.7.
 
+### Geração de Código Intermediário
+
+O front-end de um compilador constrói uma representação intermediária do programa fonte, da qual o backend gera o programa objeto.
+
+As representações intermediárias podem ser dos tipos:
+
+* Árvores, incluindo árvores de derivação e árvores de sintaxe (abstrata)
+* Código de três endereços
+
+Além de gerar a linguagem intermediária, o frontend também verifica se o programa segue as regras sintáticas e semânticas da linguagem fonte.
+Essa verificação é dita _estática_; em geral, estática significa "feita pelo compilador", do contrário da dinâmica, que é feita em _runtime_.
+
+Primeiro será falado sobre árvores sintáticas:
+
+Lembremos de como é feita a representação de uma árvore sintática:
+
+   OP
+ /   \
+E1    E2
+
+Representa a aplicação do operador OP às subexpressões E1 e E2.
+
+Árvores sintáticas podem ser criadas para quaisquer tipos de construções, não apenas expressões.
+Cada construção é representada por um nó, com filhos para os componentes significativos da construção, por exemplo:
+
+A construção **while** (_expr_) _stmt_ pode ser representada como
+
+  while
+  /    \
+expr  stmt
+
+Seguindo esse princípio, o seguinte esquema de tradução constrói uma árvore sintática para uma linguagem representativa, porém limitada:
+
+(ver pagina 61 figura 2.39)
+
+### Verificação Estática
+
+São feitas durante a compilação e podem envolver:
+* Verificação Sintática: Existe mais na sintaxe do que na gramática. Por exemplo, um comando break precisa ter um loop ou switch em sua volta. Essa verificação é sintática, embora não estejam codificadas ou impostas por uma gramática usada para o reconhecimento estático;
+* Verificação de Tipo: As regras de tipo associadas aos tipos da linguagem garantem que um operador ou função seja aplicado ao numero e ao tipo correto de operandos.
+
+**Valores-R e Valores-L:**
+
+Existe uma distinção dos valores que podem aparecer no lado esquerdo e no lado direito de uma atribuição.
+
+O lado direito especifica um valor inteiro, enquanto o lado esquerdo especifica onde o valor deve ser armazenado. Os _valores-r_ e _valores-l_ referem-se aos valores que são apropriados para o lado esquerdo e direito de uma atribuição.
+
+A verificação estática precisa garantir que o lado esquerdo de uma atribuição possua um valor-l.
+
+**Verificação de Tipos:**
+
+A verificação de tipo garante que a construção case com seu contexto.
+
+Por exemplo, em **if** (_expr_) _stmt_ espera-se que o resultado de expr seja do tipo booleano.
+
+Ou ainda, em _E1_ **<=** _E2_ espera-se que E1 e E2 sejam do mesmo tipo.
+
+**Coerção:** ocorre se o tipo de um operando for convertido para o tipo esperado pelo operador. Como em 2*13.14, onde o 2 pode ser convertido para float e depois a operação de multiplicação seria feita.
+
+**Sobrecarga:** Quando um operador possui diferentes significados dependendo do tipo dos seus operandos. Por exemplo, para numeros '+' significa adição, mas para string significa concatenação.
+
 ### Código de três endereços
 
 O código de três endereços é uma sequência de instruções no formato `x = y op z`, onde x, y e z são nomes, restrições ou temporários gerados pelo compilador; e **op** significa operador.
