@@ -131,3 +131,20 @@ Loop:
     bne Loop ;if y != 0, loop
 
 ```
+
+
+### Importante Assembly Terminology
+
+* Directives: commands that we can send to the assembler to tell it to do something, like locating code in memory, or inserting raw data into the ROM. Directives should always be indented to the right and some programmers start them with a dot. e.g. `.org $F000`.
+* Labels: a label is a name that we give to a memory address. Labels should always be indented to the left and end with a colon. e.g. `Loop:`
+* Operands: the arguments that we pass to an instruction. e.g. `LDA #$80`
+
+### Addressing Modes
+
+* Immediate: `LDA #80`
+* Absolute: `LDA $80`
+
+One important thing to notice is that `LDA $80` is not the same as `LDA #80`. The first loads the IMMEDIATE value 80 to the accumulator and the second loads the accumulator with the value inside the MEMORY ADDRESS $80. Thats is very important and the difference is not just hex/dec.
+
+Thats why we have to load the IMMEDIATE HEX DECIMAL VALUE in the register to manipulate has a number, like `LDX #$80`
+
