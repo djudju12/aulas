@@ -148,3 +148,39 @@ One important thing to notice is that `LDA $80` is not the same as `LDA #80`. Th
 
 Thats why we have to load the IMMEDIATE HEX DECIMAL VALUE in the register to manipulate has a number, like `LDX #$80`
 
+### Memory Map (where things located in address space?)
+```
+[V] - - -
+[C]     | TIA (Television Interface Adapter)
+[S]     |
+[B] - - - PIA (Peripheral Interface Adapter)
+[U]     |
+[S]     | ROM (Cartridge)
+[S] - - -
+
+$00 - - - - - - - - - - -
+$01   |                 |
+ .    |                 |
+ .    | - - - TIA       |
+$7D   |                 |
+$7E   |                 |
+$7F - -                 |
+                        | - - - Zero Page
+$80 - -                 |
+$80   |                 |
+ .    |                 |
+ .    | - - - PIA RAM   |
+$FD   |                 |
+$FE   |                 |
+$FF - - - - - - - - - - -
+ .
+ .
+$F000-|
+$F001 |
+$F002 |
+ .    |
+ .    | - - - Cartridge ROM
+$FFFD |
+$FFFE |
+$FFFF-|
+```
