@@ -184,3 +184,68 @@ $FFFD |
 $FFFE |
 $FFFF-|
 ```
+
+### TIA Objects
+
+* Background
+  * Takes the whole visible screen (160x192)
+  * We can only change de bg color per each horizontal scanline (COLUBK)
+  * The bg is always displayed behind all the other elements
+* Playfield:
+  * 20-bit pattern, rendered over the left side of the scanline (config the left side)
+  * One color per horizontal scanline
+  * The right side will either be a REPEAT or REFLECT of the same pattern
+    * PF0, PF1, PF2
+    * COLUPF
+    * CTRLPF
+      * D0: Reflect
+      * D1: Score
+      * D2: Priority
+      * D4-D5: Ball size (1, 2, 4, 8)
+* Player:
+  * Each is an independent 8-bit pattern (GRP0, GRP1) with foreground color (COLUP0, COLUP1) that can by positioned at any column of the scanline
+  * Each player can be horizontally stretched, multiplied of inverted
+    * NUSIZ0, NUSIZ1(number/size)
+    * REFP0, REFP1 (reflect player)
+* MIssiles/ball:
+  *  Can be positioned just like player, but no bit pattern
+  *  Just one Pixel, but it can be horizontally stretched (2x, 4x, 8x)
+  *  M0 and M1 use P0/P1 colors
+  *  BL uses the PF foreground color
+  *  We have a limitation of up to 2 missiles only on the same horizontal space
+
+**How rendering works with playfield**
+
+```
+Bit pattern that says if this pixel
+is active or not. Not the order if
+PF1 and PF2
+   \/         \/            \/
+
+   PF0        PF1           PF2
+|4 5 6 7|7 6 5 4 3 2 1 0|0 1 2 3 4 5 6 7|
+| | | | | | | | | | | | | | | | | | | | | -> REFLECTS OR MIRROR TO THE RIGHT
+._|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_._._._._._._._._._._._._._._._._._._._.
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+| | | | | | | | | | | | | | | | | | | | |                                       |
+.-------------------------------------------------------------------------------.
+```
+
