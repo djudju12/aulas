@@ -249,3 +249,82 @@ PF1 and PF2
 .-------------------------------------------------------------------------------.
 ```
 
+### Input (PIA)
+
+* `$280` SWCHA - Joysticks/Controllers
+* `$282` SWCHB - Front-panel Switches
+
+*SWCHA:*
+```
+P0\/     P1\/
+1 0 1 1 | 1 1 1 1
+          | | | |_ P1 - up
+          | | |___ P1 - down
+          | |_____ P1 - left
+          |_______ P1 - right
+```
+
+```asm6507
+;; Joystick input test
+
+;;     0b00010000
+;; bit 0b11111111
+;;     ----------
+;;     0b00010000 -> 16
+;;
+;;     0b00010000
+;; bit 0b11101111
+;;     ----------
+;;     0b00000000  -> 0
+;;
+;; bne CheckP0Down -> if (Z != 0) CheckP0Down;
+;; vai ser 0 se estiver ativo
+
+CheckP0Up:
+  lda #%00010000
+  bit SWCHA
+  bne CheckP0Down
+  ; logic
+
+CheckP0Down:
+  lda #%00100000
+  bit SWCHA
+  bne CheckP0Left
+  ; logic
+
+CheckP0Left:
+  lda #%01000000
+  bit SWCHA
+  bne CheckP0Right
+  ; logic
+
+CheckP0Right:
+  lda #%10000000
+  bit SWCHA
+  bne NoInput
+  ; logic
+
+NoInput:
+  ; logic
+```
+
+### Indirect Addressing
+
+```asm
+seg.u Variables
+
+SpritPtr word   ; 16bit pointer
+
+  lda #<ArrowDown
+  sta SpritePrt   ; low byte
+  lda #>ArrowDown
+  sta SpritePtr+1 ; hi byte
+
+  ldy #5
+
+  lda (SpritePtr),Y  ; 1 - look up the 16bit value at SpritePtr and SpritePtr+1 (lo and hi byte)
+                    ; 2 - convert it to an address
+                    ; 3 - the add y to it
+
+  sta Value
+```

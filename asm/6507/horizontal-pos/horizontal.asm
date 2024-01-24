@@ -53,26 +53,10 @@ StartFrame:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set player horizontal position whule we are in the VBLANK
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    LDA P0XPos          ; Load register A with desired X position
-    ; CMP MaxPos
-    AND #$7F            ; Same as AND 01111111, forces bit 7 to zero
-                        ; keeping the value inside A always positive
+    LDA P0XPos
+    LDY #0
+    JSR SetObjectXPos
 
-    STA WSYNC
-    STA HMCLR           ; Horizontal Move Clear
-
-    SEC                 ; Set carry flag
-DivideLoop:
-    SBC #15
-    BCS DivideLoop
-
-    EOR #7
-    ASL
-    ASL
-    ASL
-    ASL
-    STA HMP0
-    STA RESP0
     STA WSYNC
     STA HMOVE
 
@@ -136,6 +120,34 @@ DrawBitmap:
     STA P0XPos
 SkipAjust:
     JMP StartFrame
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Creater a subroutine to set the x position of objects with fine offset
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; `A` register contains the desired X-coordinate
+;; Y=0 : Player0
+;; Y=1 : Player1
+;; Y=2 : Missile0
+;; Y=3 : Missile1
+;; Y=4 : Ball
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+SetObjectXPos subroutine
+    STA WSYNC
+    SEC
+.Divide15Loop:
+    SBC #15
+    BCS .Divide15Loop
+
+    EOR #7
+    ASL
+    ASL
+    ASL
+    ASL
+
+    STA HMP0,Y
+    STA RESP0,Y
+
+    RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Lookup table
