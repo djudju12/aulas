@@ -16,13 +16,12 @@ JetXPos         byte
 JetYPos         byte
 BomberXPos      byte
 BomberYPos      byte
-
 JetSpritePtr    word
 JetColorPtr     word
 BomberSpritePtr word
 BomberColorPtr  word
-
 JetAnimOffset   byte
+Random          byte
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constants
@@ -51,6 +50,9 @@ Reset:
     STA BomberXPos
     LDA #54
     STA BomberYPos
+
+    LDA #%11010100
+    STA Random
 
     LDA #<JetSprite
     STA JetSpritePtr
@@ -108,6 +110,20 @@ StartFrame:
     STA VBLANK
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Display the scoreboard lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    LDA #0
+    STA PF0
+    STA PF1
+    STA PF2
+    STA GRP0
+    STA GRP1
+    STA COLUPF
+    REPEAT 20
+        STA WSYNC
+    REPEND
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Display the visibles scanlines of the game
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GameVisibleLine:
@@ -129,7 +145,7 @@ GameVisibleLine:
     LDA #0
     STA PF2
 
-    LDX #96             ; remaining of the visible scanlines
+    LDX #84             ; remaining of the visible scanlines
 .GameLineLoop:
 .AreWeInsideJetSprite:
     TXA
@@ -172,6 +188,17 @@ GameVisibleLine:
     BNE .GameLineLoop
     LDA #0
     STA JetAnimOffset
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Output the 30 more VBLANK oversacan lines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    LDA #2
+    STA VBLANK
+    REPEAT 30
+        STA WSYNC
+    REPEND
+    LDA #0
+    STA VBLANK
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Process joystick input for P0
@@ -228,25 +255,46 @@ UpdateBomberPos:
     JMP EndPositionUpdate
 
 .ResetBomberPosition
-    LDA #96
-    STA BomberYPos
+    JSR GetRandomBomberPos
 
 EndPositionUpdate:
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Output the 30 more VBLANK oversacan lines
+;; Watch for the collisions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    LDA #2
-    STA VBLANK
-    REPEAT 30
-        STA WSYNC
-    REPEND
-    LDA #0
-    STA VBLANK
+CheckCollissionP0P1:
+    LDA  #%10000000
+    BIT CXPPMM
+    BNE .CollisionP0P1
+    JMP CheckCollisionP0PF
+
+CheckCollisionP0PF:
+    LDA #%10000000
+    BIT CXP0FB
+    BNE .CollisionP0PF
+    JMP EndCollisionCheck
+
+.CollisionP0PF:
+    JSR GameOver
+
+.CollisionP0P1:
+    JSR GameOver
+
+EndCollisionCheck:
+    STA CXCLR
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; End of the main loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     JMP StartFrame
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Game Over
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GameOver subroutine
+    LDA #$30
+    STA COLUBK
+    RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Subroutine to handle object horizontal position with fine offset
@@ -267,6 +315,37 @@ SetObjectXPos subroutine
     ASL
     STA HMP0,Y
     STA RESP0,Y
+    RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Subroutine to generate a LFSR random number
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Generate a LFSR random number
+;; Divide the random value by 4 to limit the size of the result match river.
+;; After, sums 30 to compensate the green PF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GetRandomBomberPos subroutine
+    LDA Random          ; Load starting random seed
+    ASL                 ; arithmetic shift-left
+    EOR Random          ; XOR Accumulator with Random
+    ASL                 ; arithmetic shift-left
+    EOR Random          ; XOR Accumulator with Random
+    ASL                 ; arithmetic shift-left
+    ASL                 ; arithmetic shift-left
+    EOR Random          ; XOR Accumulator with Random
+    ASL                 ; arithmetic shift-left
+    ROL Random          ; rotate left
+
+    LSR                 ;
+    LSR                 ; divide by 4
+    STA BomberXPos
+    LDA #30
+    ADC BomberXPos
+    STA BomberXPos
+
+    LDA #84
+    STA BomberYPos
+
     RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
