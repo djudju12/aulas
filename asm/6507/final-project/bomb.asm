@@ -16,6 +16,11 @@ JetXPos         byte
 JetYPos         byte
 BomberXPos      byte
 BomberYPos      byte
+Score           byte
+Timer           byte
+Temp            byte
+OnesDigitOffset word
+TensDigitOffset word
 JetSpritePtr    word
 JetColorPtr     word
 BomberSpritePtr word
@@ -26,8 +31,9 @@ Random          byte
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-JET_HEIGHT = 9
+JET_HEIGHT    = 9
 BOMBER_HEIGHT = 9
+DIGITS_HEIGHT = 5
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start of the program
@@ -53,6 +59,10 @@ Reset:
 
     LDA #%11010100
     STA Random
+
+    LDA #0
+    STA Score
+    STA Timer
 
     LDA #<JetSprite
     STA JetSpritePtr
@@ -90,6 +100,8 @@ StartFrame:
     LDY #1
     JSR SetObjectXPos
 
+    JSR CalculateDigitOffset
+
     STA WSYNC
     STA HMOVE
 
@@ -118,7 +130,12 @@ StartFrame:
     STA PF2
     STA GRP0
     STA GRP1
+
+    LDA #$1C
     STA COLUPF
+    LDA #0
+    STA CTRLPF          ; not reflect
+
     REPEAT 20
         STA WSYNC
     REPEND
@@ -349,6 +366,21 @@ GetRandomBomberPos subroutine
     RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Subroutine to handle scoreboard digits to be displayed on the screen
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+CalculateDigitOffset subroutine
+    LDX #1
+.PrepareScoreLoop:
+    LDA Score,X         ; Load A with timer when X=1 because timer is below score
+    AND #$0F
+    STA Temp
+    
+    DEX
+    BPL .PrepareScoreLoop
+
+    RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Lookup table for the sprites
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 JetSprite:
@@ -415,6 +447,107 @@ BomberColor:
     .byte #$40
     .byte #$40
     .byte #$40
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Digits graphics
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Digits:
+    .byte %01110111
+    .byte %01010101
+    .byte %01010101
+    .byte %01010101
+    .byte %01110111
+
+    .byte %00010001
+    .byte %00010001
+    .byte %00010001
+    .byte %00010001
+    .byte %00010001
+
+    .byte %01110111
+    .byte %00010001
+    .byte %01110111
+    .byte %01000100
+    .byte %01110111
+
+    .byte %01110111
+    .byte %00010001
+    .byte %00110011
+    .byte %00010001
+    .byte %01110111
+
+    .byte %01010101
+    .byte %01010101
+    .byte %01110111
+    .byte %00010001
+    .byte %00010001
+
+    .byte %01110111
+    .byte %01000100
+    .byte %01110111
+    .byte %00010001
+    .byte %01110111
+
+    .byte %01110111
+    .byte %01000100
+    .byte %01110111
+    .byte %01010101
+    .byte %01110111
+
+    .byte %01110111
+    .byte %00010001
+    .byte %00010001
+    .byte %00010001
+    .byte %00010001
+
+    .byte %01110111
+    .byte %01010101
+    .byte %01110111
+    .byte %01010101
+    .byte %01110111
+
+    .byte %01110111
+    .byte %01010101
+    .byte %01110111
+    .byte %00010001
+    .byte %01110111
+
+    .byte %00100010
+    .byte %01010101
+    .byte %01110111
+    .byte %01010101
+    .byte %01010101
+
+    .byte %01100110
+    .byte %01010101
+    .byte %01100110
+    .byte %01010101
+    .byte %01100110
+
+    .byte %00110011
+    .byte %01000100
+    .byte %01000100
+    .byte %01000100
+    .byte %00110011
+
+    .byte %01100110
+    .byte %01010101
+    .byte %01010101
+    .byte %01010101
+    .byte %01100110
+
+    .byte %01110111
+    .byte %01000100
+    .byte %01100110
+    .byte %01000100
+    .byte %01110111
+
+    .byte %01110111
+    .byte %01000100
+    .byte %01100110
+    .byte %01000100
+    .byte %01000100
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Filling the 4kb memory needed
