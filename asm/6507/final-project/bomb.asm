@@ -27,6 +27,10 @@ BomberSpritePtr word
 BomberColorPtr  word
 JetAnimOffset   byte
 Random          byte
+ScoreSprite     byte
+TimerSprite     byte
+TerrainColor    byte
+RiverColor      byte
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constants
@@ -64,6 +68,11 @@ Reset:
     STA Score
     STA Timer
 
+    LDA #$84
+    STA TerrainColor
+    LDA #$C2
+    STA RiverColor
+
     LDA #<JetSprite
     STA JetSpritePtr
     LDA #>JetSprite
@@ -90,6 +99,20 @@ Reset:
 StartFrame:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Generate the three lines of the VSYNC and 37 lines of the VBLANK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    LDA #02
+    STA VBLANK
+    STA VSYNC
+    REPEAT 3
+        sta WSYNC
+    REPEND
+    LDA #0
+    STA VSYNC
+    REPEAT 33
+        STA WSYNC
+    REPEND
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Calculations and tasks performed in the pre-VBlank
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     LDA JetXPos
@@ -105,20 +128,6 @@ StartFrame:
     STA WSYNC
     STA HMOVE
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Generate the three lines of the VSYNC and 37 lines of the VBLANK
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    LDA #02
-    STA VBLANK
-    STA VSYNC
-    REPEAT 3
-        sta WSYNC
-    REPEND
-    LDA #0
-    STA VSYNC
-    REPEAT 37
-        STA WSYNC
-    REPEND
     STA VBLANK
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -130,39 +139,87 @@ StartFrame:
     STA PF2
     STA GRP0
     STA GRP1
+    STA CTRLPF
+    STA COLUBK
 
     LDA #$1C
     STA COLUPF
-    LDA #0
-    STA CTRLPF          ; not reflect
 
-    REPEAT 20
-        STA WSYNC
-    REPEND
+    LDX #DIGITS_HEIGHT
+.ScoreDigitLoop:
+    LDY TensDigitOffset ; get the tens digit offset for the Score
+    LDA Digits,Y        ; load the bit pattern for the lookup table
+    AND #$F0            ; remove the ones
+    STA ScoreSprite
+
+    LDY OnesDigitOffset
+    LDA Digits,Y
+    AND #$0F
+    ORA ScoreSprite     ; merge the ones and tens sprites
+    STA ScoreSprite
+    STA WSYNC
+    STA PF1
+
+    LDY TensDigitOffset+1
+    LDA Digits,Y
+    AND #$F0
+    STA TimerSprite
+
+    LDY OnesDigitOffset+1
+    LDA Digits,Y
+    AND #$0F
+    ORA TimerSprite
+    STA TimerSprite
+
+    JSR Sleep12ClocksCycles
+
+    STA PF1
+
+    LDY ScoreSprite
+    STA WSYNC
+
+    STY PF1
+    INC TensDigitOffset
+    INC TensDigitOffset+1
+    INC OnesDigitOffset
+    INC OnesDigitOffset+1
+
+    JSR Sleep12ClocksCycles
+
+    DEX
+    STA PF1
+    BNE .ScoreDigitLoop
+
+    STA WSYNC
+
+    LDA #0
+    STA PF0
+    STA PF1
+    STA PF2
+    STA WSYNC
+    STA WSYNC
+    STA WSYNC
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Display the visibles scanlines of the game
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GameVisibleLine:
-    LDA #$84            ; blue
+    LDA RiverColor
+    STA COLUPF
+
+    LDA TerrainColor
     STA COLUBK
 
-    LDA #$C2
-    STA COLUPF          ; green
-
-    LDA #1              ; Reflect playfield
+    LDA #00000001       ; Reflect playfield
     STA CTRLPF
-
-    LDA #%11110000
+    LDA #$F0
     STA PF0
-
-    LDA #%11110000
+    LDA #$FC
     STA PF1
-
     LDA #0
     STA PF2
 
-    LDX #84             ; remaining of the visible scanlines
+    LDX #85             ; remaining of the visible scanlines
 .GameLineLoop:
 .AreWeInsideJetSprite:
     TXA
@@ -225,7 +282,11 @@ CheckP0Up:
     BIT SWCHA
     BNE CheckP0Down
     ; logic goes here \/
+    LDA JetYPos
+    CMP #77
+    BPL .SkipIncJetY
     INC JetYPos
+.SkipIncJetY:
     LDA #0
     STA JetAnimOffset
 
@@ -234,7 +295,11 @@ CheckP0Down:
     BIT SWCHA
     BNE CheckP0Left
     ; logic goes here \/
+    LDA JetYPos
+    CMP #2
+    BMI .SkipDecJetY
     DEC JetYPos
+.SkipDecJetY:
     LDA #0
     STA JetAnimOffset
 
@@ -243,7 +308,11 @@ CheckP0Left:
     BIT SWCHA
     BNE CheckP0Right
     ; logic goes here \/
+    LDA JetXPos
+    CMP #30
+    BMI .SkipDecJetX
     DEC JetXPos
+.SkipDecJetX
     LDA JET_HEIGHT
     STA JetAnimOffset
 
@@ -252,10 +321,13 @@ CheckP0Right:
     BIT SWCHA
     BNE EndInputCheck
     ; logic goes here \/
+    LDA JetXPos
+    CMP #104
+    BPL .SkipIncJetX
     INC JetXPos
+.SkipIncJetX
     LDA JET_HEIGHT
     STA JetAnimOffset
-
 
 EndInputCheck:
     ; logic goes here \/
@@ -273,6 +345,8 @@ UpdateBomberPos:
 
 .ResetBomberPosition
     JSR GetRandomBomberPos
+    INC Score
+    INC Timer
 
 EndPositionUpdate:
 
@@ -283,16 +357,17 @@ CheckCollissionP0P1:
     LDA  #%10000000
     BIT CXPPMM
     BNE .CollisionP0P1
-    JMP CheckCollisionP0PF
-
-CheckCollisionP0PF:
-    LDA #%10000000
-    BIT CXP0FB
-    BNE .CollisionP0PF
+    JSR SetPFBKColor
     JMP EndCollisionCheck
 
-.CollisionP0PF:
-    JSR GameOver
+; CheckCollisionP0PF:
+;     LDA #%10000000
+;     BIT CXP0FB
+;     BNE .CollisionP0PF
+;     JMP EndCollisionCheck
+
+; .CollisionP0PF:
+;     JSR GameOver
 
 .CollisionP0P1:
     JSR GameOver
@@ -310,7 +385,10 @@ EndCollisionCheck:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GameOver subroutine
     LDA #$30
-    STA COLUBK
+    STA TerrainColor
+    STA RiverColor
+    LDA #0
+    STA Score
     RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -360,7 +438,7 @@ GetRandomBomberPos subroutine
     ADC BomberXPos
     STA BomberXPos
 
-    LDA #84
+    LDA #85
     STA BomberYPos
 
     RTS
@@ -368,16 +446,59 @@ GetRandomBomberPos subroutine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Subroutine to handle scoreboard digits to be displayed on the screen
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Convert the high AND low nibbles of the variable Score and Timer into the
+;; offsets of digits lookup table so the values can be displayed.
+;; Eache digit has a height of 5 bytes.
+;;
+;; For the low nibble we need to multiply by 5
+;; - we can use left shifts to perfom multiplication by 2
+;; - for any number N, the value of N*5 = (N*2*2)+N
+;;
+;; For the upper nibble, since its already times 16, we need to divide it AND
+;; the multiply by 5:
+;; - we can use right shifts to perfom division by 2
+;; - for any number N, the value of (N/16)*5 = (N/4)+(N/16)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CalculateDigitOffset subroutine
     LDX #1
 .PrepareScoreLoop:
-    LDA Score,X         ; Load A with timer when X=1 because timer is below score
-    AND #$0F
+    LDA Score,X             ; Load A with timer when X=1 because timer is below score
+    AND #$0F                ; remove the tens digit by masking 4 bits 00001111
+    STA Temp                ; save A
+    ASL                     ; (N*2)
+    ASL                     ; (N*2)
+    ADC Temp                ; +N
+    STA OnesDigitOffset,X   ; Save A in OnesDigitOffset+1 or OnesDigitOffset+0
+
+    LDA Score,X             ; Load A with timer when X=1 because timer is below score
+    AND #$F0                ; remove the ones digit by masking 4 bits 1111000
+    LSR
+    LSR
     STA Temp
-    
+    LSR
+    LSR
+    ADC Temp
+    STA TensDigitOffset,X
+
     DEX
     BPL .PrepareScoreLoop
 
+    RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; subroutine to waste 12 clocks cycles
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Sleep12ClocksCycles: ; JSR = 6
+    RTS              ; RTS = 6
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set the color of terrain (PF) and river (BK)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+SetPFBKColor subroutine
+    LDA #$84
+    STA TerrainColor
+    LDA #$C2
+    STA RiverColor
     RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

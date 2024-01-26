@@ -1,15 +1,20 @@
 --- Symbol List (sorted by symbol)
-0.AreWeInsideBomberSprite f115                  
-0.AreWeInsideJetSprite   f0fd                  
-0.CollisionP0P1          f1d1              (R )
-0.CollisionP0PF          f1ce              (R )
-0.DrawSpriteP0           f107              (R )
-0.DrawSpriteP1           f11f              (R )
+0.AreWeInsideBomberSprite f155                  
+0.AreWeInsideJetSprite   f13d                  
+0.CollisionP0P1          f224              (R )
+0.DrawSpriteP0           f147              (R )
+0.DrawSpriteP1           f15f              (R )
 0.FREE_BYTES             0000                  
-0.GameLineLoop           f0fd              (R )
-0.ResetBomberPosition    f1b9              (R )
+0.GameLineLoop           f13d              (R )
+0.ResetBomberPosition    f211              (R )
+0.ScoreDigitLoop         f0cc              (R )
+0.SkipDecJetX            f1ee              (R )
+0.SkipDecJetY            f1db              (R )
+0.SkipIncJetX            f201              (R )
+0.SkipIncJetY            f1c8              (R )
 1.CLEAR_STACK            f006              (R )
-3.Div15Loop              f1e1              (R )
+3.Div15Loop              f23a              (R )
+5.PrepareScoreLoop       f26b              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
@@ -17,18 +22,18 @@ AUDF1                    0018
 AUDV0                    0019                  
 AUDV1                    001a                  
 BOMBER_HEIGHT            0009              (R )
-BomberColor              f23d              (R )
-BomberColorPtr           008a              (R )
-BomberSprite             f234              (R )
-BomberSpritePtr          0088              (R )
+BomberColor              f2c0              (R )
+BomberColorPtr           0091              (R )
+BomberSprite             f2b7              (R )
+BomberSpritePtr          008f              (R )
 BomberXPos               0082              (R )
 BomberYPos               0083              (R )
-CheckCollisionP0PF       f1c5              (R )
-CheckCollissionP0P1      f1bc                  
-CheckP0Down              f186              (R )
-CheckP0Left              f193              (R )
-CheckP0Right             f1a0              (R )
-CheckP0Up                f179                  
+CalculateDigitOffset     f269              (R )
+CheckCollissionP0P1      f218                  
+CheckP0Down              f1cc              (R )
+CheckP0Left              f1df              (R )
+CheckP0Right             f1f2              (R )
+CheckP0Up                f1b9                  
 COLUBK                   0009              (R )
 COLUP0                   0006              (R )
 COLUP1                   0007              (R )
@@ -40,18 +45,20 @@ CXM0FB                   0004
 CXM0P                    0000                  
 CXM1FB                   0005                  
 CXM1P                    0001                  
-CXP0FB                   0002              (R )
+CXP0FB                   0002                  
 CXP1FB                   0003                  
 CXPPMM                   0007              (R )
+Digits                   f2c9              (R )
+DIGITS_HEIGHT            0005              (R )
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EndCollisionCheck        f1d4              (R )
-EndInputCheck            f1ad              (R )
-EndPositionUpdate        f1bc              (R )
-GameOver                 f1d9              (R )
-GameVisibleLine          f0e3                  
-GetRandomBomberPos       f1f2              (R )
+EndCollisionCheck        f227              (R )
+EndInputCheck            f205              (R )
+EndPositionUpdate        f218              (R )
+GameOver                 f22c              (R )
+GameVisibleLine          f123                  
+GetRandomBomberPos       f24b              (R )
 GRP0                     001b              (R )
 GRP1                     001c              (R )
 HMBL                     0024                  
@@ -69,20 +76,21 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 JET_HEIGHT               0009              (R )
-JetAnimOffset            008c              (R )
-JetColor                 f222              (R )
-JetColorPtr              0086              (R )
-JetSprite                f210              (R )
-JetSpritePtr             0084              (R )
-JetSpriteTurn            f219                  
+JetAnimOffset            0093              (R )
+JetColor                 f2a5              (R )
+JetColorPtr              008d              (R )
+JetSprite                f293              (R )
+JetSpritePtr             008b              (R )
+JetSpriteTurn            f29c                  
 JetXPos                  0080              (R )
 JetYPos                  0081              (R )
 NUSIZ0                   0004                  
 NUSIZ1                   0005              (R )
+OnesDigitOffset          0087              (R )
 PF0                      000d              (R )
 PF1                      000e              (R )
 PF2                      000f              (R )
-Random                   008d              (R )
+Random                   0094              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -93,22 +101,32 @@ RESMP0                   0028
 RESMP1                   0029                  
 RESP0                    0010              (R )
 RESP1                    0011                  
+RiverColor               0098              (R )
 RSYNC                    0003                  
-SetObjectXPos            f1de              (R )
-StartFrame               f03f              (R )
+Score                    0084              (R )
+ScoreSprite              0095              (R )
+SetObjectXPos            f237              (R )
+SetPFBKColor             f28a              (R )
+Sleep12ClocksCycles      f289              (R )
+StartFrame               f04d              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280              (R )
 SWCHB                    0282                  
 T1024T                   0297                  
+Temp                     0086              (R )
+TensDigitOffset          0089              (R )
+TerrainColor             0097              (R )
 TIA_BASE_ADDRESS         0000              (R )
 TIA_BASE_READ_ADDRESS    0000              (R )
 TIA_BASE_WRITE_ADDRESS   0000              (R )
 TIM1T                    0294                  
 TIM64T                   0296                  
 TIM8T                    0295                  
+Timer                    0085              (R )
+TimerSprite              0096              (R )
 TIMINT                   0285                  
-UpdateBomberPos          f1ad                  
+UpdateBomberPos          f205                  
 VBLANK                   0001              (R )
 VDELBL                   0027                  
 VDELP0                   0025                  
