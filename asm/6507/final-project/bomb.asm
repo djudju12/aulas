@@ -16,6 +16,8 @@ JetXPos         byte
 JetYPos         byte
 BomberXPos      byte
 BomberYPos      byte
+MissileXPos     byte
+MissileYPos     byte
 Score           byte
 Timer           byte
 Temp            byte
@@ -51,14 +53,14 @@ Reset:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Init RAM variables and TIA register
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    LDA #50
+    LDA #68
     STA JetXPos
     LDA #10
     STA JetYPos
 
-    LDA #40
+    LDA #62
     STA BomberXPos
-    LDA #54
+    LDA #83
     STA BomberYPos
 
     LDA #%11010100
@@ -67,11 +69,6 @@ Reset:
     LDA #0
     STA Score
     STA Timer
-
-    LDA #$84
-    STA TerrainColor
-    LDA #$C2
-    STA RiverColor
 
     LDA #<JetSprite
     STA JetSpritePtr
@@ -94,6 +91,22 @@ Reset:
     STA BomberColorPtr+1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; check if we should display the missile 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    MAC DRAW_MISSILE
+        LDA #0                   ; in case dont want to draw M0
+        CPX MissileYPos
+        BNE .SkipMissileDraw     ; if (x != missile y position)
+.DrawMissile:
+        LDA #%00000010           ; enable missile 0 display
+        INC MissileYPos
+.SkipMissileDraw:
+        STA ENAM0                ; store correct value in the TIA M0 register
+    ENDM
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start of the main loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StartFrame:
@@ -109,7 +122,7 @@ StartFrame:
     REPEND
     LDA #0
     STA VSYNC
-    REPEAT 33
+    REPEAT 31
         STA WSYNC
     REPEND
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,26 +136,33 @@ StartFrame:
     LDY #1
     JSR SetObjectXPos
 
+    LDA MissileXPos
+    LDY #2
+    JSR SetObjectXPos
+
     JSR CalculateDigitOffset
+
+    JSR GenerateJetSound
 
     STA WSYNC
     STA HMOVE
 
+    LDA #0
     STA VBLANK
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Display the scoreboard lines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     LDA #0
+    STA COLUBK
     STA PF0
     STA PF1
     STA PF2
     STA GRP0
     STA GRP1
     STA CTRLPF
-    STA COLUBK
 
-    LDA #$1C
+    LDA #$1E
     STA COLUPF
 
     LDX #DIGITS_HEIGHT
@@ -204,10 +224,10 @@ StartFrame:
 ;; Display the visibles scanlines of the game
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GameVisibleLine:
-    LDA RiverColor
+    LDA TerrainColor
     STA COLUPF
 
-    LDA TerrainColor
+    LDA RiverColor
     STA COLUBK
 
     LDA #00000001       ; Reflect playfield
@@ -221,11 +241,12 @@ GameVisibleLine:
 
     LDX #85             ; remaining of the visible scanlines
 .GameLineLoop:
+    DRAW_MISSILE        ; macro to check if we should draw the missile
 .AreWeInsideJetSprite:
     TXA
     SEC
     SBC JetYPos
-    CMP JET_HEIGHT
+    CMP #JET_HEIGHT
     BCC .DrawSpriteP0
     LDA #0
 
@@ -244,7 +265,7 @@ GameVisibleLine:
     TXA
     SEC
     SBC BomberYPos
-    CMP BOMBER_HEIGHT
+    CMP #BOMBER_HEIGHT
     BCC .DrawSpriteP1
     LDA #0
 
@@ -284,9 +305,8 @@ CheckP0Up:
     ; logic goes here \/
     LDA JetYPos
     CMP #77
-    BPL .SkipIncJetY
+    BPL CheckP0Down
     INC JetYPos
-.SkipIncJetY:
     LDA #0
     STA JetAnimOffset
 
@@ -297,9 +317,8 @@ CheckP0Down:
     ; logic goes here \/
     LDA JetYPos
     CMP #2
-    BMI .SkipDecJetY
+    BMI CheckP0Left
     DEC JetYPos
-.SkipDecJetY:
     LDA #0
     STA JetAnimOffset
 
@@ -310,24 +329,36 @@ CheckP0Left:
     ; logic goes here \/
     LDA JetXPos
     CMP #30
-    BMI .SkipDecJetX
+    BMI CheckP0Right
     DEC JetXPos
-.SkipDecJetX
-    LDA JET_HEIGHT
+    LDA #JET_HEIGHT
     STA JetAnimOffset
 
 CheckP0Right:
     LDA #%10000000
     BIT SWCHA
-    BNE EndInputCheck
+    BNE CheckButtonPressed
     ; logic goes here \/
     LDA JetXPos
     CMP #104
-    BPL .SkipIncJetX
+    BPL CheckButtonPressed
     INC JetXPos
-.SkipIncJetX
-    LDA JET_HEIGHT
+    LDA #JET_HEIGHT
     STA JetAnimOffset
+
+CheckButtonPressed:
+    LDA #%10000000
+    BIT INPT4
+    BNE EndInputCheck
+    ; logic goes here \/
+    LDA JetXPos
+    CLC
+    ADC #5
+    STA MissileXPos
+    LDA JetYPos
+    CLC
+    ADC #5
+    STA MissileYPos
 
 EndInputCheck:
     ; logic goes here \/
@@ -345,8 +376,14 @@ UpdateBomberPos:
 
 .ResetBomberPosition
     JSR GetRandomBomberPos
-    INC Score
-    INC Timer
+
+.SetScoreValues:
+    SED
+    LDA Timer
+    CLC
+    ADC #1
+    STA Timer
+    CLD                      ; Disable BCD mode
 
 EndPositionUpdate:
 
@@ -358,19 +395,26 @@ CheckCollissionP0P1:
     BIT CXPPMM
     BNE .CollisionP0P1
     JSR SetPFBKColor
-    JMP EndCollisionCheck
-
-; CheckCollisionP0PF:
-;     LDA #%10000000
-;     BIT CXP0FB
-;     BNE .CollisionP0PF
-;     JMP EndCollisionCheck
-
-; .CollisionP0PF:
-;     JSR GameOver
-
+    JMP CheckCollissionM0P1
 .CollisionP0P1:
     JSR GameOver
+
+CheckCollissionM0P1:
+    LDA #%10000000
+    BIT CXM0P
+    BNE .CollisionM0P1
+    JMP EndCollisionCheck
+.CollisionM0P1:
+    SED
+    LDA Score
+    CLC
+    ADC #1
+    STA Score
+    CLD
+    LDA #0
+    STA MissileYPos
+
+    JSR GetRandomBomberPos
 
 EndCollisionCheck:
     STA CXCLR
@@ -488,17 +532,38 @@ CalculateDigitOffset subroutine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; subroutine to waste 12 clocks cycles
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Sleep12ClocksCycles: ; JSR = 6
-    RTS              ; RTS = 6
+Sleep12ClocksCycles subroutine ; JSR = 6
+    RTS                        ; RTS = 6
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set the color of terrain (PF) and river (BK)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SetPFBKColor subroutine
-    LDA #$84
-    STA TerrainColor
     LDA #$C2
+    STA TerrainColor
+    LDA #$84
     STA RiverColor
+    RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Configure Jet Sound based on the jet y-pos
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GenerateJetSound subroutine
+    LDA #1
+    STA AUDV0
+
+    LDA JetYPos
+    LSR
+    LSR
+    LSR
+    STA Temp
+    LDA #25
+    SEC
+    SBC Temp
+    STA AUDF0
+
+    LDA #8
+    STA AUDC0
     RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -668,7 +733,6 @@ Digits:
     .byte %01100110
     .byte %01000100
     .byte %01000100
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Filling the 4kb memory needed
