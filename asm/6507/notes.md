@@ -423,3 +423,48 @@ CheckCollisionP0PF:
 EndCollisionCheck:
     STA CXCLR             ; Clear all collision flags
 ```
+
+### BDC mode
+
+One single byte has 256 possibles values, ranging from `$00` to `$FF` in hex.
+The most common way of representing numbers is using binary numbers (or, more specifically, unsigned integers).
+
+In BCD, a byte represents a number from 0 to 99. But in this case, `$00` to `$09` represents 0 to 9,
+`$10` to `$19` represents 10 to 19, and so on... All the way up to `$90` to `$99`.
+
+These 100 values are called  **valid** BCD numbers. The other 156 possible values of a byte are called invalid BCD numbers.
+
+### Sound Registers
+
+* The TIA chip supports two sounds channels, meaning we can play two sounds at the same time
+* Each sound/channel can be tweaked by using three registers:
+
+| CH0 | CH1 | Description | Range |
+|-----|-----|-------------|-------|
+|AUDV0|AUDV1|Volume       |0 to 15|
+|AUDF0|AUDF1|Frequency    |0 to 31|
+|AUDC0|AUDC1|tone type    |0 to 15|
+
+| HEX | Register | Bits used |
+|-----|----------|-----------|
+| 15  | AUDC0    | 00001111  |
+| 16  | AUDC1    | 00001111  |
+| 17  | AUDF0    | 00011111  |
+| 18  | AUDF1    | 00011111  |
+| 19  | AUDV0    | 00001111  |
+| 1A  | AUDV1    | 00001111  |
+
+**Audio tone**
+
+| Value  | Tone Type   |
+|--------|:----------- |
+|0, 11   |Silent       |
+|1       |Buzz         |
+|2, 3    |Rumble       |
+|4, 5    |Pure Tone    |
+|6, 10   |Square Wave  |
+|7, 9    |Buzz         |
+|8       |White Noise  |
+|12, 13  |Pure tone    |
+|14      |Square Wave  |
+|15      | Buzz        |

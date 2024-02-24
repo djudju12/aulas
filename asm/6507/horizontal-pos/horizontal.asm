@@ -3,8 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     processor 6502
 
-    include "../vcs.h"
-    include "../macro.h"
+    include "vcs.h"
+    include "macro.h"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Variables segment
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,12 +26,8 @@ Reset:
     LDX #$00
     STX COLUBK
 
-    LDA #80
+    LDA #162
     STA MaxPos
-
-    LDA #40
-    STA MinPos
-    STA P0XPos
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Turn on VSYNC and VBLANK
@@ -113,10 +109,11 @@ DrawBitmap:
     INC P0XPos
     LDA P0XPos
 
-    CMP MaxPos
-    BMI SkipAjust
+compare:
+    CMP MaxPos  ;; 10 > 162?
+    BCC SkipAjust
 
-    LDA MinPos
+    LDA #0
     STA P0XPos
 SkipAjust:
     JMP StartFrame

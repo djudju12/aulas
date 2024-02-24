@@ -4,8 +4,8 @@
       3  10000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       4  10000 ????				       processor	6502
       5  10000 ????
-------- FILE ../vcs.h LEVEL 2 PASS 2
-      0  10000 ????				       include	"../vcs.h"
+------- FILE vcs.h LEVEL 2 PASS 2
+      0  10000 ????				       include	"vcs.h"
       1  10000 ????						; VCS.H
       2  10000 ????						; Version 1.05, 13/November/2003
       3  10000 ????
@@ -207,8 +207,8 @@
     199  0000 ????
     200  0000 ????						; EOF
 ------- FILE verticalsync.asm
-------- FILE ../macro.h LEVEL 2 PASS 2
-      0  0000 ????				      include	"../macro.h"
+------- FILE macro.h LEVEL 2 PASS 2
+      0  0000 ????				      include	"macro.h"
       1  0000 ????						; MACRO.H
       2  0000 ????						; Version 1.06, 3/SEPTEMBER/2004
       3  0000 ????
@@ -516,7 +516,7 @@
      61  f075							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      62  f075							;; draw the 192 visibles scanlines
      63  f075							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     64  f075		       a2 c0		      LDX	#192
+     64  f075		       a2 60		      LDX	#96
      65  f077
      66  f077				   Scanline
      67  f077		       8a		      TXA
@@ -535,110 +535,112 @@
      80  f089		       b9 e3 f0 	      LDA	P0Color,Y
      81  f08c		       85 06		      STA	COLUP0
      82  f08e
-     83  f08e		       ca		      DEX
-     84  f08f		       d0 e6		      BNE	Scanline
-     85  f091
-     86  f091							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     87  f091							;; Output the 30 more VBLANK oversacan lines
+     83  f08e							; STA WSYNC
+     84  f08e
+     85  f08e		       ca		      DEX
+     86  f08f		       d0 e6		      BNE	Scanline
+     87  f091
      88  f091							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     89  f091		       a9 02		      LDA	#2
-     90  f093		       85 01		      STA	VBLANK
-     91  f095					      REPEAT	30
-     92  f095		       85 02		      STA	WSYNC
-     91  f095					      REPEND
-     92  f097		       85 02		      STA	WSYNC
-     91  f097					      REPEND
-     92  f099		       85 02		      STA	WSYNC
-     91  f099					      REPEND
-     92  f09b		       85 02		      STA	WSYNC
-     91  f09b					      REPEND
-     92  f09d		       85 02		      STA	WSYNC
-     91  f09d					      REPEND
-     92  f09f		       85 02		      STA	WSYNC
-     91  f09f					      REPEND
-     92  f0a1		       85 02		      STA	WSYNC
-     91  f0a1					      REPEND
-     92  f0a3		       85 02		      STA	WSYNC
-     91  f0a3					      REPEND
-     92  f0a5		       85 02		      STA	WSYNC
-     91  f0a5					      REPEND
-     92  f0a7		       85 02		      STA	WSYNC
-     91  f0a7					      REPEND
-     92  f0a9		       85 02		      STA	WSYNC
-     91  f0a9					      REPEND
-     92  f0ab		       85 02		      STA	WSYNC
-     91  f0ab					      REPEND
-     92  f0ad		       85 02		      STA	WSYNC
-     91  f0ad					      REPEND
-     92  f0af		       85 02		      STA	WSYNC
-     91  f0af					      REPEND
-     92  f0b1		       85 02		      STA	WSYNC
-     91  f0b1					      REPEND
-     92  f0b3		       85 02		      STA	WSYNC
-     91  f0b3					      REPEND
-     92  f0b5		       85 02		      STA	WSYNC
-     91  f0b5					      REPEND
-     92  f0b7		       85 02		      STA	WSYNC
-     91  f0b7					      REPEND
-     92  f0b9		       85 02		      STA	WSYNC
-     91  f0b9					      REPEND
-     92  f0bb		       85 02		      STA	WSYNC
-     91  f0bb					      REPEND
-     92  f0bd		       85 02		      STA	WSYNC
-     91  f0bd					      REPEND
-     92  f0bf		       85 02		      STA	WSYNC
-     91  f0bf					      REPEND
-     92  f0c1		       85 02		      STA	WSYNC
-     91  f0c1					      REPEND
-     92  f0c3		       85 02		      STA	WSYNC
-     91  f0c3					      REPEND
-     92  f0c5		       85 02		      STA	WSYNC
-     91  f0c5					      REPEND
-     92  f0c7		       85 02		      STA	WSYNC
-     91  f0c7					      REPEND
-     92  f0c9		       85 02		      STA	WSYNC
-     91  f0c9					      REPEND
-     92  f0cb		       85 02		      STA	WSYNC
-     91  f0cb					      REPEND
-     92  f0cd		       85 02		      STA	WSYNC
-     91  f0cd					      REPEND
-     92  f0cf		       85 02		      STA	WSYNC
-     93  f0d1					      REPEND
-     94  f0d1		       a9 00		      LDA	#0
-     95  f0d3		       85 01		      STA	VBLANK
-     96  f0d5
-     97  f0d5		       c6 81		      dec	PlayerYPos
-     98  f0d7
-     99  f0d7		       4c 17 f0 	      JMP	StartFrame
-    100  f0da
-    101  f0da							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    102  f0da							;; Lookup table
+     89  f091							;; Output the 30 more VBLANK oversacan lines
+     90  f091							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     91  f091		       a9 02		      LDA	#2
+     92  f093		       85 01		      STA	VBLANK
+     93  f095					      REPEAT	30
+     94  f095		       85 02		      STA	WSYNC
+     93  f095					      REPEND
+     94  f097		       85 02		      STA	WSYNC
+     93  f097					      REPEND
+     94  f099		       85 02		      STA	WSYNC
+     93  f099					      REPEND
+     94  f09b		       85 02		      STA	WSYNC
+     93  f09b					      REPEND
+     94  f09d		       85 02		      STA	WSYNC
+     93  f09d					      REPEND
+     94  f09f		       85 02		      STA	WSYNC
+     93  f09f					      REPEND
+     94  f0a1		       85 02		      STA	WSYNC
+     93  f0a1					      REPEND
+     94  f0a3		       85 02		      STA	WSYNC
+     93  f0a3					      REPEND
+     94  f0a5		       85 02		      STA	WSYNC
+     93  f0a5					      REPEND
+     94  f0a7		       85 02		      STA	WSYNC
+     93  f0a7					      REPEND
+     94  f0a9		       85 02		      STA	WSYNC
+     93  f0a9					      REPEND
+     94  f0ab		       85 02		      STA	WSYNC
+     93  f0ab					      REPEND
+     94  f0ad		       85 02		      STA	WSYNC
+     93  f0ad					      REPEND
+     94  f0af		       85 02		      STA	WSYNC
+     93  f0af					      REPEND
+     94  f0b1		       85 02		      STA	WSYNC
+     93  f0b1					      REPEND
+     94  f0b3		       85 02		      STA	WSYNC
+     93  f0b3					      REPEND
+     94  f0b5		       85 02		      STA	WSYNC
+     93  f0b5					      REPEND
+     94  f0b7		       85 02		      STA	WSYNC
+     93  f0b7					      REPEND
+     94  f0b9		       85 02		      STA	WSYNC
+     93  f0b9					      REPEND
+     94  f0bb		       85 02		      STA	WSYNC
+     93  f0bb					      REPEND
+     94  f0bd		       85 02		      STA	WSYNC
+     93  f0bd					      REPEND
+     94  f0bf		       85 02		      STA	WSYNC
+     93  f0bf					      REPEND
+     94  f0c1		       85 02		      STA	WSYNC
+     93  f0c1					      REPEND
+     94  f0c3		       85 02		      STA	WSYNC
+     93  f0c3					      REPEND
+     94  f0c5		       85 02		      STA	WSYNC
+     93  f0c5					      REPEND
+     94  f0c7		       85 02		      STA	WSYNC
+     93  f0c7					      REPEND
+     94  f0c9		       85 02		      STA	WSYNC
+     93  f0c9					      REPEND
+     94  f0cb		       85 02		      STA	WSYNC
+     93  f0cb					      REPEND
+     94  f0cd		       85 02		      STA	WSYNC
+     93  f0cd					      REPEND
+     94  f0cf		       85 02		      STA	WSYNC
+     95  f0d1					      REPEND
+     96  f0d1		       a9 00		      LDA	#0
+     97  f0d3		       85 01		      STA	VBLANK
+     98  f0d5
+     99  f0d5		       c6 81		      dec	PlayerYPos
+    100  f0d7
+    101  f0d7		       4c 17 f0 	      JMP	StartFrame
+    102  f0da
     103  f0da							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    104  f0da				   P0Bitmap
-    105  f0da		       00		      byte.b	#%00000000
-    106  f0db		       28		      byte.b	#%00101000
-    107  f0dc		       74		      byte.b	#%01110100
-    108  f0dd		       fa		      byte.b	#%11111010
-    109  f0de		       fa		      byte.b	#%11111010
-    110  f0df		       fa		      byte.b	#%11111010
-    111  f0e0		       fe		      byte.b	#%11111110
-    112  f0e1		       6c		      byte.b	#%01101100
-    113  f0e2		       30		      byte.b	#%00110000
-    114  f0e3
-    115  f0e3				   P0Color
-    116  f0e3		       00		      byte.b	#$00
-    117  f0e4		       40		      byte.b	#$40
-    118  f0e5		       40		      byte.b	#$40
-    119  f0e6		       40		      byte.b	#$40
-    120  f0e7		       42		      byte.b	#$42
-    121  f0e8		       42		      byte.b	#$42
-    122  f0e9		       44		      byte.b	#$44
-    123  f0ea		       d2		      byte.b	#$D2
-    124  f0eb
-    125  f0eb							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    126  f0eb							;; End of the program
+    104  f0da							;; Lookup table
+    105  f0da							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    106  f0da				   P0Bitmap
+    107  f0da		       00		      byte.b	#%00000000
+    108  f0db		       28		      byte.b	#%00101000
+    109  f0dc		       74		      byte.b	#%01110100
+    110  f0dd		       fa		      byte.b	#%11111010
+    111  f0de		       fa		      byte.b	#%11111010
+    112  f0df		       fa		      byte.b	#%11111010
+    113  f0e0		       fe		      byte.b	#%11111110
+    114  f0e1		       6c		      byte.b	#%01101100
+    115  f0e2		       30		      byte.b	#%00110000
+    116  f0e3
+    117  f0e3				   P0Color
+    118  f0e3		       00		      byte.b	#$00
+    119  f0e4		       40		      byte.b	#$40
+    120  f0e5		       40		      byte.b	#$40
+    121  f0e6		       40		      byte.b	#$40
+    122  f0e7		       42		      byte.b	#$42
+    123  f0e8		       42		      byte.b	#$42
+    124  f0e9		       44		      byte.b	#$44
+    125  f0ea		       d2		      byte.b	#$D2
+    126  f0eb
     127  f0eb							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    128  f0eb
-    129  fffc					      org	$FFFC
-    130  fffc		       00 f0		      word.w	Reset
-    131  fffe		       00 f0		      word.w	Reset
+    128  f0eb							;; End of the program
+    129  f0eb							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    130  f0eb
+    131  fffc					      org	$FFFC
+    132  fffc		       00 f0		      word.w	Reset
+    133  fffe		       00 f0		      word.w	Reset

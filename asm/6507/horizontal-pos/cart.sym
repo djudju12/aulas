@@ -1,7 +1,7 @@
 --- Symbol List (sorted by symbol)
 0.FREE_BYTES             0000                  
 1.CLEAR_STACK            f006              (R )
-2.Divide15Loop           f259              (R )
+2.Divide15Loop           f253              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
@@ -12,6 +12,7 @@ COLUBK                   0009              (R )
 COLUP0                   0006              (R )
 COLUP1                   0007                  
 COLUPF                   0008                  
+compare                  f245                  
 CTRLPF                   000a                  
 CXBLPF                   0006                  
 CXCLR                    002c                  
@@ -22,7 +23,7 @@ CXM1P                    0001
 CXP0FB                   0002                  
 CXP1FB                   0003                  
 CXPPMM                   0007                  
-DrawBitmap               f0f8              (R )
+DrawBitmap               f0f2              (R )
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
@@ -43,11 +44,11 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 MaxPos                   0081              (R )
-MinPos                   0082              (R )
+MinPos                   0082                  
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
-P0Bitmap                 f26a              (R )
-P0Color                  f273              (R )
+P0Bitmap                 f264              (R )
+P0Color                  f26d              (R )
 P0XPos                   0080              (R )
 PF0                      000d                  
 PF1                      000e                  
@@ -63,9 +64,9 @@ RESMP1                   0029
 RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
-SetObjectXPos            f256              (R )
-SkipAjust                f253              (R )
-StartFrame               f019              (R )
+SetObjectXPos            f250              (R )
+SkipAjust                f24d              (R )
+StartFrame               f013              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280                  
