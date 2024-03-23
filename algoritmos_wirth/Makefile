@@ -1,2 +1,2 @@
-shake:
-	gcc shakesort.c -o shakesort && ./shakesort
+sort:
+	gcc sort.c -o sort && ./sort

@@ -16,9 +16,7 @@
 
 8) Por que um diodo também é usado como retificador de corrente elétrica?
 
-
-
-9)  Considerando a equação de Shockley, mostre que a ddp aplicada sobre um
+10)  Considerando a equação de Shockley, mostre que a ddp aplicada sobre um
 diodo na polarização direta pode ser estimada por
 
   $V_d = \dfrac{nkT}{q}\;ln(\dfrac{I_d + I_s}{I_S})$
@@ -43,11 +41,23 @@ ___
   $ln(\dfrac{I_d + I_s}{I_s})\dfrac{nkT}{q} = V_D$
 
 
-10) Descreva o funcionamento de um diodo ideal, supondo um circuito de uma
+11) Descreva o funcionamento de um diodo ideal, supondo um circuito de uma
 única malha.
 
-        O diodo ideal possui a caracteristica de gerar corrente elétrica para qualquer valor de Vd > 0. 
+        O diodo ideal possui a caracteristica de gerar corrente elétrica para qualquer valor de Vd > 0.
 
-11)  Explique o comportamento de um diodo real na região de ruptura.
-12)  Descreva o que acontece com a região de depleção de um diodo nas
+15)  Explique o comportamento de um diodo real na região de ruptura.
+
+        O aumento da tensão na região de polarização inversa aumentará a velocidade dos portadores minoritarios responsáveis pela corrente de saturação.
+        Eventualmente esse aumento da velocidade poderá aumentar a quantidade de portadores devido a colisão com os eletrons na camada de valência. Esse portadores adicionais poderão então auxiliar na ionização até que se tenha uma corrente de avalanche e que se determina a região de ruptura por avalanche.
+        Ou seja, o diodo começa a produzir corrente na polarização reversa para valores suficientemente grandes de tensão.
+
+
+16)  Descreva o que acontece com a região de depleção de um diodo nas
 polarizações direta e reversa.
+
+        Na polarização reversa a região de depleção aumenta, devido ao fato de que os eletrons livres do semicondutor tipo n são atraidos pelo polo positivo, e do tipo p são repelidos.
+        Na polarização direta acontece o inverso, portanto diminuindo a depleção e permitindo o fluxo de corrente eletrica.
+
+9) 310 ohm
+17)
