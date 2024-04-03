@@ -147,3 +147,113 @@ e) Se Alda não é alta, Bino não é baixo, e Se Ciro é calvo, Bino não é ba
       ((V -> F) ^ (F -> F))
       (F ^ V)
       F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Para cada um dos arranjos abaixo determine se são FBFs, aponte o erro e
+a regra violada:
+1. p v ~q -> FBF
+2. r ~v t -> ~ junto do conectivo
+3. p -> FBF
+4. p ^ (r ~s) -> ~ entre proposiçoes
+5. p → ~q -> FBF
+6. p → ~ (p ^ → q) -> conectivo do lado de conectivo
+7. p (→ q → p) -> conectivo dentro dos parentes
+8. (p v q → q) -> ambigua
+9.  [(pq)] v ~r -> duas preoposicoes sem conectivos
+10. ~p ( v ~r ) ^ ~s ) -> parenteses errado
+11. p v ^q → -> dois conectivos seguidos
+12. p v q ~ → -> ~ sem proposicao
+13. pq -> proposicoes sem conectivo
+14. p ^ (q v~r) -> FBF
+15. p ~ q -> negacao entre duas proposicoes
+
+
+1. Construa a tabela verdade das proposições abaixo:
+a) (p ^ q) → ~p
+
+|p   |q   |(p ^ q) → ~p   |
+|:--:|:--:|:-------------:|
+| 1  | 1  |    0          |
+| 1  | 0  |    1          |
+| 0  | 1  |    1          |
+| 0  | 0  |    1          |
+
+b) (p → q) v p
+
+|p     |q     |(p → q) v p      |
+|:---: |:---: |:--------------: |
+| 1    | 1    | 1 v 1 -> 1      |
+| 1    | 0    | f v 1 -> 1      |
+| 0    | 1    | 1 v 0 -> 1      |
+| 0    | 0    | 1 v 0 -> 1      |
+
+c) (p → ~q) ^ q
+
+|p     |q     |(p → ~q) ^ q     |
+|:---: |:---: |:--------------: |
+| 1    | 1    |(1 → 0)^1 -> 0   |
+| 1    | 0    |(1 → 1)^0 -> 0   |
+| 0    | 1    |(0 → 0)^1 -> 1   |
+| 0    | 0    |(0 → 1)^0 -> 0   |
+
+d) (q → p) → (p v q)
+
+|p     |q     |(q → p) → (p v q) |
+|:---: |:---: |:----------------:|
+| 1    | 1    | 1 → 1 ->   1     |
+| 1    | 0    | 1 → 1 ->   1     |
+| 0    | 1    | 0 → 1 ->   1     |
+| 0    | 0    | 1 → 0 ->   0     |
+
+
+e) ~q → (p v q)
+
+|p     |q     |~q → (p v q)|
+|:---: |:---: |:----------:|
+| 1    | 1    | 0 → 1 -> 1 |
+| 1    | 0    | 1 → 1 -> 1 |
+| 0    | 1    | 0 → 1 -> 1 |
+| 0    | 0    | 1 → 0 -> 0 |
+
+
+f) (p v q) v (p ↔ q)
+
+|p     |q     |(p v q) v (p ↔ q) |
+|:---: |:---: |:----------------:|
+| 1    | 1    | 1 v 1 -> 1       |
+| 1    | 0    | 1 v 0 -> 1       |
+| 0    | 1    | 1 v 0 -> 1       |
+| 0    | 0    | 0 v 1 -> 1       |
+
+
+g) [(p → q) v (p ^ q)] ^ (p v q)
+
+|p     |q     |[(p → q) v (p ^ q)] ^ (p v q)|
+|:---: |:---: |:--------------------------: |
+| 1    | 1    |1 ^ 1 -> 1                   |
+| 1    | 0    |0 ^ 1 -> 0                   |
+| 0    | 1    |1 ^ 1 -> 1                   |
+| 0    | 0    |1 ^ 0 -> 0                   |
+
+
+h) [(q → p) → (p ↔ q)] → (p v q)
+
+|p     |q     |[(q → p) → (p ↔ q)] → (p v q)|
+|:---: |:---: |:---------------------------:|
+| 1    | 1    |1 → 1 -> 1                   |
+| 1    | 0    |0 → 1 -> 1                   |
+| 0    | 1    |1 → 1 -> 1                   |
+| 0    | 0    |1 → 0 -> 0                   |
+
