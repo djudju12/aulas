@@ -2,6 +2,35 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
+
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
+
+#define MAX_STATION_CNT 41344
+#define MAX_STATION_NAME_LEN 256
+
+typedef struct {
+    double min;
+    double total;
+    double max;
+    int total_entries;
+} Station_Data;
+
+typedef struct {
+    char *key;
+    Station_Data value;
+} Station_Table;
+
+#define FMT_STATION "%s=(min(%.2lf), total(%.2lf), max(%.2lf), entries(%d))"
+#define ARGS_STATION(key, s) (key), (s).min, (s).total, (s).max, (s).total_entries
+
+char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN];
+int comparator(const void *a, const void *b) {
+    const char (*str1)[MAX_STATION_NAME_LEN] = a;
+    const char (*str2)[MAX_STATION_NAME_LEN] = b;
+    return strcmp(*str1, *str2);
+}
 
 int mgetline(char *station, char *temperature, int size, FILE *stream) {
     char c;
@@ -33,118 +62,60 @@ int mgetline(char *station, char *temperature, int size, FILE *stream) {
     return 0;
 }
 
-#define MAX_STATION_CNT 51200
-#define MAX_STATION_NAME_LEN 256
-
-typedef struct {
-    char station[MAX_STATION_NAME_LEN];
-    double min;
-    double total;
-    double max;
-    int total_entries;
-} Station_Data;
-
-typedef struct {
-    Station_Data cities[MAX_STATION_CNT];
-    char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN];
-    int length;
-} Station_Table;
-
-Station_Data cities[MAX_STATION_CNT] = {0};
-Station_Table stations = {0};
-int length = 0;
-
-int hash(char *key) {
-    assert("TODO: int hash(char *key) NOT IMPLEMENTED");
-}
-
-Station_Data* get(char *station) {
-    int index = hash(station) % MAX_STATION_CNT;
-    if (stations.cities[index].total_entries > 0) {
-        return &stations.cities[index];
-    }
-
-    return NULL;
-}
-
-Station_Data* new(char *station) {
-    int index = hash(station) % MAX_STATION_CNT;
-    if (stations.cities[index].total_entries == 0) {
-        stations.cities[index].total_entries = 1;
-        stations.cities[index].max = -999.00;
-        stations.cities[index].min = +999.00;
-        stations.cities[index].total = 0;
-        strcpy(stations.keys[length++], station);
-        return &stations.cities[index];
-    }
-
-    assert("Trying to create a new station on an already used index." && 0);
-}
-
-int get_city(char *symbol) {
-    for (int i = 0; i < length; i++) {
-        if (cities[i].total_entries > 0 && strcmp(symbol, cities[i].station) == 0) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-int comparator(const void *a, const void *b) {
-    return strcmp(((Station_Data*)a)->station, ((Station_Data *) b)->station);
-}
-
 int main(void) {
     const char *file_path = "/home/jonathan/programacao/1brc/measurements.txt";
     // const char *file_path = "weather_stations.csv";
-    char station[MAX_STATION_NAME_LEN];
+
+    FILE *stream = fopen(file_path, "r");
+    Station_Table *stations_table;
+    stations_table = sh_new_strdup(stations_table);
+
+    char station_name[MAX_STATION_NAME_LEN];
     char temperature[MAX_STATION_NAME_LEN];
     double v;
-    FILE *stream = fopen(file_path, "r");
-
-    while (mgetline(station, temperature, 1024, stream) != EOF)  {
-        // int index = get_city(station);
-        // if (index < 0) {
-        //     index = length++;
-        //     cities[index];
-        //     cities[index].min = 999.0;
-        //     cities[index].max = -999.0;
-        //     cities[index].total = 0.0;
-        //     int cnt = 0;
-        //     while(station[cnt] != '\0') {
-        //         cities[index].station[cnt] = station[cnt];
-        //         cnt++;
-        //     }
-
-        //     cities[index].station[cnt]= '\0';
-        // }
-
-        Station_Data *station = get(station);
-        if (station == NULL) {
-            station = new(station);
+    long row = 0;
+    clock_t start = clock();
+    while (mgetline(station_name, temperature, 1024, stream) != EOF)  {
+        if (++row % 50000000 == 0) {
+            printf("processed %ld rows in %f seconds\n", row, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
         }
 
-        cities[index].total_entries++;
+        Station_Data station = shget(stations_table, station_name);
+
+        if (station.total_entries == 0) {
+            station.max = -99.00;
+            station.min = +99.00;
+            station.total = 0.00;
+            strcpy(keys[shlen(stations_table)], station_name);
+        }
+
+        station.total_entries++;
+
         sscanf(temperature, "%lf", &v);
-        cities[index].total = cities[index].total + v;
+        station.total = station.total + v;
 
-        if (v < cities[index].min) {
-            cities[index].min = v;
+        if (v < station.min) {
+            station.min = v;
         }
 
-        if (v > cities[index].max) {
-            cities[index].max = v;
+        if (v > station.max) {
+            station.max = v;
         }
+
+        shput(stations_table, station_name, station);
     }
 
-    qsort(cities, length, sizeof(struct Station_Data), comparator);
+    long table_len = shlen(stations_table);
+    qsort(keys, table_len, sizeof(keys[0]), comparator);
     FILE *result = fopen("result.txt", "w");
     fprintf(result, "{");
-    for (int i = 0; i < length; i++) {
-        double mean = cities[i].total / cities[i].total_entries;
-        fprintf(result, "%s=%+3.2lf/%+3.2lf/%+3.2lf", cities[i].station, cities[i].min, mean, cities[i].max);
-        if (i < length-1) {
+
+    for (int i = 0; i < table_len; i++) {
+        Station_Data station = shget(stations_table, keys[i]);
+        double mean = station.total / station.total_entries;
+
+        fprintf(result, "%s=%.2lf/%.2lf/%.2lf", keys[i], station.min, mean, station.max);
+        if (i < table_len-1) {
             fprintf(result, ", ");
         }
     }
