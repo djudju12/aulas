@@ -1,37 +1,38 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <time.h>
 
-char* read_file(const char* file_path) {
-    FILE *f = fopen(file_path, "r");
-    if (f == NULL) {
-        goto ERROR;
-    }
-    if (fseek(f, 0, SEEK_END) != 0) {
-        goto ERROR;
-    }
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
 
-    int size = ftell(f);
-    if (size < 0) {
-        goto ERROR;
-    }
-    rewind(f);
+#define MAX_STATION_CNT 41344
+#define MAX_STATION_NAME_LEN 256
 
-    char *content = malloc(sizeof(char)*size);
-    int b_read = fread(content, 1, size, f);
-    if (b_read != size) {
-        goto ERROR;
-    }
+typedef struct {
+    double min;
+    double total;
+    double max;
+    int total_entries;
+} Station_Data;
 
-    return content;
+typedef struct {
+    char *key;
+    Station_Data value;
+} Station_Table;
 
-ERROR:
-    if (f) fclose(f);
-    if (content) free(content);
-    return NULL;
+#define FMT_STATION "%s=(min(%.2lf), total(%.2lf), max(%.2lf), entries(%d))"
+#define ARGS_STATION(key, s) (key), (s).min, (s).total, (s).max, (s).total_entries
+
+char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN];
+int comparator(const void *a, const void *b) {
+    const char (*str1)[MAX_STATION_NAME_LEN] = a;
+    const char (*str2)[MAX_STATION_NAME_LEN] = b;
+    return strcmp(*str1, *str2);
 }
 
-int mgetline(char *city, char *value, int size, FILE *stream) {
+int mgetline(char *station, char *temperature, int size, FILE *stream) {
     char c;
     int cnt = 0;
     c = fgetc(stream);
@@ -40,7 +41,7 @@ int mgetline(char *city, char *value, int size, FILE *stream) {
     while(c != EOF && c != '\n') {
         if ((size-1) <= cnt ) break;
         if (c == ';') {
-            *(city++) = '\0';
+            *(station++) = '\0';
             in_city = 0;
             cnt++;
             c = fgetc(stream);
@@ -48,89 +49,78 @@ int mgetline(char *city, char *value, int size, FILE *stream) {
         }
 
         if (in_city) {
-            *(city++) = c;
+            *(station++) = c;
         } else {
-            *(value++) = c;
+            *(temperature++) = c;
         }
 
         cnt++;
         c = fgetc(stream);
     }
 
-    *(value++) = '\0';
+    *(temperature++) = '\0';
     return 0;
 }
 
-struct City_Data {
-    char city[256];
-    double min;
-    double total;
-    double max;
-    int total_entries;
-};
-
-struct City_Data cities[51200] = {0};
-int length = 0;
-
-int get_city(char *symbol) {
-    for (int i = 0; i < length; i++) {
-        if (cities[i].total_entries > 0 && strcmp(symbol, cities[i].city) == 0) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-int comparator(const void *a, const void *b) {
-    return strcmp(((struct City_Data*)a)->city, ((struct City_Data *) b)->city);
-}
-
 int main(void) {
-    const char *file_path = "weather_stations.csv";
-    char city[256];
-    char value[256];
-    double v;
+    const char *file_path = "/home/jonathan/programacao/1brc/measurements.txt";
+    // const char *file_path = "weather_stations.csv";
+
     FILE *stream = fopen(file_path, "r");
+    Station_Table *stations_table;
+    stations_table = sh_new_strdup(stations_table);
 
-    while (mgetline(city, value, 1024, stream) != EOF)  {
-        int index = get_city(city);
-        if (index < 0) {
-            index = length++;
-            cities[index];
-            cities[index].min = 999.0;
-            cities[index].max = -999.0;
-            cities[index].total = 0.0;
-            int cnt = 0;
-            while(city[cnt] != '\0') {
-                cities[index].city[cnt] = city[cnt];
-                cnt++;
-            }
-
-            cities[index].city[cnt]= '\0';
+    char station_name[MAX_STATION_NAME_LEN];
+    char temperature[MAX_STATION_NAME_LEN];
+    double v;
+    long row = 0;
+    clock_t start = clock();
+    while (mgetline(station_name, temperature, 1024, stream) != EOF)  {
+        if (++row % 50000000 == 0) {
+            printf("processed %ld rows in %f seconds\n", row, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
         }
 
-        cities[index].total_entries++;
-        sscanf(value, "%lf", &v);
-        cities[index].total = cities[index].total + v;
+        Station_Data station = shget(stations_table, station_name);
 
-        if (v < cities[index].min) {
-            cities[index].min = v;
+        if (station.total_entries == 0) {
+            station.max = -99.00;
+            station.min = +99.00;
+            station.total = 0.00;
+            strcpy(keys[shlen(stations_table)], station_name);
         }
 
-        if (v > cities[index].max) {
-            cities[index].max = v;
+        station.total_entries++;
+
+        sscanf(temperature, "%lf", &v);
+        station.total = station.total + v;
+
+        if (v < station.min) {
+            station.min = v;
+        }
+
+        if (v > station.max) {
+            station.max = v;
+        }
+
+        shput(stations_table, station_name, station);
+    }
+
+    long table_len = shlen(stations_table);
+    qsort(keys, table_len, sizeof(keys[0]), comparator);
+    FILE *result = fopen("result.txt", "w");
+    fprintf(result, "{");
+
+    for (int i = 0; i < table_len; i++) {
+        Station_Data station = shget(stations_table, keys[i]);
+        double mean = station.total / station.total_entries;
+
+        fprintf(result, "%s=%.2lf/%.2lf/%.2lf", keys[i], station.min, mean, station.max);
+        if (i < table_len-1) {
+            fprintf(result, ", ");
         }
     }
 
-    qsort(cities, length, sizeof(struct City_Data), comparator);
-    for (int i = 0; i < length; i++) {
-        double mean = cities[i].total / cities[i].total_entries;
-        printf("%-25s %+3.2lf %+3.2lf %+3.2lf\n", cities[i].city, cities[i].max, cities[i].min, mean);
-        // printf("%-25s  max(%+3.2lf) min(%+3.2lf) total(%+3.2lf) entries(%02d) mean(%+3.2lf)\n", cities[i].city, cities[i].max, cities[i].min, cities[i].total, cities[i].total_entries, cities[i].total / cities[i].total_entries);
-        // printf("%-25s\n",  cities[i].city);
-    }
-
+    fprintf(result, "}\n");
     return 0;
 }
 
