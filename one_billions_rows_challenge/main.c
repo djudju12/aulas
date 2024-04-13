@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <unistd.h>
 #include <time.h>
 
 #define STB_DS_IMPLEMENTATION
@@ -121,6 +122,7 @@ int main(void) {
     }
 
     fprintf(result, "}\n");
+    fprintf(stdout, "total time spent = %lf seconds\n", (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
     return 0;
 }
 
