@@ -87,7 +87,8 @@ int comparator(const void *a, const void *b) {
 }
 
 int main(void) {
-    const char *file_path = "weather_stations.csv";
+    // const char *file_path = "weather_stations.csv";
+    const char *file_path = "/home/jonathan/programacao/1brc/measurements.txt";
     char city[256];
     char value[256];
     double v;
