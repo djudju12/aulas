@@ -124,11 +124,14 @@ int main(void) {
     }
 
     qsort(cities, length, sizeof(struct City_Data), comparator);
+     FILE *result = fopen("result.txt", "w");
+    fprintf(result, "{");
     for (int i = 0; i < length; i++) {
         double mean = cities[i].total / cities[i].total_entries;
-        printf("%-25s %+3.2lf %+3.2lf %+3.2lf\n", cities[i].city, cities[i].max, cities[i].min, mean);
-        // printf("%-25s  max(%+3.2lf) min(%+3.2lf) total(%+3.2lf) entries(%02d) mean(%+3.2lf)\n", cities[i].city, cities[i].max, cities[i].min, cities[i].total, cities[i].total_entries, cities[i].total / cities[i].total_entries);
-        // printf("%-25s\n",  cities[i].city);
+        fprintf(result, "%s=%+3.2lf/%+3.2lf/%+3.2lf", cities[i].city, cities[i].min, mean, cities[i].max);
+        if (i < length-1) {
+            fprintf(result, ", ");
+        }
     }
 
     return 0;
