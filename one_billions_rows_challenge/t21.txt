@@ -1,0 +1,2 @@
+gcc -O3 main.c -o result -g -pg
+./result

@@ -5,7 +5,7 @@ run: main
 	./result
 
 profile: run
-	gprof result gmon.out > result-profile.txt
+	gprof result gmon.out > out/result-profile.txt
 
 debug: main
 	/home/jonathan/software/gf/gf2 result &
