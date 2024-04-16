@@ -2,7 +2,7 @@ M10K=/home/kopp/fontes/pessoal/1brc/measurements10k.txt
 M1KKK=/home/kopp/fontes/pessoal/1brc/measurements1kkk.txt
 
 main:
-	gcc -O3 main.c -o result
+	gcc  main.c -o result -g -pg
 
 run/10K: main
 	./result $(M10K)

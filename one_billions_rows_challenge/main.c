@@ -13,7 +13,7 @@
 #define MAX_STATION_NAME_LEN 256
 #define HASHMAP_CAPACITY 16384
 #define HASHMAP_INDEX(h) (h & (HASHMAP_CAPACITY - 1))
-#define TOTAL_WORKERS 1
+#define TOTAL_WORKERS 8
 #define FMT_STATION "%s=%.2lf/%.2lf/%2.lf"
 #define ARGS_STATION(s) (s).key, (s).min, ((s).total / (s).total_entries), (s).max
 #define FMT_CHUNK "start(%ld), end(%ld), cursor(%ld)"
@@ -45,16 +45,16 @@ typedef struct {
 Chunk chunks[TOTAL_WORKERS] = {0};
 pthread_t workers[TOTAL_WORKERS] = {0};
 
+clock_t start;
 #define CLOCK_DIFF(s) (double) (((double)clock()) - (s)) / CLOCKS_PER_SEC
 
 void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length);
 int comparator(const void *a, const void *b);
-int mgetline(char *station_name, char *temperature, int size, int *h, int *len, Chunk *chunk);
+int mgetline(char *station_name, char *temperature, int *h, int *len, Chunk *chunk);
 void * process_chunck(void *arg);
 unsigned int *hm_get(Hash_Map *map, const char *key);
 void hm_put(Hash_Map *map, const char *key, double temperature, int hash, unsigned int len);
 
-clock_t start;
 int main(int argc, char **argv) {
     start = clock();
 
@@ -153,7 +153,7 @@ void * process_chunck(void *arg) {
 
     double v; int h = 0; unsigned int len = 0;
     char station_name[MAX_STATION_NAME_LEN], temperature[MAX_STATION_NAME_LEN];
-    while (mgetline(station_name, temperature, 1024, &h, &len, chunk) != -1) {
+    while (mgetline(station_name, temperature, &h, &len, chunk) != -1) {
         sscanf(temperature, "%lf", &v);
         hm_put(map, station_name, v, h, len);
     }
@@ -165,29 +165,24 @@ void * process_chunck(void *arg) {
 
 #define EOC(c) ((c).cursor >= ((c).end - (c).start))
 
-int mgetline(char *station, char *temperature, int size, int *h, int *len, Chunk *chunk) {
+int mgetline(char *station, char *temperature, int *h, int *len, Chunk *chunk) {
     if (EOC(*chunk)) return -1;
-    char c;
 
-    int in_station = 1, lim = 0;
-    *h = 0;
-    *len = 0;
-    while(!EOC(*chunk) && (c = chunk->addr[chunk->start + chunk->cursor++]) != '\n') {
-        if ( (size-1) <= lim++ ) break;
-        if (c == ';') {
-            *(station++) = '\0';
-            in_station = 0;
-        } else {
-            if (in_station) {
-                *(station++) = c;
-                *h = (31*(*h)) + (unsigned char)c;
-                *len += 1;
-            }
-            else *(temperature++) = c;
-        }
+    *h = 0; *len = 0;
+    char c, *addr = chunk->addr + chunk->start;
+    while(!EOC(*chunk) && (c = *(addr + chunk->cursor++)) != '\n' && c != ';') {
+        *(station++) = c;
+        *h = ((*h << 5) - *h) + (unsigned char)c;
+        *len += 1;
     }
 
-    *temperature = '\0';
+    *(station++) = '\0';
+
+    while(!EOC(*chunk) && (c = *(addr + chunk->cursor++)) != '\n') {
+        *(temperature++) = c;
+    }
+
+    *(temperature++) = '\0';
 
     return 0;
 }
@@ -196,7 +191,7 @@ unsigned int *hm_get(Hash_Map *map, const char *key) {
     unsigned int len = 0;
     unsigned int h = 0;
     for (;key[len] != '\0'; len++) {
-        h = (31*h) + (unsigned char)key[len];
+        h = ((h << 5) - h) + (unsigned char)key[len];
     }
 
     unsigned int *c = &map->table[HASHMAP_INDEX(h)];
