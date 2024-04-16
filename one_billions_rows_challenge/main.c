@@ -166,7 +166,7 @@ void * process_chunck(void *arg) {
         }
     }
 
-    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
+    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\nG", chunk->id, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
 
     return &chunk->id;
 }
