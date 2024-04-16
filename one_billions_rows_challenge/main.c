@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <assert.h>
 
@@ -12,7 +13,9 @@
 #include "stb_ds.h"
 
 typedef struct {
-    long start, end, cursor; char *addr;
+    long start, end, cursor;
+    char *addr;
+    int id;
 } Chunk;
 
 #define FMT_CHUNK "start(%ld), end(%ld), cursor(%ld)"
@@ -31,38 +34,112 @@ typedef struct {
 #define MAX_STATION_CNT 10000
 #define MAX_STATION_NAME_LEN 256
 
-char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN];
-Chunk chunks[4] = {0};
+char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN] = {0};
+#define TOTAL_WORKERS 4
+Chunk chunks[TOTAL_WORKERS] = {0};
+pthread_t workers[TOTAL_WORKERS] = {0};
+Station_Table *tables[4];
 
 void make_chunks(Chunk *chunks, int how_much_chunks, const char *file_path);
 int comparator(const void *a, const void *b);
 int mgetline(char *station_name, char *temperature, int size, Chunk *chunk);
-void process_line(Station_Table *table, char *station_name, char *temperature);
+void * process_chunck(void *arg);
 
+clock_t start;
 int main(void) {
-    clock_t start = clock();
-    // const char *file_path = "/home/jonathan/programacao/1brc/measurements-10_000.txt";
-    const char *file_path = "/home/jonathan/programacao/1brc/measurements-1_000_000_000.txt";
+    start = clock();
+    // const char *file_path = "/home/jonathan/fontes/1brc/measurements10k.txt";
+    const char *file_path = "/home/jonathan/fontes/1brc/measurements1kkk.txt";
+    make_chunks(chunks, TOTAL_WORKERS, file_path);
 
-    Chunk chunk = chunks[0];
+    for (int i = 0; i < TOTAL_WORKERS; i++) {
+        printf("starting chunck = "FMT_CHUNK"\n", ARGS_CHUNK(chunks[i]));
+        tables[i] = NULL;
+        sh_new_arena(tables[i]);
+        pthread_create(&workers[i], NULL, process_chunck, &chunks[i]);
+    }
 
-    make_chunks(&chunk, 1, file_path);
+    Station_Table *agg_table = NULL;
+    sh_new_arena(agg_table);
 
-    Station_Table *table = NULL;
-    sh_new_arena(table);
+    void **ret = malloc(sizeof(void*));
+    for (int i = 0; i < TOTAL_WORKERS; i++) {
+        pthread_join(workers[i], ret);
+        int chunk_id = * ( int * ) * ret;
+        for (int j = 0; j < shlen(tables[chunk_id]); j++) {
+            Station_Table *entry = shgetp_null(agg_table, tables[i][j].key);
+            if (entry == NULL) {
+                strcpy(keys[shlen(agg_table)], tables[i][j].key);
+                shputs(agg_table, tables[i][j]);
+            } else {
+                entry->total_entries += tables[i][j].total_entries;
+                entry->total += tables[i][j].total;
 
+                if (tables[i][j].max > entry->max) {
+                    entry->max = tables[i][j].max;
+                }
+
+                if (tables[i][j].min > entry->min) {
+                    entry->min = tables[i][j].min;
+                }
+            }
+        }
+    }
+
+    fprintf(stdout, "END ALL WORKERS AFTER %lf SECONDS\n", (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
+
+    long table_len = shlen(agg_table);
+
+    qsort(keys, table_len, sizeof(keys[0]), comparator);
+    FILE *result = fopen("out/result.txt", "w");
+    fprintf(result, "{");
+    for (int i = 0; i < table_len; i++) {
+        Station_Table station = shgets(agg_table, keys[i]);
+        fprintf(result, FMT_STATION, ARGS_STATION(station));
+        if (i < table_len-1) {
+            fprintf(result, ", ");
+        }
+    }
+    fprintf(result, "}\n");
+    fprintf(stdout, "total time spent = %lf seconds\n", (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
+    return 0;
+}
+
+void make_chunks(Chunk *chunks, int how_much_chunks, const char *file_path) {
+    int fd = open(file_path, O_RDONLY);
+    assert(fd != -1);
+
+    struct stat sb;
+    assert(fstat(fd, &sb) != -1);
+    long length = sb.st_size;
+
+    char *addr = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+    assert(addr != MAP_FAILED);
+    close(fd);
+
+    long offset = length / how_much_chunks;
+    long end = 0;
+    for (int i = 0; i < how_much_chunks; i++)  {
+        chunks[i].start = end;
+        end = (offset * i) + offset;
+        while (end < length && addr[end] != '\n') ++end;
+        chunks[i].end = end;
+        chunks[i].addr = addr;
+        chunks[i].cursor = 0;
+        chunks[i].id = i;
+    }
+
+    if (end != length) chunks[how_much_chunks].end += (length - end);
+}
+
+void * process_chunck(void *arg) {
+    Chunk *chunk = (Chunk *) arg;
     double v;
-    long row = 0;
     char station_name[MAX_STATION_NAME_LEN], temperature[MAX_STATION_NAME_LEN];
-    while (mgetline(station_name, temperature, 1024, &chunk) != -1) {
-        if (++row % 5000000 == 0) {
-            printf(FMT_CHUNK"\n", ARGS_CHUNK(chunk));
-            // printf("processed %ld rows in %lf seconds\n", row, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
-         }
 
-        Station_Table *station = shgetp_null(table, station_name);
+    while (mgetline(station_name, temperature, 1024, chunk) != -1) {
+        Station_Table *station = shgetp_null(tables[chunk->id], station_name);
         if (station == NULL) {
-            strcpy(keys[shlen(table)], station_name);
             Station_Table s = {
                 .max = -99.00,
                 .min = +99.00,
@@ -70,8 +147,8 @@ int main(void) {
                 .key = station_name
             };
 
-            shputs(table, s);
-            station = shgetp_null(table, station_name);
+            shputs(tables[chunk->id], s);
+            station = shgetp_null(tables[chunk->id], station_name);
             assert(station != NULL);
         }
 
@@ -89,79 +166,32 @@ int main(void) {
         }
     }
 
-    long table_len = shlen(table);
-    qsort(keys, table_len, sizeof(keys[0]), comparator);
-    FILE *result = fopen("out/result.txt", "w");
-    fprintf(result, "{");
-    for (int i = 0; i < table_len; i++) {
-        Station_Table station = shgets(table, keys[i]);
-        fprintf(result, FMT_STATION, ARGS_STATION(station));
-        if (i < table_len-1) {
-            fprintf(result, ", ");
-        }
-    }
-    fprintf(result, "}\n");
-    fprintf(stdout, "total time spent = %lf seconds\n", (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
-    return 0;
+    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
+
+    return &chunk->id;
 }
 
-void make_chunks(Chunk *chunks, int how_much_chunks, const char *file_path) {
-    int fd = open(file_path, O_RDONLY);
-    assert(fd != -1);
-
-    struct stat sb;
-    assert(fstat(fd, &sb) != -1);
-    int length = sb.st_size;
-
-    char *addr = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
-    assert(addr != MAP_FAILED);
-    close(fd);
-
-    int offset = length / how_much_chunks;
-    int end = 0;
-    for (int i = 0; i < how_much_chunks; i++)  {
-        chunks[i].start = end;
-        end = (offset * i) + offset;
-        while (end < length && addr[end] != '\n') ++end;
-        chunks[i].end = end;
-        chunks[i].addr = addr;
-        chunks[i].cursor = 0;
-    }
-
-    if (end != length) chunks[how_much_chunks].end += (length - end);
-}
+#define EOC(c) ((c).cursor >= ((c).end - (c).start))
 
 int mgetline(char *station, char *temperature, int size, Chunk *chunk) {
-    if (chunk->cursor >= (chunk->end - chunk->start)) return -1;
-    char c = chunk->addr[chunk->start + chunk->cursor];
+    if (EOC(*chunk)) return -1;
+    char c;
 
-    int in_station = 1, lim;
-    while(chunk->cursor < (chunk->end - chunk->start) && c != '\n') {
+    int in_station = 1, lim = 0;
+    while(!EOC(*chunk) && (c = chunk->addr[chunk->start + chunk->cursor++]) != '\n') {
         if ( (size-1) <= lim++ ) break;
         if (c == ';') {
             *(station++) = '\0';
             in_station = 0;
-            ++chunk->cursor;
-            c = chunk->addr[chunk->start + chunk->cursor];
-            continue;
-        }
-
-        if (in_station) {
-            *(station++) = c;
         } else {
-            *(temperature++) = c;
+            if (in_station) *(station++)     = c;
+            else            *(temperature++) = c;
         }
-
-        ++chunk->cursor;
-        c = chunk->addr[chunk->start + chunk->cursor];
     }
 
-    if (c == '\n') chunk->cursor++;
+    *temperature = '\0';
 
     return 0;
-}
-
-void process_line(Station_Table *table, char *station_name, char *temperature) {
 }
 
 int comparator(const void *a, const void *b) {
