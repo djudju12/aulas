@@ -1,10 +1,16 @@
+M10K=/home/kopp/fontes/pessoal/1brc/measurements10k.txt
+M1KKK=/home/kopp/fontes/pessoal/1brc/measurements1kkk.txt
+
 main:
 	gcc main.c -o result -g -pg
 
-run: main
-	./result
+run/10K: main
+	./result $(M10K)
 
-profile: run
+run/1KKK: main
+	./result $(M1KKK)
+
+profile: run/1KKK
 	gprof result gmon.out > out/result-profile.txt
 
 debug: main

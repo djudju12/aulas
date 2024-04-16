@@ -35,10 +35,10 @@ typedef struct {
 #define MAX_STATION_NAME_LEN 256
 
 char keys[MAX_STATION_CNT][MAX_STATION_NAME_LEN] = {0};
-#define TOTAL_WORKERS 4
+#define TOTAL_WORKERS 8
 Chunk chunks[TOTAL_WORKERS] = {0};
 pthread_t workers[TOTAL_WORKERS] = {0};
-Station_Table *tables[4];
+Station_Table *tables[TOTAL_WORKERS];
 
 void make_chunks(Chunk *chunks, int how_much_chunks, const char *file_path);
 int comparator(const void *a, const void *b);
@@ -46,10 +46,10 @@ int mgetline(char *station_name, char *temperature, int size, Chunk *chunk);
 void * process_chunck(void *arg);
 
 clock_t start;
-int main(void) {
+int main(int argc, char **argv) {
+    assert(argc == 2);
+    char *file_path = argv[1];
     start = clock();
-    // const char *file_path = "/home/jonathan/fontes/1brc/measurements10k.txt";
-    const char *file_path = "/home/jonathan/fontes/1brc/measurements1kkk.txt";
     make_chunks(chunks, TOTAL_WORKERS, file_path);
 
     for (int i = 0; i < TOTAL_WORKERS; i++) {
@@ -113,7 +113,7 @@ void make_chunks(Chunk *chunks, int how_much_chunks, const char *file_path) {
     assert(fstat(fd, &sb) != -1);
     long length = sb.st_size;
 
-    char *addr = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+    char *addr = mmap(NULL, length, PROT_READ, MAP_SHARED, fd, 0);
     assert(addr != MAP_FAILED);
     close(fd);
 
@@ -166,7 +166,7 @@ void * process_chunck(void *arg) {
         }
     }
 
-    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\nG", chunk->id, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
+    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, (double) (((double)clock()) - start) / CLOCKS_PER_SEC);
 
     return &chunk->id;
 }
