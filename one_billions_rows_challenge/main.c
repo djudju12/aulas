@@ -20,10 +20,10 @@ typedef struct {
     int id;
 } Chunk;
 
-void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length);
+void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long int length);
 void * process_chunck(void *arg);
 
-#define TOTAL_WORKERS 4
+#define TOTAL_WORKERS 8
 Chunk chunks[TOTAL_WORKERS];
 pthread_t workers[TOTAL_WORKERS];
 
@@ -51,7 +51,7 @@ void hm_put(Hash_Map *map, const char *key, double temperature, int hash, unsign
 #define min(a, b) (a) < (b) ? (a) : (b)
 #define max(a, b) (a) > (b) ? (a) : (b)
 
-int mgetline(char *station_name, char *temperature, int *h, int *len, Chunk *chunk);
+int mgetline(char *station_name, char *temperature, int *h, unsigned int *len, Chunk *chunk);
 
 int main(int argc, char **argv) {
     int comparator(const void *a, const void *b);
@@ -70,9 +70,9 @@ int main(int argc, char **argv) {
 
     struct stat sb;
     assert(fstat(fd, &sb) != -1);
-    long length = sb.st_size;
+    off_t length = sb.st_size;
 
-    char *addr = mmap(NULL, length, PROT_READ, MAP_SHARED, fd, 0);
+    char *addr = mmap(NULL, (size_t) length, PROT_READ, MAP_SHARED, fd, 0);
     assert(addr != MAP_FAILED);
     close(fd);
 
@@ -90,8 +90,8 @@ int main(int argc, char **argv) {
     }
 
     Hash_Map *result = results[0];
-    for (int i = 1; i < TOTAL_WORKERS; i++) {
-        for (int k = 0; k < results[i]->len; k++) {
+    for (unsigned int i = 1; i < TOTAL_WORKERS; i++) {
+        for (unsigned int k = 0; k < results[i]->len; k++) {
             unsigned int *entry = hm_get(result, results[i]->entries[k].key);
             unsigned int c = *entry;
             if (c == 0) {
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
     assert(out != NULL);
 
     fprintf(out, "{");
-    for (int i = 0; i < result->len; i++) {
+    for (unsigned int i = 0; i < result->len; i++) {
         Station_Data station = result->entries[i];
         fprintf(out, FMT_STATION, ARGS_STATION(station));
         if (i < result->len-1) {
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
     fprintf(stdout, "total time => %.2lfs\n", difftime(end,start));
 
     fclose(out);
-    munmap((void *) addr, length);
+    munmap((void *) addr, (size_t) length);
     for (int i = 0; i < TOTAL_WORKERS; i++) {
         free(results[i]);
     }
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length) {
+void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long int length) {
     long offset = length / how_much_chunks;
     long end = 0;
     for (int i = 0; i < how_much_chunks; i++)  {
@@ -168,7 +168,7 @@ void * process_chunck(void *arg) {
 }
 
 #define EOC(c) ((c).cursor >= ((c).end - (c).start))
-int mgetline(char *station, char *temperature, int *h, int *len, Chunk *chunk) {
+int mgetline(char *station, char *temperature, int *h, unsigned int *len, Chunk *chunk) {
     if (EOC(*chunk)) return -1;
 
     *h = 0; *len = 0;
