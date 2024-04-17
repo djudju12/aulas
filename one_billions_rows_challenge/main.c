@@ -16,8 +16,8 @@
 #define TOTAL_WORKERS 8
 #define FMT_STATION "%s=%.2lf/%.2lf/%2.lf"
 #define ARGS_STATION(s) (s).key, (s).min, ((s).total / (s).total_entries), (s).max
-#define FMT_CHUNK "start(%ld), end(%ld), cursor(%ld)"
-#define ARGS_CHUNK(c) (c).start, (c).end, (c).cursor
+#define FMT_CHUNK "[ %d ] start(%ld), end(%ld), cursor(%ld)"
+#define ARGS_CHUNK(c) (c).id, (c).start, (c).end, (c).cursor
 
 #define min(a, b) (a) < (b) ? (a) : (b)
 #define max(a, b) (a) > (b) ? (a) : (b)
@@ -45,9 +45,6 @@ typedef struct {
 Chunk chunks[TOTAL_WORKERS] = {0};
 pthread_t workers[TOTAL_WORKERS] = {0};
 
-clock_t start;
-#define CLOCK_DIFF(s) (double) (((double)clock()) - (s)) / CLOCKS_PER_SEC
-
 void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length);
 int comparator(const void *a, const void *b);
 int mgetline(char *station_name, char *temperature, int *h, int *len, Chunk *chunk);
@@ -56,9 +53,11 @@ unsigned int *hm_get(Hash_Map *map, const char *key);
 void hm_put(Hash_Map *map, const char *key, double temperature, int hash, unsigned int len);
 
 int main(int argc, char **argv) {
-    start = clock();
+    time_t start, end;
+    time(&start);
+    printf("start => %s", ctime(&start));
 
-    char *file_path = "/home/kopp/fontes/pessoal/1brc/measurements10k.txt";
+    char *file_path = "/home/jonathan/programacao/1brc/measurements10k.txt";
     if (argc > 1) {
         file_path = argv[1];
     }
@@ -75,8 +74,9 @@ int main(int argc, char **argv) {
 
     make_chunks(chunks, TOTAL_WORKERS, addr, length);
 
+    printf("TOTAL THREADS => %d\n", TOTAL_WORKERS);
     for (int i = 0; i < TOTAL_WORKERS; i++) {
-        printf("starting chunck = "FMT_CHUNK"\n", ARGS_CHUNK(chunks[i]));
+        printf(FMT_CHUNK"\n", ARGS_CHUNK(chunks[i]));
         pthread_create(&workers[i], NULL, process_chunck, &chunks[i]);
     }
 
@@ -103,8 +103,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    fprintf(stdout, "END ALL WORKERS AFTER %lf SECONDS\n", CLOCK_DIFF(start));
-
     qsort(result->entries, result->len, sizeof(*result->entries), comparator);
     FILE *out = fopen("out/result.txt", "w");
     fprintf(out, "{");
@@ -117,7 +115,10 @@ int main(int argc, char **argv) {
     }
 
     fprintf(out, "}\n");
-    fprintf(stdout, "total time spent = %lf seconds\n", CLOCK_DIFF(start));
+    // fprintf(stdout, "total time spent => %lf seconds\n", CLOCK_DIFF(start));
+    time(&end);
+    printf("end => %s", ctime(&end));
+    printf("total time => %.2lfs\n", difftime(end,start));
 
     munmap((void *) addr, length);
     close(fd);
@@ -158,7 +159,7 @@ void * process_chunck(void *arg) {
         hm_put(map, station_name, v, h, len);
     }
 
-    fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, CLOCK_DIFF(start));
+    // fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, CLOCK_DIFF(start));
 
     return map;
 }
@@ -229,4 +230,3 @@ void hm_put(Hash_Map *map, const char *key, double temperature, int h, unsigned 
 int comparator(const void *a, const void *b) {
     return strcmp(((Station_Data *)a)->key, ((Station_Data *)b)->key);
 }
-
