@@ -11,23 +11,24 @@
 
 #define MAX_STATION_CNT 10000
 #define MAX_STATION_NAME_LEN 256
-#define HASHMAP_CAPACITY 16384
-#define HASHMAP_INDEX(h) (h & (HASHMAP_CAPACITY - 1))
-#define TOTAL_WORKERS 8
-#define FMT_STATION "%s=%.2lf/%.2lf/%2.lf"
-#define ARGS_STATION(s) (s).key, (s).min, ((s).total / (s).total_entries), (s).max
+
 #define FMT_CHUNK "[ %d ] start(%ld), end(%ld), cursor(%ld)"
 #define ARGS_CHUNK(c) (c).id, (c).start, (c).end, (c).cursor
-
-#define min(a, b) (a) < (b) ? (a) : (b)
-#define max(a, b) (a) > (b) ? (a) : (b)
-
 typedef struct {
     long start, end, cursor;
     char *addr;
     int id;
 } Chunk;
 
+void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length);
+void * process_chunck(void *arg);
+
+#define TOTAL_WORKERS 4
+Chunk chunks[TOTAL_WORKERS];
+pthread_t workers[TOTAL_WORKERS];
+
+#define FMT_STATION "%s=%.2lf/%.2lf/%2.lf"
+#define ARGS_STATION(s) (s).key, (s).min, ((s).total / (s).total_entries), (s).max
 typedef struct {
     char key[MAX_STATION_NAME_LEN];
     double min;
@@ -36,28 +37,30 @@ typedef struct {
     int total_entries;
 } Station_Data;
 
+#define HASHMAP_CAPACITY 16384
+#define HASHMAP_INDEX(h) (h & (HASHMAP_CAPACITY - 1))
 typedef struct {
     Station_Data entries[MAX_STATION_CNT];
     unsigned int table[HASHMAP_CAPACITY];
     unsigned int len;
 } Hash_Map;
 
-Chunk chunks[TOTAL_WORKERS] = {0};
-pthread_t workers[TOTAL_WORKERS] = {0};
-
-void make_chunks(Chunk *chunks, int how_much_chunks, char *addr, long length);
-int comparator(const void *a, const void *b);
-int mgetline(char *station_name, char *temperature, int *h, int *len, Chunk *chunk);
-void * process_chunck(void *arg);
 unsigned int *hm_get(Hash_Map *map, const char *key);
 void hm_put(Hash_Map *map, const char *key, double temperature, int hash, unsigned int len);
 
+#define min(a, b) (a) < (b) ? (a) : (b)
+#define max(a, b) (a) > (b) ? (a) : (b)
+
+int mgetline(char *station_name, char *temperature, int *h, int *len, Chunk *chunk);
+
 int main(int argc, char **argv) {
+    int comparator(const void *a, const void *b);
+
     time_t start, end;
     time(&start);
-    printf("start => %s", ctime(&start));
+    fprintf(stdout, "start => %s", ctime(&start));
 
-    char *file_path = "/home/jonathan/programacao/1brc/measurements10k.txt";
+    char *file_path = "/home/jonathan/fontes/1brc/measurements10k.txt";
     if (argc > 1) {
         file_path = argv[1];
     }
@@ -71,12 +74,13 @@ int main(int argc, char **argv) {
 
     char *addr = mmap(NULL, length, PROT_READ, MAP_SHARED, fd, 0);
     assert(addr != MAP_FAILED);
+    close(fd);
 
     make_chunks(chunks, TOTAL_WORKERS, addr, length);
 
-    printf("TOTAL THREADS => %d\n", TOTAL_WORKERS);
+    fprintf(stdout, "TOTAL THREADS => %d\n", TOTAL_WORKERS);
     for (int i = 0; i < TOTAL_WORKERS; i++) {
-        printf(FMT_CHUNK"\n", ARGS_CHUNK(chunks[i]));
+        fprintf(stdout, FMT_CHUNK"\n", ARGS_CHUNK(chunks[i]));
         pthread_create(&workers[i], NULL, process_chunck, &chunks[i]);
     }
 
@@ -104,7 +108,10 @@ int main(int argc, char **argv) {
     }
 
     qsort(result->entries, result->len, sizeof(*result->entries), comparator);
+
     FILE *out = fopen("out/result.txt", "w");
+    assert(out != NULL);
+
     fprintf(out, "{");
     for (int i = 0; i < result->len; i++) {
         Station_Data station = result->entries[i];
@@ -112,16 +119,14 @@ int main(int argc, char **argv) {
         if (i < result->len-1) {
             fprintf(out, ", ");
         }
-    }
+    } fprintf(out, "}\n");
 
-    fprintf(out, "}\n");
-    // fprintf(stdout, "total time spent => %lf seconds\n", CLOCK_DIFF(start));
     time(&end);
-    printf("end => %s", ctime(&end));
-    printf("total time => %.2lfs\n", difftime(end,start));
+    fprintf(stdout, "end => %s", ctime(&end));
+    fprintf(stdout, "total time => %.2lfs\n", difftime(end,start));
 
+    fclose(out);
     munmap((void *) addr, length);
-    close(fd);
     for (int i = 0; i < TOTAL_WORKERS; i++) {
         free(results[i]);
     }
@@ -159,13 +164,10 @@ void * process_chunck(void *arg) {
         hm_put(map, station_name, v, h, len);
     }
 
-    // fprintf(stdout, "[ %d ] END AFTER %lf SECONDS\n", chunk->id, CLOCK_DIFF(start));
-
     return map;
 }
 
 #define EOC(c) ((c).cursor >= ((c).end - (c).start))
-
 int mgetline(char *station, char *temperature, int *h, int *len, Chunk *chunk) {
     if (EOC(*chunk)) return -1;
 

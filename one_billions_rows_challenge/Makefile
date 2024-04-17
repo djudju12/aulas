@@ -1,5 +1,5 @@
-M10K=/home/jonathan/programacao/1brc/measurements10k.txt
-M1KKK=/home/jonathan/programacao/1brc/measurements1kkk.txt
+M10K=/home/jonathan/fontes/1brc/measurements10k.txt
+M1KKK=/home/jonathan/fontes/1brc/measurements1kkk.txt
 
 main:
 	gcc -O3 main.c -o result
