@@ -1,17 +1,23 @@
-M10K=/home/jonathan/fontes/1brc/measurements10k.txt
-M1KKK=/home/jonathan/fontes/1brc/measurements1kkk.txt
+M10K=data/measurements.txt
+# M1KKK=data/measurements1kkk.txt
 
-main:
-	gcc -O3 main.c -o result
+build: out/
+	gcc -O3 src/main.c -o out/result
 
-run/10K: main
-	./result $(M10K)
+out/:
+	mkdir -p out/
 
-run/1KKK: main
-	./result $(M1KKK)
+run/10K: build
+	out/result $(M10K)
+
+# para rodar esse eh necessario criar o arquivo anters
+# src/create_measurements.py 1000000000
+# run/1KKK: build
+# 	./result $(M1KKK)
 
 profile: run/1KKK
-	gprof result gmon.out > out/result-profile.txt
+	gprof out/result out/gmon.out > out/result-profile.txt
+	rm -f out/gmon.out
 
-debug: main
-	/home/kopp/software/gf/gf2 result &
+debug: build
+	gf2 src/result &
