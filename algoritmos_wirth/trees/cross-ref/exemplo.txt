@@ -1,0 +1,12 @@
+PROCEDURE search (x: INTEGER; VAR p: WPtr);
+BEGIN
+	IF x < p^.key THEN search(x, p^left)
+	ELSIF x > p^key THEN search(x, p^right)
+	ELSIF p # s THEN p^.count := p^.count + 1
+	ELSE Allocate(p. SIZE(Word));
+		WITH p^ DO
+			key := x; left := s; right := s; count := 1
+		END
+	END
+END
+
