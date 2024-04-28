@@ -88,7 +88,7 @@ void free_tree(Node *root) {
 }
 
 int main(int argc, char **argv) {
-    const char *file_path = "main.c";
+    const char *file_path = "exemplo.txt";
     FILE *file = fopen(file_path, "r");
 
     assert(file != NULL && "cannot open the file");
