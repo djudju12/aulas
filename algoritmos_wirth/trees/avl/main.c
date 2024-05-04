@@ -55,17 +55,8 @@ void search(Node **root, int x, bool *h) {
                 n->l = n2->r;
                 n2->r = n;
 
-                if (n2->bal == -1) {
-                    n->bal = 1;
-                } else {
-                    n->bal = 0;
-                }
-
-                if (n2->bal == 1) {
-                    n1->bal = -1;
-                } else {
-                    n1->bal = 0;
-                }
+                n->bal  = n2->bal == -1 ?  1 : 0;
+                n1->bal = n2->bal ==  1 ? -1 : 0;
                 *root = n = n2;
             }
             n->bal = 0;
@@ -95,17 +86,9 @@ void search(Node **root, int x, bool *h) {
                 n2->r = n1;
                 n->r = n2->l;
                 n2->l = *root;
-                if (n2->bal == 1) {
-                    n->bal = -1;
-                } else {
-                    n->bal = 0;
-                }
 
-                if (n2->bal == -1) {
-                    n1->bal = 1;
-                } else {
-                    n1->bal = 0;
-                }
+                n->bal  = n2->bal ==  1 ? -1 : 0;
+                n1->bal = n2->bal == -1 ?  1 : 0;
                 *root = n = n2;
             }
             n->bal = 0;
@@ -132,12 +115,15 @@ void free_tree(Node *root) {
 }
 
 int main(void) {
-    int entries[] = { 4, 5, 7, 2, 1, 3, 6 };
     Node *root = NULL;
     bool h = false;
-    for (int i = 0; i < 7; i++) {
-        search(&root, entries[i], &h);
-    }
+    search(&root, 40, &h);
+    search(&root, 20, &h);
+    search(&root, 10, &h);
+    search(&root, 25, &h);
+    search(&root, 30, &h);
+    search(&root, 22, &h);
+    search(&root, 50, &h);
 
     tree_dump(root, 0);
     free_tree(root);
