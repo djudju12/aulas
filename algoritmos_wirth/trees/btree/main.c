@@ -93,7 +93,7 @@ void _search(int x, Page *a, bool *h, Item *v) {
                 } else {
                     /* k is in the middle */
                     for (int i = N; i < a->m; ++i) {
-                        b->items[N - i] = a->items[i];
+                        b->items[i - N] = a->items[i];
                     }
                 }
 
@@ -114,7 +114,8 @@ Page *new() {
 int main(void) {
     Page *root = new();
     Page *q = NULL;
-    int values[] = { 20, 40, 10, 30, 15, 35, 7, 26, 18, 22, 5, 42, 13, 46, 27, 8, 32, 38, 24, 45, 25};
+    int values[] = { 20, 40, 10, 30, 15, 35, 7, 26, 18, 22, 5, 42, 13, 46, 27, 8, 32 , 38, 24, 45, 25
+    };
     bool h = false;
     Item u = { .p = NULL };
 
