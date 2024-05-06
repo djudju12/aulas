@@ -14,105 +14,120 @@ typedef struct {
 } Item;
 
 struct Page {
-    int m ;
+    int m;
     Item items[2*N];
     Page *p0;
 };
 
-void search(int x, Page **p) {
-    void _search(int x, Page *a, bool *h, Item **v);
-    bool h = false;
-    Item *item = NULL;
-
-    if (*p == NULL) {
-        *p = malloc(sizeof(Page));
-        (*p)->p0 = NULL;
-        (*p)->m = 1;
-        (*p)->items[0].cnt = 1;
-        (*p)->items[0].key = x;
-        (*p)->items[0].p = NULL;
-    } else {
-        _search(x, *p, &h, &item);
-    }
+Page *new_page() {
+    Page *p = malloc(sizeof(Page));
+    p->p0 = NULL;
+    p->m = 0;
+    return p;
 }
-void _search(int x, Page *a, bool *h, Item **v) {
-    if (a == NULL) {
-        assert(*v == NULL);
-        *h = true;
-        *v = malloc(sizeof(Item));
-        (*v)->cnt = 1;
-        (*v)->key = x;
-        (*v)->p = NULL;
-    } else {
-        /* binary array search */
-        int l, r, k;
-        l = 0, r = a->m - 1;
-        do {
-            k = (l+r) / 2;
-            if (x <= a->items[k].key) r = k-1;
-            if (x >= a->items[k].key) l = k+1;
-        } while (r >= l);
 
-        if (l-r > 1) { // tem um erro aq
-            /* found */
+void _search(int x, Page *a, bool *h, Item *v) {
+    if (a == NULL) {
+        *h = true;
+        v->cnt = 1;
+        v->key = x;
+        v->p = NULL;
+    } else {
+        /* linear array search */
+        int k = 0;
+        while (k < a->m && x > a->items[k].key) k++;
+
+        bool found = a->items[k].key == x;
+        if (found) {
             a->items[k].cnt++;
             *h = false;
         } else {
             /* item is not in this page */
-            Page *q = (r == -1) ? a->p0 : a->items[r].p;
+            Page *q = (k == 0) ? a->p0 : a->items[k - 1].p;
+
             _search(x, q, h, v);
             if (!(*h)) return;
-            Item *u = *v;
-            /* inserts new item */
+
+            Item u = *v;
             if (a->m < 2*N) {
-                for (int i = a->m; i > r+1; --i) {
+                /* inserts new item in position k */
+                for (int i = a->m; i > k; --i) {
                     a->items[i] = a->items[i - 1];
                 }
 
-                assert(v != NULL);
-                a->items[r+1] = *u;
+                a->items[k] = u;
                 a->m++;
                 *h = false;
             } else {
                 /* splits */
-                Page *b = malloc(sizeof(Page));
-                b->p0 = a->p0;
-                b->m = 0;
+                Page *b = new_page();
 
-                Item temp = *u;
-                if (r < N) {
-                    *v = &a->items[N]; // check
-                    for (int i = N; i > r+1; --i) {
-                        a->items[i] = a->items[i - 1];
+                if (k < N) {
+                    /* k is in the left */
+                    *v = a->items[N - 1]; // middle of the array merged
+                    for (int i = k; i < N - 1; ++i) {
+                        a->items[i + 1] = a->items[i];
                     }
-                    a->items[r] = temp;
+
+                    a->items[k] = u;
+
+                    for (int i = N; i < 2*N; ++i) {
+                        b->items[i - N] = a->items[i];
+                    }
+
+                } else if (k > N) {
+                    /* k is in the right */
+                    *v = a->items[N];
+
+                    int j = 0;
+                    for (int i = N + 1; i < k; ++i) {
+                        b->items[j++] = a->items[i];
+                    }
+
+                    b->items[j++] = u;
+
+                    for (int i = k + 1; i < a->m; ++i) {
+                        b->items[j++] = a->items[i];
+                    }
+
                 } else {
-                    r = r - N;
-                    *v = &a->items[N]; // check
-                    for (int i = 0; i < r; ++i) {
-                        b->items[i] = a->items[i+N+1];
+                    /* k is in the middle */
+                    for (int i = N; i < a->m; ++i) {
+                        b->items[N - i] = a->items[i];
                     }
-                    b->items[r] = temp;
-                    for (int i = r+1; i < N; ++i) {
-                        b->items[i] = a->items[i+N];
-                    }
-                    a->m = N;
-                    b->m = N;
-                    b->p0 = u->p;
-                    u->p = b;
                 }
-            }
 
+                a->m = b->m = N;
+                b->p0 = v->p;
+                v->p = b;
+            }
         }
     }
 }
 
+Page *new() {
+    Page *p = malloc(sizeof(Page));
+    p->m = 0;
+    return p;
+}
+
 int main(void) {
-    Page *p = NULL;
-    search(20, &p);
-    search(40, &p);
-    search(10, &p);
-    search(30, &p);
-    search(15, &p);
+    Page *root = new();
+    Page *q = NULL;
+    int values[] = { 20, 40, 10, 30, 15, 35, 7, 26, 18, 22, 5, 42, 13, 46, 27, 8, 32, 38, 24, 45, 25};
+    bool h = false;
+    Item u = { .p = NULL };
+
+    for (int i = 0; i < (sizeof(values)/(sizeof(values)[0])); ++i) {
+        _search(values[i], root, &h, &u);
+        if (h) {
+            q = root;
+            root = new();
+            root->m = 1;
+            root->p0 = q;
+            root->items[0] = u;
+        }
+    }
+
     return 0;
 }
