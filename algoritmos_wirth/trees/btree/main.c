@@ -19,6 +19,21 @@ struct Page {
     Page *p0;
 };
 
+
+void print_tree(Page *root, int level) {
+    if (root == NULL) return;
+
+    if (root->p0) {
+        printf("%*s[%d] p0\n", level*2, "", level);
+        print_tree(root->p0, level + 1);
+    }
+
+    for (int i = 0; i < root->m; ++i) {
+        printf("%*s[%d] %d\n", level*2, "", level, root->items[i].key);
+        print_tree(root->items[i].p, level + 1);
+    }
+}
+
 Page *new_page() {
     Page *p = malloc(sizeof(Page));
     p->p0 = NULL;
@@ -32,75 +47,75 @@ void _search(int x, Page *a, bool *h, Item *v) {
         v->cnt = 1;
         v->key = x;
         v->p = NULL;
-    } else {
-        /* linear array search */
-        int k = 0;
-        while (k < a->m && x > a->items[k].key) k++;
+        return;
+    }
+    /* linear array search */
+    int k = 0;
+    while (k < a->m && x > a->items[k].key) k++;
 
-        bool found = a->items[k].key == x;
-        if (found) {
-            a->items[k].cnt++;
+    bool found = a->items[k].key == x;
+    if (found) {
+        a->items[k].cnt++;
+        *h = false;
+    } else {
+        /* item is not in this page */
+        Page *q = (k == 0) ? a->p0 : a->items[k - 1].p;
+
+        _search(x, q, h, v);
+        if (!(*h)) return;
+
+        Item u = *v;
+        if (a->m < 2*N) {
+            /* inserts new item in position k */
+            for (int i = a->m; i > k; --i) {
+                a->items[i] = a->items[i - 1];
+            }
+
+            a->items[k] = u;
+            a->m++;
             *h = false;
         } else {
-            /* item is not in this page */
-            Page *q = (k == 0) ? a->p0 : a->items[k - 1].p;
+            /* splits */
+            Page *b = new_page();
 
-            _search(x, q, h, v);
-            if (!(*h)) return;
-
-            Item u = *v;
-            if (a->m < 2*N) {
-                /* inserts new item in position k */
-                for (int i = a->m; i > k; --i) {
-                    a->items[i] = a->items[i - 1];
+            if (k < N) {
+                /* k is in the left */
+                *v = a->items[N - 1]; // middle of the array merged
+                for (int i = k; i < N - 1; ++i) {
+                    a->items[i + 1] = a->items[i];
                 }
 
                 a->items[k] = u;
-                a->m++;
-                *h = false;
-            } else {
-                /* splits */
-                Page *b = new_page();
 
-                if (k < N) {
-                    /* k is in the left */
-                    *v = a->items[N - 1]; // middle of the array merged
-                    for (int i = k; i < N - 1; ++i) {
-                        a->items[i + 1] = a->items[i];
-                    }
-
-                    a->items[k] = u;
-
-                    for (int i = N; i < 2*N; ++i) {
-                        b->items[i - N] = a->items[i];
-                    }
-
-                } else if (k > N) {
-                    /* k is in the right */
-                    *v = a->items[N];
-
-                    int j = 0;
-                    for (int i = N + 1; i < k; ++i) {
-                        b->items[j++] = a->items[i];
-                    }
-
-                    b->items[j++] = u;
-
-                    for (int i = k + 1; i < a->m; ++i) {
-                        b->items[j++] = a->items[i];
-                    }
-
-                } else {
-                    /* k is in the middle */
-                    for (int i = N; i < a->m; ++i) {
-                        b->items[i - N] = a->items[i];
-                    }
+                for (int i = N; i < 2*N; ++i) {
+                    b->items[i - N] = a->items[i];
                 }
 
-                a->m = b->m = N;
-                b->p0 = v->p;
-                v->p = b;
+            } else if (k > N) {
+                /* k is in the right */
+                *v = a->items[N];
+
+                int j = 0;
+                for (int i = N + 1; i < k; ++i) {
+                    b->items[j++] = a->items[i];
+                }
+
+                b->items[j++] = u;
+
+                for (int i = k + 1; i < a->m; ++i) {
+                    b->items[j++] = a->items[i];
+                }
+
+            } else {
+                /* k is in the middle */
+                for (int i = N; i < a->m; ++i) {
+                    b->items[i - N] = a->items[i];
+                }
             }
+
+            a->m = b->m = N;
+            b->p0 = v->p;
+            v->p = b;
         }
     }
 }
@@ -129,6 +144,8 @@ int main(void) {
             root->items[0] = u;
         }
     }
+
+    print_tree(root, 0);
 
     return 0;
 }
