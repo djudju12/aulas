@@ -34,6 +34,7 @@ Node *new_node(char *key) {
     node->left  = NULL;
     node->right = NULL;
     node->lines = malloc(sizeof(Vec));
+    assert(node->lines != NULL && "buy more ram!!");
     return node;
 }
 
@@ -42,6 +43,7 @@ void search_and_insert(Node **root, char *key, int line) {
     if (*root == NULL) {
         n = new_node(key);
         Item *first_item = malloc(sizeof(Item));
+        assert(first_item != NULL && "buy more ram!!");
         first_item->value = line;
         first_item->next = NULL;
         n->lines->first = first_item;
@@ -56,6 +58,7 @@ void search_and_insert(Node **root, char *key, int line) {
             search_and_insert(&n->right, key, line);
         } else {
             Item *new_item = malloc(sizeof(Item));
+            assert(new_item != NULL && "buy more ram!!");
             new_item->value = line;
             new_item->next = NULL;
             n->lines->last->next = new_item;
@@ -64,9 +67,16 @@ void search_and_insert(Node **root, char *key, int line) {
     }
 }
 
-void print_tree(Node *root, FILE *out) {
+void print_tree(Node *root, FILE *out, int level) {
+    if (root == NULL) return;
+    printf("%*c%s\n", level*2, ' ', root->key);
+    print_tree(root->left, out, level + 1);
+    print_tree(root->right, out, level + 1);
+}
+
+void tree_dump(Node *root, FILE *out) {
     if (root != NULL) {
-        print_tree(root->left, out);
+        tree_dump(root->left, out);
         fprintf(out, "%s ", root->key);
         Vec *line_numbers = root->lines;
         Item *curent_item = line_numbers->first;
@@ -76,7 +86,7 @@ void print_tree(Node *root, FILE *out) {
         }
 
         fprintf(out, "\n");
-        print_tree(root->right, out);
+        tree_dump(root->right, out);
     }
 }
 
@@ -88,7 +98,7 @@ void free_tree(Node *root) {
 }
 
 int main(int argc, char **argv) {
-    const char *file_path = "exemplo.txt";
+    const char *file_path = "/home/kopp/fontes/pessoal/1brc/measurements1kkk.txt";
     FILE *file = fopen(file_path, "r");
 
     assert(file != NULL && "cannot open the file");
@@ -118,7 +128,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    print_tree(root, stdout);
+    print_tree(root, stdout, 0);
     free_tree(root);
     fclose(file);
     return 0;
