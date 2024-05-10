@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
     const char *dec = argv[1];
     int num = str2dec(dec);
 
+
     char hex[12] = {'0', 'x'};
     int i = 2;
     while (num > 0) {
@@ -41,6 +42,13 @@ int main(int argc, char **argv) {
     }
 
     hex[i] = '\0';
+    char t;
+    for (int j = 0; j < (i - 2) / 2; ++j) {
+        t = hex[j + 2];
+        hex[j + 2] = hex[i - j - 1];
+        hex[i - j - 1] = t;
+    }
+
     printf("%s\n", hex);
     return 0;
 }
