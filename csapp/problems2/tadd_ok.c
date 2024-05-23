@@ -1,22 +1,20 @@
 #include <stdio.h>
 
-int uadd_ok(unsigned x, unsigned y) {
-    int sum = x + y;
+int tadd_ok(int x, int y) {
+    int sum = x+y;
+    int neg_overflow = x < 0 && y < 0 && sum >= 0;
+    int pos_overflow = x >= 0 && y >= 0 && sum < 0;
 
-    if (x < 0 && y < 0) {
-        return sum < 0;
-    }
+    return !neg_overflow && !pos_overflow;
+}
 
-    if (x >= 0 && y >= 0) {
-        return sum >= 0;
-    }
-
-
-    return 1;
+int tsub_ok(int x, int y) {
+    return tadd_ok(x, -y);
 }
 
 int main(void) {
-    unsigned umax = 1u << (sizeof(umax)*8) - 1;
-    printf("%d\n", uadd_ok(umax/4, umax));
+    int imin = 1u << ((sizeof(imin)*8) - 1);
+
+    printf("%s\n", tsub_ok(-10, -imin) == 1 ? "true" : "false");
     return 0;
 }
