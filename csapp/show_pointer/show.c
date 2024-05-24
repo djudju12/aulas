@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 typedef unsigned char *byte_pointer;
 
@@ -42,6 +43,13 @@ int fun2(unsigned word) {
     return ((int) word << 24) >> 24;
 }
 
+int div16(uint32_t x) {
+    // k | x => 0000 0000 0000 0000 0000 0000 0000 1111
+    // unsigned bias = ((x >> 31) & 0x1) * 15; // minha solução (pior)
+    int bias = (x >> 31) & 0xF; // solucao do livro
+    return (x + bias) >> 4;
+}
+
 int main(void) {
     unsigned ws[] = {
         0x00000076,
@@ -80,6 +88,9 @@ int main(void) {
     // printf("ux  = %u:\t", ux);
     // show_bytes((byte_pointer) &ux, sizeof(unsigned));
     // return 0;
+    printf("%d\n", div16(-32));
+    return 0;
+
     // int val = 0x87654321;
     // byte_pointer valp = (byte_pointer) &val;
     // show_bytes(valp, 1);           // -> 0x21
@@ -91,7 +102,7 @@ int main(void) {
     // show_int(val2);
     // show_float((float) val2);
 
-    const char *s = "abcdef";
-    show_bytes((byte_pointer) s, strlen(s));
-    return 0;
+    // const char *s = "abcdef";
+    // show_bytes((byte_pointer) s, strlen(s));
+    // return 0;
 }
