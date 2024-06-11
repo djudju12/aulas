@@ -35,6 +35,13 @@ void show_pointer(void *x) {
     show_bytes((byte_pointer) &x, sizeof(x));
 }
 
+int is_little_endian(void) {
+    uint32_t le = 0x1234;
+    char test[7];
+    snprintf(test, 7, "0x%" PRIx32, le);
+    return strncmp("0x1234", test, 7) == 0;
+}
+
 int fun1(unsigned word) {
     return (int) ((word << 24) >> 24);
 }
@@ -51,6 +58,12 @@ int div16(uint32_t x) {
 }
 
 int main(void) {
+    if (is_little_endian()) {
+        printf("little endian\n");
+    } else {
+        printf("big endian\n");
+    }
+    return 0;
     unsigned ws[] = {
         0x00000076,
         0x87654321,
