@@ -59,20 +59,21 @@ struct Token {
 
 ```
 Entrada: a -> b
-
 Stack = [ ]
 a = V
 b = V
 
-1.                 2.                 3.
- a -> b             a -> b             a -> b
- ^                    ^                     ^
- push(&S, a);       valor = pop(&S);   resultado = BICOND(valor, b);
-                                       push(&S, resultado);
-
-  S                  S                  S
- [V]                [ ] -> Head        [V]
- [ ] -> Head                           [ ] -> Head
+┌ 1 ───────────┐  ┌ 2 ───────────┐ ┌ 3 ─────────────────┐
+│ a -> b       │  │ a -> b       │ │ a -> b             │
+│ ^            │  │   ^          │ │      ^             │
+│              │  │              │ │                    │
+│ push(&S, a); │  │ v = pop(&S); │ │ res = CONDS(v, b); │
+│              │  │              │ │ push(&S, res);     │
+│              │  │              │ │                    │
+│  S           │  │  S           │ │    S               │
+│ [V]          │  │ [ ] -> Head  │ │   [V]              │
+│ [ ] -> Head  │  │              │ │   [ ] -> Head      │
+└──────────────┘  └──────────────┘ └────────────────────┘
 ```
 
 ---
@@ -80,16 +81,24 @@ b = V
 ## Exemplo de Execução
 
 ```
-                    S   S   S   S
+                    1   2   3   4
 1. a = V, b = V    [V] [V] [V] [V]
 2. a = V, b = F        [F] [F] [F]
 3. a = F, b = V            [V] [V]
 4. a = F, b = F                [V]
 ```
 
-| a | b | CLRES |
-| - | - |   -   |
-| 1 | 1 |     1 |
-| 1 | 0 |     0 |
-| 0 | 1 |     1 |
-| 0 | 0 |     1 |
+| a   | b   | a -> b |
+| :-: | :-: |   :-:  |
+| 1   | 1   |    1   |
+| 1   | 0   |    0   |
+| 0   | 1   |    1   |
+| 0   | 0   |    1   |
+
+---
+
+## Bibliografia
+
+* Compiladores: Princípios, Técnicas e Ferramentas
+* The C Programming Language
+* www.youtube.com/tsoding
