@@ -10,7 +10,9 @@ a) F(a, b, c) = (a . b) + (a' . (c' + b))
 
 b) F(a,b,c) = ((a.b’.c)’ + (a’.c’) + (a’.b))’
 
-c) F(p,q) = (p’ q) + (p’ + q)
+c) F(p,q) = (p’ xor q) + (p’ + q)
+
+![](23d02fda-22aa-4e74-955c-e6b56173e8d0.jpeg)
 
 ### Determina a função correspondente ao circuito com portas lógicas
 
