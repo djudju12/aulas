@@ -58,64 +58,64 @@ int div16(uint32_t x) {
 }
 
 int main(void) {
-    if (is_little_endian()) {
-        printf("little endian\n");
-    } else {
-        printf("big endian\n");
-    }
-    return 0;
-    unsigned ws[] = {
-        0x00000076,
-        0x87654321,
-        0x000000C9,
-        0xEDCBA987
-    };
-
-    printf("|     w      |  fun1(w)   |  fun2(w)   |\n");
-    printf("|------------|------------|------------|\n");
-    unsigned w;
-    for (int i = 0; i < sizeof(ws)/sizeof(unsigned); i++) {
-        w = ws[i];
-        printf("| 0x%.8X | ", w);
-        int x1 = fun1(w);
-        show_bytes2((byte_pointer)&x1, sizeof(int));
-        printf(" | ");
-        int x2 = fun2(w);
-        show_bytes2((byte_pointer)&x2, sizeof(int));
-        printf(" |");
-        printf("\n");
-    }
-
-    return 0;
-    // short sx = -12345;
-    // unsigned short usx = sx;
-    // int x = sx;
-    // unsigned ux = usx;
-
-    // printf("sx = %d:\t", sx);
-    // show_bytes((byte_pointer) &sx, sizeof(short));
-    // printf("usx = %u:\t", usx);
-    // show_bytes((byte_pointer) &usx, sizeof(unsigned short));
-    // printf("x   = %d:\t", x);
-    // show_bytes((byte_pointer) &x, sizeof(int));
-    // printf("ux  = %u:\t", ux);
-    // show_bytes((byte_pointer) &ux, sizeof(unsigned));
-    // return 0;
-    printf("%d\n", div16(-32));
-    return 0;
-
-    // int val = 0x87654321;
-    // byte_pointer valp = (byte_pointer) &val;
-    // show_bytes(valp, 1);           // -> 0x21
-    // show_bytes(valp, 2);           // -> 0x2143
-    // show_bytes(valp, 3);           // -> 0x214365
-    // show_bytes(valp, sizeof(val)); // -> 0x21436587
-
-    // int val2 = 3510593;
-    // show_int(val2);
-    // show_float((float) val2);
-
-    // const char *s = "abcdef";
-    // show_bytes((byte_pointer) s, strlen(s));
-    // return 0;
+//    if (is_little_endian()) {
+//        printf("little endian\n");
+//    } else {
+//        printf("big endian\n");
+//    }
+//    return 0;
+//    unsigned ws[] = {
+//        0x00000076,
+//        0x87654321,
+//        0x000000C9,
+//        0xEDCBA987
+//    };
+//
+//    printf("|     w      |  fun1(w)   |  fun2(w)   |\n");
+//    printf("|------------|------------|------------|\n");
+//    unsigned w;
+//    for (int i = 0; i < sizeof(ws)/sizeof(unsigned); i++) {
+//        w = ws[i];
+//        printf("| 0x%.8X | ", w);
+//        int x1 = fun1(w);
+//        show_bytes2((byte_pointer)&x1, sizeof(int));
+//        printf(" | ");
+//        int x2 = fun2(w);
+//        show_bytes2((byte_pointer)&x2, sizeof(int));
+//        printf(" |");
+//        printf("\n");
+//    }
+//
+//    return 0;
+//    // short sx = -12345;
+//    // unsigned short usx = sx;
+//    // int x = sx;
+//    // unsigned ux = usx;
+//
+//    // printf("sx = %d:\t", sx);
+//    // show_bytes((byte_pointer) &sx, sizeof(short));
+//    // printf("usx = %u:\t", usx);
+//    // show_bytes((byte_pointer) &usx, sizeof(unsigned short));
+//    // printf("x   = %d:\t", x);
+//    // show_bytes((byte_pointer) &x, sizeof(int));
+//    // printf("ux  = %u:\t", ux);
+//    // show_bytes((byte_pointer) &ux, sizeof(unsigned));
+//    // return 0;
+//    printf("%d\n", div16(-32));
+//    return 0;
+//
+//    // int val = 0x87654321;
+//    // byte_pointer valp = (byte_pointer) &val;
+//    // show_bytes(valp, 1);           // -> 0x21
+//    // show_bytes(valp, 2);           // -> 0x2143
+//    // show_bytes(valp, 3);           // -> 0x214365
+//    // show_bytes(valp, sizeof(val)); // -> 0x21436587
+//
+//    // int val2 = 3510593;
+//    // show_int(val2);
+//    // show_float((float) val2);
+//
+//    // const char *s = "abcdef";
+//    // show_bytes((byte_pointer) s, strlen(s));
+//    // return 0;
 }
